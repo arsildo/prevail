@@ -46,7 +46,7 @@ fun PrevailTheme(
 
     /*dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S*/
     val colorScheme = when {
-        dynamicColor && !darkTheme -> {
+        dynamicColor && !darkTheme  -> {
             val lightDynamicColors = dynamicLightColorScheme(LocalContext.current)
             systemUiController.setStatusBarColor(
                 color = Color.Transparent,

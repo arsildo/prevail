@@ -61,6 +61,7 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation 'androidx.compose.material3:material3:1.0.0'
 
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     implementation "androidx.navigation:navigation-compose:$nav_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"

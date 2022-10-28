@@ -7,12 +7,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.arsildo.prevail.logic.cache.CachedPreferences
 import com.arsildo.prevail.logic.navigation.Destinations
 import com.arsildo.prevail.logic.viewmodels.BoardsViewModel
 import com.arsildo.prevail.presentation.screens.MainScreen
@@ -25,12 +29,24 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
+
+
+
+
         setContent {
-            PrevailTheme {
+            val dataStore = CachedPreferences(LocalContext.current)
+            val dynamicThemeEnabled = dataStore.getDynamicColorSchemePreference.collectAsState(
+                initial = true
+            ).value
+            PrevailTheme(
+                dynamicColor = dynamicThemeEnabled
+            ) {
                 val navController = rememberNavController()
                 NavigationGraph(navController = navController)
             }
