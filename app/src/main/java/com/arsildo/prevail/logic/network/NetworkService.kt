@@ -1,10 +1,12 @@
 package com.arsildo.prevail.logic.network
 
-import com.arsildo.prevail.logic.constants.BOARDS_ENDPOINT
-import com.arsildo.prevail.logic.network.model.BoardList
+import com.arsildo.prevail.logic.network.model.thread_catalog.ThreadCatalogItem
 import retrofit2.http.GET
+import retrofit2.http.Url
 
 interface NetworkService {
-    @GET(BOARDS_ENDPOINT)
-    suspend fun getBoards(): BoardList
+
+    @GET
+    suspend fun getCatalog(@Url board: String): List<ThreadCatalogItem>
+
 }

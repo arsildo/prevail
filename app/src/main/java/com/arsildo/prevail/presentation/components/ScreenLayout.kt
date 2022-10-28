@@ -22,7 +22,7 @@ fun ScreenLayout(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
+            .padding(start = 16.dp, end = 16.dp),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement
     ) {

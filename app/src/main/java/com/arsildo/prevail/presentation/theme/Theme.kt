@@ -1,6 +1,5 @@
 package com.arsildo.prevail.presentation.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -39,24 +38,29 @@ private val lightColorScheme = lightColorScheme(
 @Composable
 fun PrevailTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
 
     val systemUiController = rememberSystemUiController()
 
-    val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    /*dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S*/
     val colorScheme = when {
         dynamicColor && !darkTheme -> {
             val lightDynamicColors = dynamicLightColorScheme(LocalContext.current)
-            systemUiController.setNavigationBarColor(lightDynamicColors.background)
-            systemUiController.setStatusBarColor(lightDynamicColors.background)
+            systemUiController.setStatusBarColor(
+                color = Color.Transparent,
+                darkIcons = true,
+            )
             lightDynamicColors
         }
 
         dynamicColor && darkTheme -> {
             val darkDynamicColors = dynamicDarkColorScheme(LocalContext.current)
-            systemUiController.setNavigationBarColor(darkDynamicColors.background)
-            systemUiController.setStatusBarColor(darkDynamicColors.background)
+            systemUiController.setStatusBarColor(
+                color = Color.Transparent,
+                darkIcons = false,
+            )
             darkDynamicColors
         }
 
