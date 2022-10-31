@@ -6,6 +6,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -84,15 +85,23 @@ fun PrevailTheme(
 
     val colorScheme = when {
         dynamicColor && !darkTheme -> {
+            systemUiController.setSystemBarsColor(darkIcons = true, color = Color.Transparent)
             dynamicLightColorScheme(LocalContext.current)
         }
 
         dynamicColor && darkTheme -> {
+            systemUiController.setSystemBarsColor(darkIcons = false, color = Color.Transparent)
             dynamicDarkColorScheme(LocalContext.current)
         }
 
-        darkTheme -> darkColorScheme
-        else -> lightColorScheme
+        darkTheme -> {
+            systemUiController.setSystemBarsColor(darkIcons = false, color = Color.Transparent)
+            darkColorScheme
+        }
+        else -> {
+            systemUiController.setSystemBarsColor(darkIcons = true, color = Color.Transparent)
+            lightColorScheme
+        }
     }
 
     MaterialTheme(

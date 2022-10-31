@@ -36,19 +36,14 @@ class MainActivity : ComponentActivity() {
             val automaticThemeEnabled = dataStore.getFollowSystemThemePreference.collectAsState(
                 initial = true
             ).value
-            val dynamicThemeEnabled = dataStore.getDynamicColorSchemePreference.collectAsState(
-                initial = true
-            ).value
-
-            val themePreference = dataStore.getThemePreference.collectAsState(
-                initial = isSystemInDarkTheme()
-            ).value
-
-            val androidVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+            val dynamicThemeEnabled =
+                dataStore.getDynamicColorSchemePreference.collectAsState(initial = true).value
+            val themePreference =
+                dataStore.getThemePreference.collectAsState(initial = isSystemInDarkTheme()).value
 
             PrevailTheme(
-                darkTheme = themePreference,
-                dynamicColor = if (androidVersion) dynamicThemeEnabled else false
+                darkTheme = if (automaticThemeEnabled) isSystemInDarkTheme() else themePreference,
+                dynamicColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicThemeEnabled else false
             ) {
                 val navController = rememberNavController()
                 NavigationGraph(navController = navController)

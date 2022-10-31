@@ -1,12 +1,16 @@
 package com.arsildo.prevail.logic.viewmodels
 
+import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arsildo.prevail.logic.cache.CachedPreferences
+import com.arsildo.prevail.logic.main.PrevailApplication
 import com.arsildo.prevail.logic.network.model.thread_catalog.ThreadCatalogItem
 import com.arsildo.prevail.logic.repository.BoardRepository
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

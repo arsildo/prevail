@@ -29,6 +29,6 @@ fun LoadingDataAnimation() {
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Loading", color = MaterialTheme.colorScheme.primary)
+        Text(text = "Loading...", color = MaterialTheme.colorScheme.primary)
     }
 }

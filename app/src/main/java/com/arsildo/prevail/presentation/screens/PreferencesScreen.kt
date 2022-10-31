@@ -2,7 +2,7 @@ package com.arsildo.prevail.presentation.screens
 
 import android.os.Build
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +31,11 @@ import kotlinx.coroutines.launch
 fun PreferencesScreen(navController: NavController) {
 
     val dataStore = CachedPreferences(LocalContext.current)
+
+    val automaticThemePreference = dataStore.getFollowSystemThemePreference.collectAsState(
+        initial = true
+    ).value
+
     val themePreference = dataStore.getThemePreference.collectAsState(
         initial = isSystemInDarkTheme()
     ).value
@@ -45,15 +48,13 @@ fun PreferencesScreen(navController: NavController) {
     AnimateColorSchemeChange {
         ScreenLayout {
             Spacer(modifier = Modifier.height(64.dp))
+            SettingCategoryLabel(title = "Appearance")
             SettingRow(
-                checked = themePreference,
+                checked = automaticThemePreference,
                 onCheckedChange = {
-                    if (themePreference)
-                        coroutineScope.launch {
-                            dataStore.setThemePreference(false)
-
-                        }
-                    else coroutineScope.launch { dataStore.setThemePreference(true) }
+                    if (automaticThemePreference)
+                        coroutineScope.launch { dataStore.setFollowSystemThemePreference(false) }
+                    else coroutineScope.launch { dataStore.setFollowSystemThemePreference(true) }
                 },
                 enabled = true,
                 title = "Follow System Theme",
@@ -62,23 +63,17 @@ fun PreferencesScreen(navController: NavController) {
                 checked = themePreference,
                 onCheckedChange = {
                     if (themePreference)
-                        coroutineScope.launch {
-                            dataStore.setThemePreference(false)
-
-                        }
+                        coroutineScope.launch { dataStore.setThemePreference(false) }
                     else coroutineScope.launch { dataStore.setThemePreference(true) }
                 },
-                enabled = true,
+                enabled = !automaticThemePreference,
                 title = "Dark Theme",
             )
             SettingRow(
                 checked = dynamicColorSchemePreference,
                 onCheckedChange = {
                     if (dynamicColorSchemePreference)
-                        coroutineScope.launch {
-                            dataStore.setDynamicColorSchemePreference(false)
-
-                        }
+                        coroutineScope.launch { dataStore.setDynamicColorSchemePreference(false) }
                     else coroutineScope.launch { dataStore.setDynamicColorSchemePreference(true) }
                 },
                 enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
@@ -91,7 +86,6 @@ fun PreferencesScreen(navController: NavController) {
 
 @Composable
 fun AnimateColorSchemeChange(content: @Composable () -> Unit) {
-
     val colors = MaterialTheme.colorScheme.copy(
         background = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.background,
@@ -103,14 +97,23 @@ fun AnimateColorSchemeChange(content: @Composable () -> Unit) {
             targetValue = MaterialTheme.colorScheme.primary,
             animationSpec = tween(
                 delayMillis = 512,
-                durationMillis = 500,
-                easing = LinearEasing
+                durationMillis = 512,
+                easing = LinearOutSlowInEasing
             )
         ).value,
     )
     MaterialTheme(colorScheme = colors, content = content)
 }
 
+
+@Composable
+fun SettingCategoryLabel(title: String) {
+    Row(
+        modifier = Modifier.padding(vertical = 4.dp)
+    ) {
+        Text(text = title, color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodyMedium)
+    }
+}
 
 @Composable
 fun SettingRow(
