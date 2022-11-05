@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -22,24 +27,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.cache.CachedPreferences
-import com.arsildo.prevail.presentation.components.ScreenLayout
+import com.arsildo.prevail.logic.Destinations
+import com.arsildo.prevail.logic.cache.ColorSchemePreferences
+import com.arsildo.prevail.presentation.components.shared.ScreenLayout
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferencesScreen(navController: NavController) {
 
-    val dataStore = CachedPreferences(LocalContext.current)
+    val dataStore = ColorSchemePreferences(LocalContext.current)
 
-    val automaticThemePreference = dataStore.getFollowSystemThemePreference.collectAsState(
+    val automaticThemePreference = dataStore.getSystemColorScheme.collectAsState(
         initial = true
     ).value
 
-    val themePreference = dataStore.getThemePreference.collectAsState(
+    val themePreference = dataStore.getColorScheme.collectAsState(
         initial = isSystemInDarkTheme()
     ).value
-    val dynamicColorSchemePreference = dataStore.getDynamicColorSchemePreference.collectAsState(
+    val dynamicColorSchemePreference = dataStore.getDynamicColorScheme.collectAsState(
         initial = true
     ).value
 
@@ -53,8 +61,8 @@ fun PreferencesScreen(navController: NavController) {
                 checked = automaticThemePreference,
                 onCheckedChange = {
                     if (automaticThemePreference)
-                        coroutineScope.launch { dataStore.setFollowSystemThemePreference(false) }
-                    else coroutineScope.launch { dataStore.setFollowSystemThemePreference(true) }
+                        coroutineScope.launch { dataStore.setSystemColorScheme(false) }
+                    else coroutineScope.launch { dataStore.setSystemColorScheme(true) }
                 },
                 enabled = true,
                 title = "Follow System Theme",
@@ -63,8 +71,8 @@ fun PreferencesScreen(navController: NavController) {
                 checked = themePreference,
                 onCheckedChange = {
                     if (themePreference)
-                        coroutineScope.launch { dataStore.setThemePreference(false) }
-                    else coroutineScope.launch { dataStore.setThemePreference(true) }
+                        coroutineScope.launch { dataStore.setColorScheme(false) }
+                    else coroutineScope.launch { dataStore.setColorScheme(true) }
                 },
                 enabled = !automaticThemePreference,
                 title = "Dark Theme",
@@ -73,14 +81,15 @@ fun PreferencesScreen(navController: NavController) {
                 checked = dynamicColorSchemePreference,
                 onCheckedChange = {
                     if (dynamicColorSchemePreference)
-                        coroutineScope.launch { dataStore.setDynamicColorSchemePreference(false) }
-                    else coroutineScope.launch { dataStore.setDynamicColorSchemePreference(true) }
+                        coroutineScope.launch { dataStore.setDynamicColorScheme(false) }
+                    else coroutineScope.launch { dataStore.setDynamicColorScheme(true) }
                 },
                 enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
                 title = "Dynamic Theme",
             )
         }
     }
+
 }
 
 
@@ -111,7 +120,11 @@ fun SettingCategoryLabel(title: String) {
     Row(
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
-        Text(text = title, color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.tertiary,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 

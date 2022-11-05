@@ -1,7 +1,5 @@
-package com.arsildo.prevail.presentation.components.main_screen
+package com.arsildo.prevail.presentation.components.main
 
-import android.text.Html
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,16 +12,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.arsildo.prevail.logic.network.model.thread_catalog.Thread
+import com.arsildo.prevail.logic.network.models.threads.Thread
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
 @Composable
@@ -33,62 +31,32 @@ fun ThreadCard(thread: Thread) {
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.primary
         ),
-        modifier = Modifier.padding(vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 16.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "${thread.no}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-                Text(
-                    text = thread.now,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                Text(text = "${thread.no}",)
+                Text(text = thread.now,)
             }
-            Text(
-                text = thread.semantic_url,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            if (thread.com != null) {
-                Text(
-                    text = thread.com,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    maxLines = 2
-                )
-            }
+            Text(text = thread.semantic_url,)
+            if (thread.com != null) { Text(text = thread.com, maxLines = 2) }
 
-
-            /*MediaPlayer(url = "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}")*/
+            /* MediaPlayer(url = "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}")*/
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "${thread.replies} replies",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-                Text(
-                    text = "${thread.images} media file(s)",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
+                Text(text = "${thread.replies} replies",)
+                Text(text = "${thread.images} media file(s)",)
 
             }
         }
 
     }
-
-
 }
 
 
@@ -99,7 +67,7 @@ fun MediaPlayer(url: String) {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(url))
             prepare()
-            playWhenReady = false
+            repeatMode = Player.REPEAT_MODE_ALL
         }
     }
 
@@ -109,8 +77,6 @@ fun MediaPlayer(url: String) {
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        DisposableEffect(Unit) { onDispose { exoPlayer.release() } }
-
         AndroidView(
             factory = {
                 StyledPlayerView(context).apply {
@@ -121,7 +87,6 @@ fun MediaPlayer(url: String) {
     }
 
 }
-
 
 /*private fun formatLogic(string: String): String {
     val decoded: String = Html

@@ -58,23 +58,23 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
 
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.material3:material3:$material3_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0'
 
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation "androidx.datastore:datastore-preferences:$datastore_version"
 
     implementation "androidx.navigation:navigation-compose:$nav_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
-    implementation "io.coil-kt:coil-compose:2.2.2"
-    implementation "com.google.android.exoplayer:exoplayer:2.18.1"
-
+    implementation "io.coil-kt:coil-compose:$coil_version"
+    implementation "com.google.android.exoplayer:exoplayer:$exo_player_version"
 
 
     testImplementation 'junit:junit:4.13.2'

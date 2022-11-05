@@ -1,10 +1,8 @@
-package com.arsildo.prevail.logic.main
+package com.arsildo.prevail.logic
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 
 @HiltAndroidApp
-class PrevailApplication : Application() {
-
-}
+class PrevailApplication : Application(){}

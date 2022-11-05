@@ -1,4 +1,4 @@
-package com.arsildo.prevail.logic.network.model.thread_catalog
+package com.arsildo.prevail.logic.network.models.threads
 
 import com.google.gson.annotations.SerializedName
 

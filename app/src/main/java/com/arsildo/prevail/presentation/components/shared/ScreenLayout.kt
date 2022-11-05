@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.components
+package com.arsildo.prevail.presentation.components.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +21,7 @@ fun ScreenLayout(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(start = 16.dp, end = 16.dp),
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement
     ) {

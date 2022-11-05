@@ -1,4 +1,4 @@
-package com.arsildo.prevail.logic.main
+package com.arsildo.prevail.logic
 
 import android.os.Build
 import android.os.Bundle
@@ -17,9 +17,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.arsildo.prevail.logic.cache.CachedPreferences
-import com.arsildo.prevail.logic.navigation.Destinations
-import com.arsildo.prevail.logic.viewmodels.BoardsViewModel
+import com.arsildo.prevail.logic.cache.ColorSchemePreferences
+import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
+import com.arsildo.prevail.presentation.screens.BoardsScreen
 import com.arsildo.prevail.presentation.screens.MainScreen
 import com.arsildo.prevail.presentation.screens.PreferencesScreen
 import com.arsildo.prevail.presentation.theme.PrevailTheme
@@ -32,18 +32,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            val dataStore = CachedPreferences(LocalContext.current)
-            val automaticThemeEnabled = dataStore.getFollowSystemThemePreference.collectAsState(
-                initial = true
-            ).value
-            val dynamicThemeEnabled =
-                dataStore.getDynamicColorSchemePreference.collectAsState(initial = true).value
-            val themePreference =
-                dataStore.getThemePreference.collectAsState(initial = isSystemInDarkTheme()).value
+
+            val dataStore = ColorSchemePreferences(LocalContext.current)
+            val systemColorScheme = dataStore.getSystemColorScheme.collectAsState(true).value
+            val colorScheme = dataStore.getColorScheme.collectAsState(true).value
+            val dynamicColorScheme = dataStore.getDynamicColorScheme.collectAsState(true).value
 
             PrevailTheme(
-                darkTheme = if (automaticThemeEnabled) isSystemInDarkTheme() else themePreference,
-                dynamicColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicThemeEnabled else false
+                darkTheme = if (systemColorScheme) isSystemInDarkTheme() else colorScheme,
+                dynamicColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dynamicColorScheme else false
             ) {
                 val navController = rememberNavController()
                 NavigationGraph(navController = navController)
@@ -51,25 +48,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun NavigationGraph(navController: NavHostController) {
-        val viewModel = hiltViewModel<BoardsViewModel>()
+        val threadsViewModel = hiltViewModel<ThreadsViewModel>()
         NavHost(
             navController = navController,
             startDestination = Destinations.Main.route,
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) {
             composable(route = Destinations.Main.route) {
-                MainScreen(
-                    navController = navController,
-                    viewModel = viewModel
-                )
+                MainScreen(navController = navController, viewModel = threadsViewModel)
             }
-            composable(route = Destinations.Preferences.route) {
-                PreferencesScreen(navController)
-            }
+            composable(route = Destinations.Preferences.route) { PreferencesScreen(navController) }
+            composable(route = Destinations.Boards.route) { BoardsScreen(navController) }
         }
     }
 
 }
+
+sealed class Destinations(val route: String) {
+    object Main : Destinations(route = "main_screen")
+    object Boards : Destinations(route = "boards_screen")
+    object Preferences : Destinations(route = "preferences_screen")
+}
+

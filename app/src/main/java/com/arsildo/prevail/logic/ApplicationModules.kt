@@ -1,6 +1,6 @@
-package com.arsildo.prevail.logic.modules
+package com.arsildo.prevail.logic
 
-import com.arsildo.prevail.logic.constants.BASE_URL
+import com.arsildo.prevail.logic.network.API_BASE_URL
 import com.arsildo.prevail.logic.network.NetworkService
 import dagger.Module
 import dagger.Provides
@@ -19,7 +19,7 @@ class ApplicationModules {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
