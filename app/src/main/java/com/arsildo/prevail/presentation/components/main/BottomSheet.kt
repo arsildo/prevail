@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.logic.Destinations
@@ -66,7 +67,7 @@ fun BottomSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(10) {
-                        OptionCard(icon = Icons.Default.Settings, title = "setting $it") {
+                        OptionCard(icon = Icons.Default.Settings, title = "Manage Setting $it") {
                             navController.navigate(Destinations.Preferences.route)
                         }
                     }
@@ -99,7 +100,11 @@ fun OptionCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(32.dp))
-            Text(text = title, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
+            )
         }
 
     }

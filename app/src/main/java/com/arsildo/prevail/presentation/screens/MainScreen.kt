@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.arsildo.prevail.logic.viewmodels.MainScreenState
 import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
@@ -68,7 +67,7 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                     state = appBarState,
                     snapAnimationSpec = tween(
                         easing = LinearOutSlowInEasing,
-                        durationMillis = 512,
+                        durationMillis = 1024,
                         delayMillis = 0
                     )
 
@@ -88,21 +87,21 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                     title = {
                         Column(modifier = Modifier.padding(start = 8.dp)) {
                             Text(
-                                text = "/wsg/",
+                                text = "/board/",
                                 style = MaterialTheme.typography.titleLarge,
                             )
                             Text(
-                                text = "Worksafe GIF",
+                                text = "board desc",
                                 style = MaterialTheme.typography.titleSmall,
                             )
                         }
                     },
                     actions = {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                bottomSheetState.show()
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch { bottomSheetState.show() }
                             }
-                        }) {
+                        ) {
                             Icon(
                                 Icons.Rounded.MoreVert,
                                 contentDescription = null
@@ -116,7 +115,7 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                         .animateContentSize(
                             tween(
                                 delayMillis = 0,
-                                durationMillis = 1024,
+                                durationMillis = 128,
                                 easing = LinearOutSlowInEasing
                             )
                         )
@@ -130,7 +129,7 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                 }
             }
 
-            BottomSheet(bottomSheetState,navController)
+            BottomSheet(bottomSheetState, navController)
 
         }
     }
