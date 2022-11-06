@@ -15,6 +15,7 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.HorizontalRule
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.logic.Destinations
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -56,19 +58,30 @@ fun BottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(horizontal = 8.dp, vertical = 16.dp),
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
 
+                Text(
+                    text = "More Actions",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(5),
+                    columns = GridCells.Fixed(4),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(10) {
-                        OptionCard(icon = Icons.Default.Settings, title = "Manage Setting $it") {
-                            navController.navigate(Destinations.Preferences.route)
+                        OptionCard(
+                            icon = if (it % 2 == 0) Icons.Default.Settings else Icons.Rounded.Palette,
+                            title = "Manage Setting $it"
+                        ) {
+                            if (it % 2 == 0) navController.navigate(Destinations.Boards.route)
+                            else navController.navigate(Destinations.Preferences.route)
                         }
                     }
                 }
