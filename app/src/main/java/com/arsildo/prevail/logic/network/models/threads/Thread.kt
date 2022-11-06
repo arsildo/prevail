@@ -35,4 +35,10 @@ data class Thread(
     val tn_h: Int,
     val tn_w: Int,
     val w: Int
-)
+) {
+    val hasAnimatedMedia: Boolean
+        get() {
+            //TODO improve logic to determine if the media is animated
+            return tim != 0L && ext.isNotEmpty()
+        }
+}

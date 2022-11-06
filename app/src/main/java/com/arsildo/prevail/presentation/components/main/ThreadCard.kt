@@ -12,7 +12,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,12 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arsildo.prevail.logic.network.models.threads.Thread
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
 @Composable
-fun ThreadCard(thread: Thread) {
+fun ThreadCard(thread: Thread, exoPlayer: ExoPlayer?) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -35,7 +32,9 @@ fun ThreadCard(thread: Thread) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "${thread.no}",)
@@ -44,10 +43,13 @@ fun ThreadCard(thread: Thread) {
             Text(text = thread.semantic_url,)
             if (thread.com != null) { Text(text = thread.com, maxLines = 2) }
 
-            /* MediaPlayer(url = "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}")*/
+            if (thread.hasAnimatedMedia)
+                MediaPlayer(exoPlayer)
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "${thread.replies} replies",)
@@ -61,31 +63,25 @@ fun ThreadCard(thread: Thread) {
 
 
 @Composable
-fun MediaPlayer(url: String) {
+fun MediaPlayer(exoPlayer: ExoPlayer?) {
     val context = LocalContext.current
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(url))
-            prepare()
-            repeatMode = Player.REPEAT_MODE_ALL
-        }
-    }
-
     Box(
         modifier = Modifier
             .height(256.dp)
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        AndroidView(
-            factory = {
-                StyledPlayerView(context).apply {
-                    player = exoPlayer
+        if (exoPlayer != null) {
+            AndroidView(
+                factory = {
+                    StyledPlayerView(context).apply {
+                        player = exoPlayer
+                    }
                 }
-            }
-        )
+            )
+        }
+        //TODO else show a thumbnail
     }
-
 }
 
 /*private fun formatLogic(string: String): String {
