@@ -3,6 +3,7 @@ package com.arsildo.prevail.presentation.components.boards
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,18 +48,18 @@ fun SearchBoard(
             Text(
                 text = "Search board",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary.copy(.4f)
+                color = MaterialTheme.colorScheme.primary.copy(.5f)
             )
         },
         textStyle = MaterialTheme.typography.titleMedium,
         colors = TextFieldDefaults.textFieldColors(
             textColor = MaterialTheme.colorScheme.primary,
             cursorColor = MaterialTheme.colorScheme.primary,
-            backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp),
+            backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
         ),
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.extraLarge,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search
@@ -90,7 +91,8 @@ fun SearchBoard(
             )
             .padding(horizontal = 8.dp)
             .let {
-                if (appBarState.collapsedFraction < 1) it.padding(vertical = 8.dp) else it
+                if (appBarState.collapsedFraction < .5) it.padding(vertical = 8.dp)
+                else it
                     .statusBarsPadding()
                     .padding(bottom = 8.dp)
             }

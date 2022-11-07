@@ -102,7 +102,7 @@ fun OptionCard(
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp),
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         onClick = onClick,
         modifier = Modifier.wrapContentSize()

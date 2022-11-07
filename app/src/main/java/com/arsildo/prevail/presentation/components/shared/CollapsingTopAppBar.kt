@@ -5,12 +5,12 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -43,11 +43,10 @@ fun CollapsingTopAppBar(
                     easing = LinearOutSlowInEasing,
                 )
             )
-            .padding(
-                if (appBarState.collapsedFraction < 1) PaddingValues(
-                    top = (32 + 4).dp
-                ) else PaddingValues(top = 0.dp)
-            ),
+            .let {
+                if (appBarState.collapsedFraction < .5) it.statusBarsPadding()
+                else it.padding(0.dp)
+            },
         navigationIcon = navigationIcon,
         title = title,
         actions = actions,

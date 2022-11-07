@@ -24,24 +24,30 @@ class ThreadsViewModel @Inject constructor(
     private val repository: NetworkRepository
 ) : ViewModel() {
 
-    private val _mainScreenState: MutableState<MainScreenState> = mutableStateOf(MainScreenState.Loading)
+    private val _mainScreenState: MutableState<MainScreenState> =
+        mutableStateOf(MainScreenState.Loading)
     val mainScreenState: State<MainScreenState> = _mainScreenState
 
     var threadList: MutableState<List<ThreadCatalogItem>> = mutableStateOf(ArrayList())
 
     init {
         try {
-            _mainScreenState.value = MainScreenState.Loading
-            viewModelScope.launch {
-                try {
-                    threadList.value = repository.getThreadCatalog("wsg/catalog.json")
-                    _mainScreenState.value = MainScreenState.Responded(threadList.value)
-                } catch (e: Exception) {
-                    _mainScreenState.value = MainScreenState.Failed("Failed to load.")
-                }
-            }
+            viewModelScope.launch { requestThreads() }
         } catch (e: Exception) {
             _mainScreenState.value = MainScreenState.Failed("Failed to load.")
         }
     }
+
+    suspend fun requestThreads() {
+        _mainScreenState.value = MainScreenState.Loading
+        viewModelScope.launch {
+            try {
+                threadList.value = repository.getThreadCatalog("wsg/catalog.json")
+                _mainScreenState.value = MainScreenState.Responded(threadList.value)
+            } catch (e: Exception) {
+                _mainScreenState.value = MainScreenState.Failed("Failed to load.")
+            }
+        }
+    }
+
 }

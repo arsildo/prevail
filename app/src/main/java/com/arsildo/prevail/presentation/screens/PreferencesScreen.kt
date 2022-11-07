@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -27,9 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.Destinations
 import com.arsildo.prevail.logic.cache.ColorSchemePreferences
 import com.arsildo.prevail.presentation.components.shared.ScreenLayout
 import kotlinx.coroutines.launch
@@ -54,7 +48,9 @@ fun PreferencesScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
 
     AnimateColorSchemeChange {
-        ScreenLayout {
+        ScreenLayout(
+            topBar = {}
+        ) {
             Spacer(modifier = Modifier.height(64.dp))
             SettingCategoryLabel(title = "Appearance")
             SettingRow(

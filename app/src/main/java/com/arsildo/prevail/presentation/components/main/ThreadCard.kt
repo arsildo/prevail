@@ -1,5 +1,6 @@
 package com.arsildo.prevail.presentation.components.main
 
+import android.widget.TextView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
 import com.arsildo.prevail.logic.network.models.threads.Thread
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -27,31 +31,58 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 @Composable
 fun ThreadCard(thread: Thread) {
     Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(.4f),
+            contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        modifier = Modifier.padding(vertical = 16.dp),
+        shape = MaterialTheme.shapes.extraLarge
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "${thread.no}",)
-                Text(text = thread.now,)
+                Text(
+                    text = "${thread.no}",
+                    style = MaterialTheme.typography.labelSmall
+                )
+                Text(
+                    text = thread.now,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
-            Text(text = thread.semantic_url,)
-            if (thread.com != null) { Text(text = thread.com, maxLines = 2) }
+            Text(
+                text = thread.semantic_url,
+                style = MaterialTheme.typography.titleMedium
+            )
+            if (thread.com != null) {
+                HtmlText(
+                    text = thread.com,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
             /* MediaPlayer(url = "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}")*/
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "${thread.replies} replies",)
-                Text(text = "${thread.images} media file(s)",)
+                Text(
+                    text = "${thread.replies} replies",
+                    style = MaterialTheme.typography.labelSmall
+                )
+                Text(
+                    text = "${thread.images} media file(s)",
+                    style = MaterialTheme.typography.labelSmall
+                )
 
             }
         }
@@ -86,6 +117,26 @@ fun MediaPlayer(url: String) {
         )
     }
 
+}
+
+
+@Composable
+fun HtmlText(
+    text: String,
+    color: Color
+) {
+    AndroidView(factory = { context ->
+        TextView(context).apply {
+            setText(
+                if (text.length > 128) {
+                    HtmlCompat.fromHtml(text.take(256) + "...", HtmlCompat.FROM_HTML_MODE_LEGACY)
+                } else {
+                    HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                }
+            )
+            setTextColor(color.toArgb())
+        }
+    })
 }
 
 /*private fun formatLogic(string: String): String {

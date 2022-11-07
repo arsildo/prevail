@@ -19,28 +19,29 @@ import androidx.compose.ui.unit.dp
 fun BoardCard(
     title: String,
     desc: String,
-    fullDecs: String,
+    fullDesc: String,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(.4f),
             contentColor = MaterialTheme.colorScheme.onSurface
-        )
+        ),
+        shape = MaterialTheme.shapes.extraLarge
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.fillMaxWidth(.7f)) {
                 Text(text = "/$title/", style = MaterialTheme.typography.bodyLarge)
                 Text(text = desc, style = MaterialTheme.typography.titleMedium)
-                Text(text = fullDecs, style = MaterialTheme.typography.bodySmall, maxLines = 3)
+                Text(text = fullDesc, style = MaterialTheme.typography.bodySmall, maxLines = 3)
             }
             Checkbox(checked = true, onCheckedChange = {})
         }
