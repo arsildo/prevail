@@ -24,7 +24,7 @@ fun BoardCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp),
+            .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(.4f),
             contentColor = MaterialTheme.colorScheme.onSurface

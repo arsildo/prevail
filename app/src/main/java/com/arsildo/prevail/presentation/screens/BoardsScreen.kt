@@ -1,7 +1,7 @@
 package com.arsildo.prevail.presentation.screens
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
+
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -35,25 +35,17 @@ import com.arsildo.prevail.presentation.components.shared.ScreenLayout
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardsScreen(navController: NavController) {
-
     val boardViewModel = hiltViewModel<BoardsViewModel>()
-
-    val appBarState = rememberTopAppBarState()
-    val scrollBehavior =
-        TopAppBarDefaults.enterAlwaysScrollBehavior(
-            state = appBarState,
-            snapAnimationSpec = tween(
-                delayMillis = 0,
-                durationMillis = 256,
-                easing = LinearOutSlowInEasing,
-            )
-
-        )
+    val topBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = topBarState,
+        snapAnimationSpec = tween(delayMillis = 0, easing = LinearEasing)
+    )
 
     ScreenLayout(
         topBar = {
             CollapsingTopAppBar(
-                appBarState = appBarState,
+                appBarState = topBarState,
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(modifier = Modifier.padding(start = 8.dp)) {
@@ -85,7 +77,7 @@ fun BoardsScreen(navController: NavController) {
     ) {
         when (boardViewModel.boardsScreenState.value) {
             is BoardsScreenState.Loading -> {
-                LoadingResponse(text = "Loading data...")
+                LoadingResponse(text = "Loading boards...")
             }
 
             is BoardsScreenState.Failed -> {
@@ -93,33 +85,21 @@ fun BoardsScreen(navController: NavController) {
             }
 
             is BoardsScreenState.Responded -> {
-                SearchBoard(appBarState = appBarState)
+                SearchBoard(appBarState = topBarState)
                 val listState = rememberLazyListState()
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier
-                        .animateContentSize(
-                            tween(
-                                delayMillis = 0,
-                                durationMillis = 256,
-                                easing = LinearOutSlowInEasing,
-                            )
-                        )
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
-                        .padding(horizontal = 8.dp),
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 ) {
-                    boardViewModel.boardList.value?.boards?.let { it ->
-                        items(it.size) {
-                            BoardCard(
-                                title = boardViewModel.boardList.value!!.boards[it].board,
-                                desc = boardViewModel.boardList.value!!.boards[it].title,
-                                fullDesc = boardViewModel.boardList.value!!.boards[it].meta_description
-                            )
-                        }
+                    items(boardViewModel.boardList.value.boards.size) {
+                        BoardCard(
+                            title = boardViewModel.boardList.value.boards[it].board,
+                            desc = boardViewModel.boardList.value.boards[it].title,
+                            fullDesc = boardViewModel.boardList.value.boards[it].meta_description
+                        )
                     }
                 }
             }
         }
     }
-
 }

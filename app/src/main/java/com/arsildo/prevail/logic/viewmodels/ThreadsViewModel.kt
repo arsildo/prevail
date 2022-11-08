@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.logic.network.NetworkRepository
 import com.arsildo.prevail.logic.network.models.threads.ThreadCatalogItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,7 +19,6 @@ sealed class MainScreenState {
     data class Failed(val errorMessage: String) : MainScreenState()
 }
 
-
 @HiltViewModel
 class ThreadsViewModel @Inject constructor(
     private val repository: NetworkRepository
@@ -28,7 +28,7 @@ class ThreadsViewModel @Inject constructor(
         mutableStateOf(MainScreenState.Loading)
     val mainScreenState: State<MainScreenState> = _mainScreenState
 
-    var threadList: MutableState<List<ThreadCatalogItem>> = mutableStateOf(ArrayList())
+    var threadList: MutableState<List<ThreadCatalogItem>> = mutableStateOf(emptyList())
 
     init {
         try {
@@ -43,6 +43,7 @@ class ThreadsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 threadList.value = repository.getThreadCatalog("wsg/catalog.json")
+                delay(512)
                 _mainScreenState.value = MainScreenState.Responded(threadList.value)
             } catch (e: Exception) {
                 _mainScreenState.value = MainScreenState.Failed("Failed to load.")

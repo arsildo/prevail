@@ -31,9 +31,7 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 @Composable
 fun ThreadCard(thread: Thread) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(.4f),
             contentColor = MaterialTheme.colorScheme.onSurface
@@ -42,9 +40,7 @@ fun ThreadCard(thread: Thread) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -90,7 +86,6 @@ fun ThreadCard(thread: Thread) {
     }
 }
 
-
 @Composable
 fun MediaPlayer(url: String) {
     val context = LocalContext.current
@@ -119,7 +114,6 @@ fun MediaPlayer(url: String) {
 
 }
 
-
 @Composable
 fun HtmlText(
     text: String,
@@ -138,13 +132,3 @@ fun HtmlText(
         }
     })
 }
-
-/*private fun formatLogic(string: String): String {
-    val decoded: String = Html
-        .fromHtml(string, Html.FROM_HTML_MODE_COMPACT)
-        .toString()
-    return if (decoded.count() > 128) {
-        decoded.take(128) + "..."
-    } else decoded
-}*/
-

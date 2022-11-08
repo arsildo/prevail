@@ -1,8 +1,8 @@
 package com.arsildo.prevail.presentation.screens
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,8 +11,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,10 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -43,18 +41,11 @@ import kotlinx.coroutines.launch
 fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
 
 
-    val appBarState = rememberTopAppBarState()
-    val scrollBehavior =
-        TopAppBarDefaults.enterAlwaysScrollBehavior(
-            state = appBarState,
-            snapAnimationSpec = tween(
-                delayMillis = 0,
-                durationMillis = 128,
-                easing = LinearOutSlowInEasing,
-            )
-
-        )
-
+    val topBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = topBarState,
+        snapAnimationSpec = tween(delayMillis = 0, easing = LinearEasing)
+    )
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -62,13 +53,19 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
     )
 
     val coroutineScope = rememberCoroutineScope()
+
     ScreenLayout(
         topBar = {
             CollapsingTopAppBar(
-                appBarState = appBarState,
+                appBarState = topBarState,
                 scrollBehavior = scrollBehavior,
                 title = {
-                    Column(modifier = Modifier.padding(start = 8.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable { coroutineScope.launch { bottomSheetState.show() } }
+                            .padding(horizontal = 8.dp)
+                    ) {
                         Text(
                             text = "/board/",
                             style = MaterialTheme.typography.titleLarge,
@@ -80,6 +77,16 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch { viewModel.requestThreads() }
+                        }
+                    ) {
+                        Icon(
+                            Icons.Rounded.Refresh,
+                            contentDescription = null
+                        )
+                    }
                     IconButton(
                         onClick = {
                             coroutineScope.launch { bottomSheetState.show() }
@@ -96,37 +103,28 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
     ) {
         when (viewModel.mainScreenState.value) {
             is MainScreenState.Loading -> {
-                LoadingResponse(text = "Loading data...")
+                LoadingResponse(text = "Loading threads...")
             }
 
             is MainScreenState.Failed -> {
-                LoadingResponse(text = "Failed to load data.\n Please check your internet connection.")
+                LoadingResponse(
+                    text = "Failed to load data.\n Please check your internet connection.",
+                    reloadEnabled = true,
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.requestThreads()
+                        }
+                    }
+                )
             }
 
             is MainScreenState.Responded -> {
                 val threadList = viewModel.threadList.value
                 val listState = rememberLazyListState()
-                val refreshState = remember { mutableStateOf(false) }
-                fun refresh() = coroutineScope.launch {
-                    refreshState.value = true
-                    viewModel.requestThreads()
-                    refreshState.value = false
-                }
-
-                val state = rememberPullRefreshState(refreshState.value, ::refresh)
 
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier
-                        .pullRefresh(state)
-                        .animateContentSize(
-                            tween(
-                                delayMillis = 0,
-                                durationMillis = 256,
-                                easing = LinearOutSlowInEasing,
-                            )
-                        )
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 ) {
                     items(viewModel.threadList.value.size) { index ->
                         threadList[index].threads.forEach {
@@ -134,7 +132,6 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                         }
                     }
                 }
-
 
             }
 

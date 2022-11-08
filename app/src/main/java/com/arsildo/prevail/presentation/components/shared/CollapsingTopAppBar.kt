@@ -1,7 +1,7 @@
 package com.arsildo.prevail.presentation.components.shared
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.waterfall
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
@@ -22,6 +23,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -35,18 +37,10 @@ fun CollapsingTopAppBar(
 ) {
     TopAppBar(
         modifier = Modifier
+            .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp))
-            .animateContentSize(
-                tween(
-                    delayMillis = 0,
-                    durationMillis = 256,
-                    easing = LinearOutSlowInEasing,
-                )
-            )
-            .let {
-                if (appBarState.collapsedFraction < .5) it.statusBarsPadding()
-                else it.padding(0.dp)
-            },
+            .animateContentSize(tween(delayMillis = 0, easing = LinearEasing))
+            .let { if (appBarState.collapsedFraction < .99) it.statusBarsPadding() else it.padding(0.dp) },
         navigationIcon = navigationIcon,
         title = title,
         actions = actions,

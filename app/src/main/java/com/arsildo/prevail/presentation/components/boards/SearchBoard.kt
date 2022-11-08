@@ -1,10 +1,9 @@
 package com.arsildo.prevail.presentation.components.boards
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -23,7 +22,6 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,10 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
-@OptIn(
-    ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalComposeUiApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBoard(
     appBarState: TopAppBarState,
@@ -82,19 +77,11 @@ fun SearchBoard(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(
-                tween(
-                    delayMillis = 0,
-                    durationMillis = 256,
-                    easing = LinearOutSlowInEasing,
-                )
-            )
+            .animateContentSize(tween(delayMillis = 0, easing = LinearEasing))
             .padding(horizontal = 8.dp)
             .let {
-                if (appBarState.collapsedFraction < .5) it.padding(vertical = 8.dp)
-                else it
-                    .statusBarsPadding()
-                    .padding(bottom = 8.dp)
+                if (appBarState.collapsedFraction < .99) it.padding(vertical = 32.dp)
+                else it.statusBarsPadding().padding(bottom = 16.dp)
             }
 
 
