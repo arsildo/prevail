@@ -10,6 +10,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,9 +25,9 @@ fun BoardCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(bottom = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(.4f),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         shape = MaterialTheme.shapes.extraLarge
@@ -43,7 +44,7 @@ fun BoardCard(
                 Text(text = desc, style = MaterialTheme.typography.titleMedium)
                 Text(text = fullDesc, style = MaterialTheme.typography.bodySmall, maxLines = 3)
             }
-            Checkbox(checked = true, onCheckedChange = {})
+            Checkbox(checked = false, onCheckedChange = {})
         }
     }
 }
