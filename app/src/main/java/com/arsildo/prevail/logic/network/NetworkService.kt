@@ -1,6 +1,5 @@
 package com.arsildo.prevail.logic.network
 
-import com.arsildo.prevail.logic.network.models.boards.Board
 import com.arsildo.prevail.logic.network.models.boards.Boards
 import com.arsildo.prevail.logic.network.models.threads.ThreadCatalogItem
 import retrofit2.http.GET

@@ -1,12 +1,21 @@
 package com.arsildo.prevail.presentation.screens
 
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
@@ -17,10 +26,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,33 +44,36 @@ import com.arsildo.prevail.logic.viewmodels.MainScreenState
 import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
 import com.arsildo.prevail.presentation.components.main.BottomSheet
 import com.arsildo.prevail.presentation.components.main.ThreadCard
-import com.arsildo.prevail.presentation.components.shared.CollapsingTopAppBar
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
-import com.arsildo.prevail.presentation.components.shared.ScreenLayout
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
 
-
-    val topBarState = rememberTopAppBarState()
+    val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
-        state = topBarState,
-        snapAnimationSpec = tween(delayMillis = 0, easing = LinearEasing)
+        state = topAppBarState,
+        snapAnimationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
+
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
-
     val coroutineScope = rememberCoroutineScope()
 
-    ScreenLayout(
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            CollapsingTopAppBar(
-                appBarState = topBarState,
+            val statusBarPadding by animateDpAsState(
+                if (topAppBarState.collapsedFraction < .99)
+                    WindowInsets.statusBars.asPaddingValues().calculateTopPadding() else 0.dp,
+                animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
+            )
+            TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(
@@ -78,64 +94,63 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            coroutineScope.launch { viewModel.requestThreads() }
-                        }
-                    ) {
-                        Icon(
-                            Icons.Rounded.Refresh,
-                            contentDescription = null
-                        )
-                    }
+                        onClick = { coroutineScope.launch { viewModel.requestThreads() } }
+                    ) { Icon(Icons.Rounded.Refresh, contentDescription = null) }
                     IconButton(
-                        onClick = {
-                            coroutineScope.launch { bottomSheetState.show() }
-                        }
-                    ) {
-                        Icon(
-                            Icons.Rounded.MoreVert,
-                            contentDescription = null
-                        )
-                    }
-                }
+                        onClick = { coroutineScope.launch { bottomSheetState.show() } }
+                    ) { Icon(Icons.Rounded.MoreVert, contentDescription = null) }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp))
+                    .padding(top = statusBarPadding)
             )
-        }
-    ) {
-        when (viewModel.mainScreenState.value) {
-            is MainScreenState.Loading -> {
-                LoadingResponse(text = "Loading threads...")
-            }
+        },
+        contentColor = MaterialTheme.colorScheme.onBackground,
+        containerColor = MaterialTheme.colorScheme.background,
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { contentPadding ->
+        Box(
+            modifier = Modifier
+                .padding(contentPadding)
+                .padding(horizontal = 8.dp)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        ) {
+            when (viewModel.mainScreenState.value) {
+                is MainScreenState.Loading -> LoadingResponse(text = "Loading threads...")
 
-            is MainScreenState.Failed -> {
-                LoadingResponse(
-                    text = "Failed to load data.\n Please check your internet connection.",
-                    reloadEnabled = true,
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.requestThreads()
+                is MainScreenState.Failed -> {
+                    LoadingResponse(
+                        text = "Failed to load data.\n Please check your internet connection.",
+                        reloadEnabled = true,
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.requestThreads()
+                            }
                         }
-                    }
-                )
-            }
+                    )
+                }
 
-            is MainScreenState.Responded -> {
-                val threadList = viewModel.threadList.value
-                val listState = rememberLazyListState()
-
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                ) {
-                    items(viewModel.threadList.value.size) { index ->
-                        threadList[index].threads.forEach {
-                            ThreadCard(thread = it)
+                is MainScreenState.Responded -> {
+                    val threadList = viewModel.threadList.value
+                    /*val listState = rememberLazyListState()*/
+                    LazyColumn {
+                        items(threadList.size) { it ->
+                            threadList[it].threads.forEach {
+                                ThreadCard(thread = it)
+                            }
                         }
+
                     }
+
                 }
 
             }
-
         }
+        BottomSheet(bottomSheetState, navController)
     }
-    BottomSheet(bottomSheetState, navController)
 }

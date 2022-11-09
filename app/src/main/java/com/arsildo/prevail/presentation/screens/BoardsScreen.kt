@@ -98,18 +98,18 @@ fun BoardsScreen(navController: NavController) {
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp))
                     .padding(top = statusBarPadding)
-
             )
 
         },
         contentColor = MaterialTheme.colorScheme.onBackground,
         containerColor = MaterialTheme.colorScheme.background,
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { contentPadding ->
         Box(
             modifier = Modifier
                 .padding(contentPadding)
                 .padding(horizontal = 8.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
             when (boardViewModel.boardsScreenState.value) {
                 is BoardsScreenState.Loading -> LoadingResponse(text = "Loading boards...")
@@ -119,10 +119,7 @@ fun BoardsScreen(navController: NavController) {
                     val listState = rememberLazyListState()
                     Column {
                         SearchBoard(topAppBarState = topAppBarState)
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        ) {
+                        LazyColumn {
                             items(boardViewModel.boardList.value.boards.size) {
                                 BoardCard(
                                     title = boardViewModel.boardList.value.boards[it].board,

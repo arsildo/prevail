@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.logic.network.NetworkRepository
+import com.arsildo.prevail.logic.network.models.threads.Thread
 import com.arsildo.prevail.logic.network.models.threads.ThreadCatalogItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

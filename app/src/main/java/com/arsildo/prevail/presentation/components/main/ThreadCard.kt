@@ -31,16 +31,20 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 @Composable
 fun ThreadCard(thread: Thread) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(.4f),
-            contentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         shape = MaterialTheme.shapes.extraLarge
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -56,14 +60,14 @@ fun ThreadCard(thread: Thread) {
                 text = thread.semantic_url,
                 style = MaterialTheme.typography.titleMedium
             )
-            if (thread.com != null) {
-                HtmlText(
-                    text = thread.com,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            /* if (thread.com != null) {
+                 HtmlText(
+                     text = thread.com,
+                     color = MaterialTheme.colorScheme.primary
+                 )
+             }*/
 
-            /* MediaPlayer(url = "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}")*/
+            /*MediaPlayer(url = "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}")*/
 
             Row(
                 modifier = Modifier
