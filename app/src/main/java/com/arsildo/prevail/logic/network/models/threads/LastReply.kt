@@ -1,5 +1,8 @@
 package com.arsildo.prevail.logic.network.models.threads
 
+import androidx.annotation.Keep
+
+@Keep
 data class LastReply(
     val capcode: String,
     val com: String,

@@ -28,7 +28,6 @@ import com.arsildo.prevail.logic.cache.ColorSchemePreferences
 import com.arsildo.prevail.presentation.components.shared.ScreenLayout
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferencesScreen(navController: NavController) {
 

@@ -116,7 +116,7 @@ fun BoardsScreen(navController: NavController) {
                 is BoardsScreenState.Failed -> LoadingResponse(text = "Failed to load data.\n Please check your internet connection.")
 
                 is BoardsScreenState.Responded -> {
-                    val listState = rememberLazyListState()
+                    /*val listState = rememberLazyListState()*/
                     Column {
                         SearchBoard(topAppBarState = topAppBarState)
                         LazyColumn {

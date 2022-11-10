@@ -1,5 +1,8 @@
 package com.arsildo.prevail.logic.network.models.boards
 
+import androidx.annotation.Keep
+
+@Keep
 data class Board(
     val board: String,
     val board_flags: BoardFlags,
