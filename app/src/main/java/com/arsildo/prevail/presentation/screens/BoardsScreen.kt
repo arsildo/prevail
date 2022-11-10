@@ -120,12 +120,11 @@ fun BoardsScreen(navController: NavController) {
                     Column {
                         SearchBoard(topAppBarState = topAppBarState)
                         LazyColumn {
-                            items(boardViewModel.boardList.value.boards.size) {
-                                BoardCard(
-                                    title = boardViewModel.boardList.value.boards[it].board,
-                                    desc = boardViewModel.boardList.value.boards[it].title,
-                                    fullDesc = boardViewModel.boardList.value.boards[it].meta_description
-                                )
+                            items(boardViewModel.boardList.boards.size) {
+                                boardViewModel.boardList.boards.forEach { 
+                                    BoardCard(board = it)
+                                }
+                                
                             }
                         }
                     }

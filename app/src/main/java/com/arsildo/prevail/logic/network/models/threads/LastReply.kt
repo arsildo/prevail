@@ -16,5 +16,6 @@ data class LastReply(
     val time: Int,
     val tn_h: Int,
     val tn_w: Int,
+    val trip: String,
     val w: Int
 )

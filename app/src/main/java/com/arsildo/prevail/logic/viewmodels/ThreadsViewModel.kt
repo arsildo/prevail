@@ -6,8 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.logic.network.NetworkRepository
-import com.arsildo.prevail.logic.network.models.threads.Thread
-import com.arsildo.prevail.logic.network.models.threads.ThreadCatalogItem
+import com.arsildo.prevail.logic.network.models.threads.ThreadCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 sealed class MainScreenState {
     object Loading : MainScreenState()
-    data class Responded(val data: List<ThreadCatalogItem>) : MainScreenState()
+    data class Responded(val data: ThreadCatalog) : MainScreenState()
     data class Failed(val errorMessage: String) : MainScreenState()
 }
 
@@ -29,7 +28,7 @@ class ThreadsViewModel @Inject constructor(
         mutableStateOf(MainScreenState.Loading)
     val mainScreenState: State<MainScreenState> = _mainScreenState
 
-    var threadList: MutableState<List<ThreadCatalogItem>> = mutableStateOf(emptyList())
+    var threadList: ThreadCatalog = ThreadCatalog()
 
     init {
         try {
@@ -43,9 +42,9 @@ class ThreadsViewModel @Inject constructor(
         _mainScreenState.value = MainScreenState.Loading
         viewModelScope.launch {
             try {
-                threadList.value = repository.getThreadCatalog("wsg/catalog.json")
+                threadList = repository.getThreadCatalog("wsg/catalog.json")
                 delay(512)
-                _mainScreenState.value = MainScreenState.Responded(threadList.value)
+                _mainScreenState.value = MainScreenState.Responded(threadList)
             } catch (e: Exception) {
                 _mainScreenState.value = MainScreenState.Failed("Failed to load.")
             }

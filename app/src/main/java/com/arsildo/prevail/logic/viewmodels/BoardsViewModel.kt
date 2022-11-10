@@ -28,7 +28,7 @@ class BoardsViewModel @Inject constructor(
         mutableStateOf(BoardsScreenState.Loading)
     val boardsScreenState: State<BoardsScreenState> = _boardsScreenState
 
-    val boardList: MutableState<Boards> = mutableStateOf(Boards(emptyList()))
+    var boardList: Boards = Boards(emptyList())
 
     init {
         try {
@@ -42,9 +42,9 @@ class BoardsViewModel @Inject constructor(
         _boardsScreenState.value = BoardsScreenState.Loading
         viewModelScope.launch {
             try {
-                boardList.value = repository.getBoards()
+                boardList = repository.getBoards()
                 delay(512)
-                _boardsScreenState.value = BoardsScreenState.Responded(boardList.value)
+                _boardsScreenState.value = BoardsScreenState.Responded(boardList)
             } catch (e: Exception) {
                 _boardsScreenState.value = BoardsScreenState.Failed("Failed to load.")
             }

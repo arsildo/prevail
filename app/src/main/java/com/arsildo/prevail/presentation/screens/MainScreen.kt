@@ -50,7 +50,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
-
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = topAppBarState,
@@ -136,7 +135,7 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                 }
 
                 is MainScreenState.Responded -> {
-                    val threadList = viewModel.threadList.value
+                    val threadList = viewModel.threadList
                     /*val listState = rememberLazyListState()*/
                     LazyColumn {
                         items(threadList.size) { it ->
@@ -144,7 +143,6 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                                 ThreadCard(thread = it)
                             }
                         }
-
                     }
 
                 }

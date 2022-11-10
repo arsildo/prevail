@@ -15,13 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arsildo.prevail.logic.network.models.boards.Board
 import com.arsildo.prevail.presentation.components.main.HtmlText
 
 @Composable
 fun BoardCard(
-    title: String,
-    desc: String,
-    fullDesc: String,
+    board:Board
 ) {
     Card(
         modifier = Modifier
@@ -41,9 +40,9 @@ fun BoardCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.fillMaxWidth(.7f)) {
-                Text(text = "/$title/", style = MaterialTheme.typography.bodyLarge)
-                Text(text = desc, style = MaterialTheme.typography.titleMedium)
-                HtmlText(text = fullDesc, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(text = "/${board.board}/", style = MaterialTheme.typography.bodyLarge)
+                Text(text = board.title, style = MaterialTheme.typography.titleMedium)
+                HtmlText(text = board.meta_description, color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
             Checkbox(checked = false, onCheckedChange = {})
         }

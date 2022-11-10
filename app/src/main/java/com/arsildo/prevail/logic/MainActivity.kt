@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
         val threadsViewModel = hiltViewModel<ThreadsViewModel>()
         NavHost(
             navController = navController,
-            startDestination = Destinations.Main.route,
+            startDestination = Destinations.Boards.route,
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) {
             composable(route = Destinations.Main.route) {

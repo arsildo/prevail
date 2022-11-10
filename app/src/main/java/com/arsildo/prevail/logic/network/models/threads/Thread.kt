@@ -1,21 +1,15 @@
 package com.arsildo.prevail.logic.network.models.threads
 
-import com.google.gson.annotations.SerializedName
-
 data class Thread(
-    @SerializedName("bumplimit")
-    val bumpLimit: Int,
-    @SerializedName("capcode")
-    val capCode: String,
+    val bumplimit: Int,
+    val capcode: String,
     val closed: Int,
-    val com: String?,
+    val com: String,
     val ext: String,
     val filename: String,
-    @SerializedName("fsize")
-    val fileSize: Int,
+    val fsize: Int,
     val h: Int,
-    @SerializedName("imagelimit")
-    val imageLimit: Int,
+    val imagelimit: Int,
     val images: Int,
     val last_modified: Int,
     val last_replies: List<LastReply>,
