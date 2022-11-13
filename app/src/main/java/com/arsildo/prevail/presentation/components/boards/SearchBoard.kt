@@ -1,5 +1,6 @@
 package com.arsildo.prevail.presentation.components.boards
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -8,10 +9,11 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
@@ -42,15 +44,14 @@ fun SearchBoard(topAppBarState: TopAppBarState) {
         else WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
         animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
-
-    OutlinedTextField(
+    TextField(
         value = search.value,
         onValueChange = { search.value = it },
         placeholder = {
             Text(
                 text = "Search board",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.inversePrimary
+                color = MaterialTheme.colorScheme.secondary
             )
         },
         textStyle = MaterialTheme.typography.titleMedium,
@@ -85,3 +86,4 @@ fun SearchBoard(topAppBarState: TopAppBarState) {
 
     )
 }
+

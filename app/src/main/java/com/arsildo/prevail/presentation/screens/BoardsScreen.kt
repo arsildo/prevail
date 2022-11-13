@@ -7,17 +7,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.SelectAll
@@ -33,6 +27,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -41,28 +36,33 @@ import androidx.navigation.NavController
 import com.arsildo.prevail.logic.Destinations
 import com.arsildo.prevail.logic.viewmodels.BoardsScreenState
 import com.arsildo.prevail.logic.viewmodels.BoardsViewModel
+import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
 import com.arsildo.prevail.presentation.components.boards.BoardCard
 import com.arsildo.prevail.presentation.components.boards.SearchBoard
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardsScreen(navController: NavController) {
-    val boardViewModel = hiltViewModel<BoardsViewModel>()
+    val viewModel = hiltViewModel<BoardsViewModel>()
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = topAppBarState,
         snapAnimationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
 
+
+    val statusBarPadding by animateDpAsState(
+        if (topAppBarState.collapsedFraction < .9)
+            WindowInsets.statusBars.asPaddingValues().calculateTopPadding().value.dp else 0.dp,
+        animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
+    )
+
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            val statusBarPadding by animateDpAsState(
-                if (topAppBarState.collapsedFraction < .99)
-                    WindowInsets.statusBars.asPaddingValues().calculateTopPadding() else 0.dp,
-                animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
-            )
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 scrollBehavior = scrollBehavior,
@@ -76,13 +76,21 @@ fun BoardsScreen(navController: NavController) {
                     }
                 },
                 title = {
-                    Text(
-                        text = "boards",
-                        style = MaterialTheme.typography.titleLarge,
-                    )
+                    Column {
+                        Text(
+                            text = "Boards",
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                        Text(
+                            text = "Manage your board selection",
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                    }
                 },
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(
+                        onClick = { }
+                    ) {
                         Icon(
                             Icons.Rounded.SelectAll,
                             contentDescription = null,
@@ -99,32 +107,35 @@ fun BoardsScreen(navController: NavController) {
                     .background(MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp))
                     .padding(top = statusBarPadding)
             )
-
         },
         contentColor = MaterialTheme.colorScheme.onBackground,
         containerColor = MaterialTheme.colorScheme.background,
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { contentPadding ->
         Box(
             modifier = Modifier
                 .padding(contentPadding)
-                .padding(horizontal = 8.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+                .padding(horizontal = 16.dp)
         ) {
-            when (boardViewModel.boardsScreenState.value) {
+            when (viewModel.boardsScreenState.value) {
                 is BoardsScreenState.Loading -> LoadingResponse(text = "Loading boards...")
-                is BoardsScreenState.Failed -> LoadingResponse(text = "Failed to load data.\n Please check your internet connection.")
+                is BoardsScreenState.Failed ->
+                    LoadingResponse(
+                        text = "Failed to load boards.\n Please check your internet connection.",
+                        failed = true,
+                        onClick = { coroutineScope.launch { viewModel.requestBoards() } }
+                    )
 
                 is BoardsScreenState.Responded -> {
-                    /*val listState = rememberLazyListState()*/
                     Column {
+                        /*SearchBoard()*/
+                        val boardList = viewModel.boardList.boards
                         SearchBoard(topAppBarState = topAppBarState)
                         LazyColumn {
-                            items(boardViewModel.boardList.boards.size) {
-                                boardViewModel.boardList.boards.forEach { 
-                                    BoardCard(board = it)
+                            items(boardList.size) {
+                                boardList.forEach { board ->
+                                    BoardCard(board = board)
                                 }
-                                
                             }
                         }
                     }

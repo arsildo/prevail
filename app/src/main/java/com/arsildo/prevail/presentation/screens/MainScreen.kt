@@ -8,13 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
@@ -55,22 +51,21 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
         state = topAppBarState,
         snapAnimationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
-
+    val statusBarPadding by animateDpAsState(
+        if (topAppBarState.collapsedFraction < .99)
+            WindowInsets.statusBars.asPaddingValues().calculateTopPadding().value.dp else 0.dp,
+        animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
+    )
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
-    val coroutineScope = rememberCoroutineScope()
 
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            val statusBarPadding by animateDpAsState(
-                if (topAppBarState.collapsedFraction < .99)
-                    WindowInsets.statusBars.asPaddingValues().calculateTopPadding() else 0.dp,
-                animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
-            )
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 scrollBehavior = scrollBehavior,
@@ -94,10 +89,22 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
                 actions = {
                     IconButton(
                         onClick = { coroutineScope.launch { viewModel.requestThreads() } }
-                    ) { Icon(Icons.Rounded.Refresh, contentDescription = null) }
+                    ) {
+                        Icon(
+                            Icons.Rounded.Refresh,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     IconButton(
                         onClick = { coroutineScope.launch { bottomSheetState.show() } }
-                    ) { Icon(Icons.Rounded.MoreVert, contentDescription = null) }
+                    ) {
+                        Icon(
+                            Icons.Rounded.MoreVert,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
@@ -116,31 +123,25 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
         Box(
             modifier = Modifier
                 .padding(contentPadding)
-                .padding(horizontal = 8.dp)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .padding(horizontal = 16.dp)
         ) {
             when (viewModel.mainScreenState.value) {
                 is MainScreenState.Loading -> LoadingResponse(text = "Loading threads...")
 
                 is MainScreenState.Failed -> {
                     LoadingResponse(
-                        text = "Failed to load data.\n Please check your internet connection.",
-                        reloadEnabled = true,
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModel.requestThreads()
-                            }
-                        }
+                        text = "Failed to load threads.\n Please check your internet connection.",
+                        failed = true,
+                        onClick = { coroutineScope.launch { viewModel.requestThreads() } }
                     )
                 }
 
                 is MainScreenState.Responded -> {
                     val threadList = viewModel.threadList
-                    /*val listState = rememberLazyListState()*/
                     LazyColumn {
                         items(threadList.size) { it ->
-                            threadList[it].threads.forEach {
-                                ThreadCard(thread = it)
+                            threadList[it].threads.forEach { thread ->
+                                ThreadCard(thread = thread)
                             }
                         }
                     }
@@ -149,6 +150,6 @@ fun MainScreen(navController: NavController, viewModel: ThreadsViewModel) {
 
             }
         }
-        BottomSheet(bottomSheetState, navController)
     }
+    BottomSheet(bottomSheetState, navController)
 }

@@ -2,7 +2,6 @@ package com.arsildo.prevail.logic
 
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -19,9 +18,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arsildo.prevail.logic.cache.ColorSchemePreferences
+import com.arsildo.prevail.logic.viewmodels.BoardsViewModel
 import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
+import com.arsildo.prevail.presentation.components.preferences.PreferenceCategory
 import com.arsildo.prevail.presentation.screens.BoardsScreen
 import com.arsildo.prevail.presentation.screens.MainScreen
+import com.arsildo.prevail.presentation.screens.PreferenceDetailScreen
 import com.arsildo.prevail.presentation.screens.PreferencesScreen
 import com.arsildo.prevail.presentation.theme.PrevailTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,8 +62,20 @@ class MainActivity : ComponentActivity() {
             composable(route = Destinations.Main.route) {
                 MainScreen(navController = navController, viewModel = threadsViewModel)
             }
-            composable(route = Destinations.Preferences.route) { PreferencesScreen(navController) }
-            composable(route = Destinations.Boards.route) { BoardsScreen(navController) }
+            composable(route = Destinations.Boards.route) {
+                BoardsScreen(navController)
+            }
+
+            var destination = PreferenceCategory.Appearance.route
+            composable(route = Destinations.Preferences.route) {
+                PreferencesScreen(navController) {
+                    destination = it
+                    navController.navigate(Destinations.PreferenceDetailsScreen.route)
+                }
+            }
+            composable(route = Destinations.PreferenceDetailsScreen.route) {
+                PreferenceDetailScreen(destination = destination, navController)
+            }
         }
     }
 
@@ -71,5 +85,6 @@ sealed class Destinations(val route: String) {
     object Main : Destinations(route = "main_screen")
     object Boards : Destinations(route = "boards_screen")
     object Preferences : Destinations(route = "preferences_screen")
+    object PreferenceDetailsScreen : Destinations(route = "preference_details_screen")
 }
 

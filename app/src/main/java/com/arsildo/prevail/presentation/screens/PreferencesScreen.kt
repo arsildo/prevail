@@ -1,142 +1,180 @@
 package com.arsildo.prevail.presentation.screens
 
-import android.os.Build
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.cache.ColorSchemePreferences
-import com.arsildo.prevail.presentation.components.shared.ScreenLayout
-import kotlinx.coroutines.launch
+import com.arsildo.prevail.logic.Destinations
+import com.arsildo.prevail.logic.constants.APPLICATION_VERSION
+import com.arsildo.prevail.presentation.components.preferences.PreferenceCategory
+import com.arsildo.prevail.presentation.components.preferences.PreferenceCategoryModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreferencesScreen(navController: NavController) {
+fun PreferencesScreen(
+    navController: NavController,
+    onPreferenceCategoryClicked: (String) -> Unit
+) {
 
-    val dataStore = ColorSchemePreferences(LocalContext.current)
 
-    val automaticThemePreference = dataStore.getSystemColorScheme.collectAsState(
-        initial = true
-    ).value
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = topAppBarState,
+        snapAnimationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
+    )
 
-    val themePreference = dataStore.getColorScheme.collectAsState(
-        initial = isSystemInDarkTheme()
-    ).value
-    val dynamicColorSchemePreference = dataStore.getDynamicColorScheme.collectAsState(
-        initial = true
-    ).value
+    val statusBarPadding by animateDpAsState(
+        if (topAppBarState.collapsedFraction < .99)
+            WindowInsets.statusBars.asPaddingValues().calculateTopPadding().value.dp else 0.dp,
+        animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
+    )
 
-    val coroutineScope = rememberCoroutineScope()
 
-    AnimateColorSchemeChange {
-        ScreenLayout(
-            topBar = {}
+
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                scrollBehavior = scrollBehavior,
+                title = { Text("Preferences") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate(Destinations.Main.route) }) {
+                        Icon(
+                            Icons.Rounded.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp))
+                    .padding(top = statusBarPadding)
+            )
+        },
+        contentColor = MaterialTheme.colorScheme.onBackground,
+        containerColor = MaterialTheme.colorScheme.background,
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    ) { contentPadding ->
+        Box(
+            modifier = Modifier
+                .padding(contentPadding)
+                .padding(horizontal = 16.dp)
         ) {
-            Spacer(modifier = Modifier.height(64.dp))
-            SettingCategoryLabel(title = "Appearance")
-            SettingRow(
-                checked = automaticThemePreference,
-                onCheckedChange = {
-                    if (automaticThemePreference)
-                        coroutineScope.launch { dataStore.setSystemColorScheme(false) }
-                    else coroutineScope.launch { dataStore.setSystemColorScheme(true) }
-                },
-                enabled = true,
-                title = "Follow System Theme",
+            val preferenceList = listOf(
+                PreferenceCategoryModel(
+                    route = PreferenceCategory.Appearance.route,
+                    icon = Icons.Outlined.Palette,
+                    title = "Appearance",
+                    subtitle = "Customize the look of your experience.",
+                    action = { onPreferenceCategoryClicked(PreferenceCategory.Appearance.route) }
+                ),
+                PreferenceCategoryModel(
+                    route = "player_preferences",
+                    icon = Icons.Outlined.PlayArrow,
+                    title = "Player",
+                    subtitle = "todo",
+                    action = { onPreferenceCategoryClicked(PreferenceCategory.Player.route) }
+                ),
+                PreferenceCategoryModel(
+                    route = "about_preferences",
+                    icon = Icons.Outlined.Info,
+                    title = "About",
+                    subtitle = "Version $APPLICATION_VERSION",
+                    action = {}
+                )
+
             )
-            SettingRow(
-                checked = themePreference,
-                onCheckedChange = {
-                    if (themePreference)
-                        coroutineScope.launch { dataStore.setColorScheme(false) }
-                    else coroutineScope.launch { dataStore.setColorScheme(true) }
-                },
-                enabled = !automaticThemePreference,
-                title = "Dark Theme",
-            )
-            SettingRow(
-                checked = dynamicColorSchemePreference,
-                onCheckedChange = {
-                    if (dynamicColorSchemePreference)
-                        coroutineScope.launch { dataStore.setDynamicColorScheme(false) }
-                    else coroutineScope.launch { dataStore.setDynamicColorScheme(true) }
-                },
-                enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
-                title = "Dynamic Theme",
-            )
+            LazyColumn {
+                items(preferenceList.size) {
+                    PreferenceCategory(preference = preferenceList[it])
+                }
+            }
         }
     }
 
+
 }
 
-
 @Composable
-fun AnimateColorSchemeChange(content: @Composable () -> Unit) {
-    val colors = MaterialTheme.colorScheme.copy(
-        background = animateColorAsState(
-            targetValue = MaterialTheme.colorScheme.background,
-            animationSpec = spring(
-                stiffness = 32f
-            )
-        ).value,
-        primary = animateColorAsState(
-            targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = tween(
-                delayMillis = 512,
-                durationMillis = 512,
-                easing = LinearOutSlowInEasing
-            )
-        ).value,
-    )
-    MaterialTheme(colorScheme = colors, content = content)
-}
-
-
-@Composable
-fun SettingCategoryLabel(title: String) {
+fun PreferenceCategory(preference: PreferenceCategoryModel) {
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
-        modifier = Modifier.padding(vertical = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = { preference.action() }
+            )
     ) {
-        Text(
-            text = title,
-            color = MaterialTheme.colorScheme.tertiary,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-fun SettingRow(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean,
-    title: String,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Text(text = title, color = MaterialTheme.colorScheme.primary)
-        Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                preference.icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = preference.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = preference.subtitle,
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
     }
 }

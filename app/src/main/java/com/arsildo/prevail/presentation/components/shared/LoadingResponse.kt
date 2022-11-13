@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoadingResponse(
     text: String,
-    reloadEnabled: Boolean = false,
+    failed: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     Column(
@@ -33,7 +33,7 @@ fun LoadingResponse(
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center
         )
-        if (reloadEnabled)
+        if (failed)
             Button(
                 onClick = onClick,
                 colors = ButtonDefaults.buttonColors(
@@ -41,8 +41,6 @@ fun LoadingResponse(
                     contentColor = MaterialTheme.colorScheme.onErrorContainer,
                 ),
                 modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text(text = "Reload")
-            }
+            ) { Text(text = "Retry") }
     }
 }

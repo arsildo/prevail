@@ -13,9 +13,9 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.HorizontalRule
-import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -75,13 +75,14 @@ fun BottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(10) {
-                        OptionCard(
-                            icon = if (it % 2 == 0) Icons.Default.Settings else Icons.Rounded.Palette,
-                            title = "Manage Setting $it"
-                        ) {
-                            if (it % 2 == 0) navController.navigate(Destinations.Boards.route)
-                            else navController.navigate(Destinations.Preferences.route)
+                    item {
+                        OptionCard(icon = Icons.Rounded.Dashboard, title = "Your Boards") {
+                            navController.navigate(Destinations.Boards.route)
+                        }
+                    }
+                    item {
+                        OptionCard(icon = Icons.Outlined.Settings, title = "Preferences") {
+                            navController.navigate(Destinations.Preferences.route)
                         }
                     }
                 }
@@ -91,6 +92,7 @@ fun BottomSheet(
         content = {}
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
