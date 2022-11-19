@@ -4,23 +4,16 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,26 +26,25 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.viewmodels.MainScreenState
-import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
-import com.arsildo.prevail.presentation.components.main.BottomSheet
-import com.arsildo.prevail.presentation.components.main.ThreadCard
+import com.arsildo.prevail.logic.Destinations
+import com.arsildo.prevail.logic.viewmodels.ThreadScreenState
+import com.arsildo.prevail.logic.viewmodels.ThreadViewModel
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
+import com.arsildo.prevail.presentation.components.thread.PostCard
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    navController: NavController, viewModel: ThreadsViewModel,
-    onThreadClicked: (Int, String) -> Unit,
+fun ThreadScreen(
+    navController: NavController,
+    viewModel: ThreadViewModel,
+    threadName: String,
 ) {
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -65,58 +57,63 @@ fun MainScreen(
         animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
 
-    val bottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
-    )
-
     val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 scrollBehavior = scrollBehavior,
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.navigate(Destinations.Main.route)
+                        }
+                    ) {
+                        Icon(
+                            Icons.Rounded.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
                 title = {
                     Column(
                         modifier = Modifier
                             .clip(MaterialTheme.shapes.medium)
-                            .clickable { coroutineScope.launch { bottomSheetState.show() } }
                             .padding(horizontal = 8.dp)
                     ) {
                         Text(
-                            text = "/wsg/",
-                            style = MaterialTheme.typography.titleLarge,
+                            text = "${viewModel.threadNumber}",
+                            style = MaterialTheme.typography.labelSmall,
                         )
                         Text(
-                            text = "Worksafe GIF",
-                            style = MaterialTheme.typography.titleSmall,
+                            text = threadName,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1
                         )
                     }
                 },
                 actions = {
                     IconButton(
-                        onClick = { coroutineScope.launch { viewModel.requestThreads() } }
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.requestThread(viewModel.threadNumber)
+                            }
+                        }
                     ) {
                         Icon(
                             Icons.Rounded.Refresh,
                             contentDescription = null,
-                        )
-                    }
-                    IconButton(
-                        onClick = { coroutineScope.launch { bottomSheetState.show() } }
-                    ) {
-                        Icon(
-                            Icons.Rounded.MoreVert,
-                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                    titleContentColor = MaterialTheme.colorScheme.secondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.secondary
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
                     .clip(MaterialTheme.shapes.small)
@@ -133,51 +130,32 @@ fun MainScreen(
                 .padding(contentPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            when (viewModel.mainScreenState.value) {
-                is MainScreenState.Loading -> LoadingResponse(text = "Loading threads...")
+            when (viewModel.threadScreenState.value) {
+                is ThreadScreenState.Loading -> LoadingResponse(text = "Loading thread...")
 
-                is MainScreenState.Failed -> {
+                is ThreadScreenState.Failed -> {
                     LoadingResponse(
-                        text = "Failed to load threads.\n Please check your internet connection.",
+                        text = "Failed to load thread.\n Please check your internet connection.",
                         failed = true,
-                        onClick = { coroutineScope.launch { viewModel.requestThreads() } }
+                        onClick = {
+                            coroutineScope.launch { viewModel.requestThread(viewModel.threadNumber) }
+                        }
                     )
                 }
 
-                is MainScreenState.Responded -> {
-
-                    val threadList = viewModel.threadList
-                    val context = LocalContext.current
-                    val listState = rememberLazyListState()
-                    val exoPlayer = remember { viewModel.exoPlayer }
-                    LazyColumn(state = listState) {
-                        items(threadList.size) { it ->
-                            threadList[it].threads.forEach { thread ->
-                                ThreadCard(
-                                    thread = thread,
-                                    mediaPlayer = {
-                                        Box(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.dp))
-                                        /*val url =
-                                            "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}"
-                                        viewModel.playVideo(url)
-                                        MediaPlayer(
-                                            exoPlayer = exoPlayer,
-                                            context = context,
-                                        )*/
-                                    },
-                                    onClick = { onThreadClicked(thread.no, thread.semantic_url) }
-                                )
+                is ThreadScreenState.Responded -> {
+                    val postList = viewModel.postList.posts
+                    LazyColumn {
+                        items(postList.size) {
+                            postList.forEach { post ->
+                                PostCard(post = post)
                             }
                         }
                     }
-
 
                 }
 
             }
         }
     }
-    BottomSheet(bottomSheetState, navController)
 }

@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -99,12 +100,13 @@ fun BoardsScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp))
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
                     .padding(top = statusBarPadding)
             )
         },

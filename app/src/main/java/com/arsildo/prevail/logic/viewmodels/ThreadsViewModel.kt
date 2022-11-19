@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.logic.network.NetworkRepository
 import com.arsildo.prevail.logic.network.models.threads.ThreadCatalog
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,7 +24,8 @@ sealed class MainScreenState {
 
 @HiltViewModel
 class ThreadsViewModel @Inject constructor(
-    private val repository: NetworkRepository
+    private val repository: NetworkRepository,
+    val exoPlayer: ExoPlayer
 ) : ViewModel() {
 
     private val _mainScreenState: MutableState<MainScreenState> =
@@ -35,6 +39,20 @@ class ThreadsViewModel @Inject constructor(
             viewModelScope.launch { requestThreads() }
         } catch (e: Exception) {
             _mainScreenState.value = MainScreenState.Failed("Failed to load.")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        exoPlayer.release()
+    }
+
+    fun playVideo(url: String) {
+        exoPlayer.apply {
+            setMediaItem(MediaItem.fromUri(url))
+            prepare()
+            playWhenReady = false
+            repeatMode = Player.REPEAT_MODE_ALL
         }
     }
 
