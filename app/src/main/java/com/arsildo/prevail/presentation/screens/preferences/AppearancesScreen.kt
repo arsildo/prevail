@@ -1,8 +1,9 @@
-package com.arsildo.prevail.presentation.components.preferences
+package com.arsildo.prevail.presentation.screens.preferences
 
 import android.os.Build
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -21,20 +22,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.logic.cache.ColorSchemePreferences
+import com.arsildo.prevail.logic.cache.ColorSchemePreferencesKeys
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun Appearance(
-    dataStore: ColorSchemePreferences
-) {
+fun AppearancesScreen(dataStore: ColorSchemePreferencesKeys) {
     val automaticTheme = dataStore.getSystemColorScheme.collectAsState(initial = true).value
     val theme = dataStore.getColorScheme.collectAsState(initial = isSystemInDarkTheme()).value
     val dynamicColorScheme = dataStore.getDynamicColorScheme.collectAsState(initial = true).value
 
     val coroutineScope = rememberCoroutineScope()
-    AnimateColorSchemeChange {
+    AnimateColorSchemeTransition {
         Column {
             SettingRow(
                 checked = automaticTheme,
@@ -112,19 +111,19 @@ fun SettingRow(
 }
 
 @Composable
-fun AnimateColorSchemeChange(content: @Composable () -> Unit) {
+fun AnimateColorSchemeTransition(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme.copy(
         background = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.background,
             animationSpec = tween(
                 delayMillis = 256,
-                durationMillis = 512,
-                easing = LinearEasing
+                durationMillis = 2048,
+                easing = FastOutSlowInEasing
             )
         ).value,
         primary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = spring(stiffness = 32f)
+            animationSpec = spring(stiffness = 32f, dampingRatio = Spring.DampingRatioMediumBouncy)
         ).value,
     )
     MaterialTheme(colorScheme = colors, content = content)

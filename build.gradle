@@ -6,7 +6,7 @@ buildscript {
         material3_version = "1.0.1"
         hilt_version = "2.44"
         retrofit_version = "2.9.0"
-        exo_player_version = "2.18.1"
+        exo_player_version = "2.18.2"
         coil_version = "2.2.2"
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.

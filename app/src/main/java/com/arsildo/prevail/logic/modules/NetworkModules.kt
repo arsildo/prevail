@@ -1,4 +1,4 @@
-package com.arsildo.prevail.logic
+package com.arsildo.prevail.logic.modules
 
 import com.arsildo.prevail.logic.network.API_BASE_URL
 import com.arsildo.prevail.logic.network.NetworkService

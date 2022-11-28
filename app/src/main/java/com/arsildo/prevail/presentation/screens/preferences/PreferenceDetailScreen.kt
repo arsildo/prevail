@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.screens
+package com.arsildo.prevail.presentation.screens.preferences
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -28,14 +28,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.cache.ColorSchemePreferences
-import com.arsildo.prevail.presentation.components.preferences.Appearance
-import com.arsildo.prevail.presentation.components.preferences.PreferenceCategory
+import com.arsildo.prevail.logic.cache.ColorSchemePreferencesKeys
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferenceDetailScreen(
-    destination: String,
+    category: String?,
     navController: NavController,
 ) {
     val topAppBarState = rememberTopAppBarState()
@@ -56,15 +54,26 @@ fun PreferenceDetailScreen(
                 .padding(horizontal = 16.dp)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
-            when (destination) {
-                PreferenceCategory.Appearance.route -> {
+            when (category) {
+
+                "appearances" -> {
                     Column {
                         PreferenceCategoryLabel(title = "Appearance", navController = navController)
-                        val colorSchemePreferences = ColorSchemePreferences(LocalContext.current)
-                        Appearance(dataStore = colorSchemePreferences)
+                        val colorSchemePreferencesKeys = ColorSchemePreferencesKeys(LocalContext.current)
+                        AppearancesScreen(dataStore = colorSchemePreferencesKeys)
                     }
                 }
-                PreferenceCategory.Player.route -> Text("Player Settings")
+
+                "mediaPlayer" -> {
+                    Column {
+                        PreferenceCategoryLabel(
+                            title = "Media Player",
+                            navController = navController
+                        )
+                        MediaPlayerScreen()
+                    }
+                }
+
                 else -> Text(text = "Category not found!")
             }
 

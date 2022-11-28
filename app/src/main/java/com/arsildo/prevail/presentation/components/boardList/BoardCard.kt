@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.components.boards
+package com.arsildo.prevail.presentation.components.boardList
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -18,22 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arsildo.prevail.logic.network.models.boards.Board
-import com.arsildo.prevail.presentation.components.main.HtmlText
+import com.arsildo.prevail.presentation.components.shared.ContentCard
+import com.arsildo.prevail.presentation.components.threadList.HtmlText
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardCard(
-    board:Board
+    board: Board
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
-            contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-        shape = MaterialTheme.shapes.large,
+    ContentCard(
         onClick = {}
     ) {
         Row(
@@ -43,19 +34,20 @@ fun BoardCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.fillMaxWidth(.7f)) {
+            Column(modifier = Modifier.fillMaxWidth(.8f)) {
                 Card(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(.1f)),
                     shape = MaterialTheme.shapes.small,
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    )
+                        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
                 ) {
                     Text(
                         text = "/${board.board}/",
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                     )
                 }
                 Text(
@@ -64,7 +56,7 @@ fun BoardCard(
                     color = MaterialTheme.colorScheme.secondary
                 )
                 HtmlText(
-                    text = board.meta_description,
+                    text = board.meta_description + "\"",
                     color = MaterialTheme.colorScheme.tertiary
                 )
             }

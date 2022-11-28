@@ -1,6 +1,5 @@
-package com.arsildo.prevail.presentation.components.boards
+package com.arsildo.prevail.presentation.components.boardList
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
@@ -24,8 +22,6 @@ import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -35,8 +31,11 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBoard(topAppBarState: TopAppBarState) {
-    val search = remember { mutableStateOf("") }
+fun SearchBoard(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    topAppBarState: TopAppBarState,
+) {
     val focusManager = LocalFocusManager.current
 
     val topPadding by animateDpAsState(
@@ -45,8 +44,8 @@ fun SearchBoard(topAppBarState: TopAppBarState) {
         animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
     TextField(
-        value = search.value,
-        onValueChange = { search.value = it },
+        value = query,
+        onValueChange = onQueryChange,
         placeholder = {
             Text(
                 text = "Search board",

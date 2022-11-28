@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.components.main
+package com.arsildo.prevail.presentation.components.threadList
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +30,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.Destinations
+import com.arsildo.prevail.logic.navigation.ContentRoute
+import com.arsildo.prevail.logic.navigation.PreferencesRoute
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -77,12 +78,12 @@ fun BottomSheet(
                 ) {
                     item {
                         OptionCard(icon = Icons.Rounded.Dashboard, title = "Your Boards") {
-                            navController.navigate(Destinations.Boards.route)
+                            navController.navigate(ContentRoute.BoardList.route)
                         }
                     }
                     item {
                         OptionCard(icon = Icons.Outlined.Settings, title = "Preferences") {
-                            navController.navigate(Destinations.Preferences.route)
+                            navController.navigate(PreferencesRoute.PreferenceList.route)
                         }
                     }
                 }

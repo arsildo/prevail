@@ -1,9 +1,9 @@
-package com.arsildo.prevail.presentation.screens
+package com.arsildo.prevail.presentation.screens.content
+
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,66 +11,59 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.Destinations
-import com.arsildo.prevail.logic.viewmodels.ThreadScreenState
-import com.arsildo.prevail.logic.viewmodels.ThreadViewModel
+import com.arsildo.prevail.logic.navigation.ContentRoute
+import com.arsildo.prevail.logic.viewModels.BoardListScreenState
+import com.arsildo.prevail.logic.viewModels.BoardListViewModel
+import com.arsildo.prevail.presentation.components.boardList.BoardCard
+import com.arsildo.prevail.presentation.components.boardList.SearchBoard
+import com.arsildo.prevail.presentation.components.shared.AppBar
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
-import com.arsildo.prevail.presentation.components.thread.PostCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ThreadScreen(
-    navController: NavController,
-    viewModel: ThreadViewModel,
-    threadName: String,
-) {
+fun BoardListScreen(navController: NavController, viewModel: BoardListViewModel) {
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = topAppBarState,
         snapAnimationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
+
     val statusBarPadding by animateDpAsState(
-        if (topAppBarState.collapsedFraction < .99)
+        if (topAppBarState.collapsedFraction < .9)
             WindowInsets.statusBars.asPaddingValues().calculateTopPadding().value.dp else 0.dp,
         animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
 
     val coroutineScope = rememberCoroutineScope()
-
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            TopAppBar(
-                windowInsets = WindowInsets(0, 0, 0, 0),
-                scrollBehavior = scrollBehavior,
+            AppBar(
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(Destinations.Main.route)
-                        }
-                    ) {
+                    IconButton(onClick = { navController.navigate(ContentRoute.ThreadList.route) }) {
                         Icon(
                             Icons.Rounded.ArrowBack,
                             contentDescription = null,
@@ -79,46 +72,30 @@ fun ThreadScreen(
                     }
                 },
                 title = {
-                    Column(
-                        modifier = Modifier
-                            .clip(MaterialTheme.shapes.medium)
-                            .padding(horizontal = 8.dp)
-                    ) {
+                    Column {
                         Text(
-                            text = "${viewModel.threadNumber}",
-                            style = MaterialTheme.typography.labelSmall,
+                            text = "boards",
+                            style = MaterialTheme.typography.titleLarge,
                         )
                         Text(
-                            text = threadName,
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1
+                            text = "Manage your board selection",
+                            style = MaterialTheme.typography.titleSmall,
                         )
                     }
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModel.requestThread(viewModel.threadNumber)
-                            }
-                        }
+                        onClick = { }
                     ) {
                         Icon(
-                            Icons.Rounded.Refresh,
+                            Icons.Rounded.SelectAll,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                    titleContentColor = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
-                    .padding(top = statusBarPadding)
+                scrollBehavior = scrollBehavior,
+                statusBarPadding = statusBarPadding
             )
         },
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -130,31 +107,37 @@ fun ThreadScreen(
                 .padding(contentPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            when (viewModel.threadScreenState.value) {
-                is ThreadScreenState.Loading -> LoadingResponse(text = "Loading thread...")
-
-                is ThreadScreenState.Failed -> {
+            when (viewModel.boardListScreenState.value) {
+                is BoardListScreenState.Loading -> LoadingResponse(text = "Loading boards...")
+                is BoardListScreenState.Failed ->
                     LoadingResponse(
-                        text = "Failed to load thread.\n Please check your internet connection.",
+                        text = "Failed to load boards.\n Please check your internet connection.",
                         failed = true,
-                        onClick = {
-                            coroutineScope.launch { viewModel.requestThread(viewModel.threadNumber) }
-                        }
+                        onClick = { coroutineScope.launch { viewModel.requestBoards() } }
                     )
-                }
 
-                is ThreadScreenState.Responded -> {
-                    val postList = viewModel.postList.posts
-                    LazyColumn {
-                        items(postList.size) {
-                            postList.forEach { post ->
-                                PostCard(post = post)
+                is BoardListScreenState.Responded -> {
+
+                    Column {
+                        val boardList = viewModel.boardList
+                        var boardSearch by remember { mutableStateOf("") }
+                        SearchBoard(
+                            query = boardSearch,
+                            onQueryChange = { query ->
+                                boardSearch = query
+                                viewModel.searchBoards(query)
+                            },
+                            topAppBarState = topAppBarState
+                        )
+
+                        LazyColumn {
+                            itemsIndexed(boardList) { index, board ->
+                                BoardCard(board = board)
                             }
                         }
                     }
 
                 }
-
             }
         }
     }

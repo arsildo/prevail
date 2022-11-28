@@ -1,10 +1,10 @@
-package com.arsildo.prevail.presentation.components.main
+package com.arsildo.prevail.presentation.components.threadList
 
-import android.content.Context
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.graphics.Typeface
+import android.os.Build.VERSION.SDK_INT
 import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.PushPin
@@ -24,37 +23,32 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import com.arsildo.prevail.logic.network.models.threads.Thread
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.arsildo.prevail.presentation.components.shared.ContentCard
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThreadCard(
     thread: Thread,
-    mediaPlayer: @Composable () -> Unit,
+    inFocus: Boolean,
     onClick: () -> Unit,
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-            contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-        shape = MaterialTheme.shapes.large,
+    ContentCard(
         onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -68,9 +62,7 @@ fun ThreadCard(
                 Card(
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(.1f)),
                     shape = MaterialTheme.shapes.small,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    )
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                 ) {
                     Text(
                         text = "${thread.no}",
@@ -96,7 +88,7 @@ fun ThreadCard(
                     Text(
                         text = thread.now,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
                 }
             }
@@ -111,9 +103,22 @@ fun ThreadCard(
                 )
             }
 
-
-            if (thread.ext != null) mediaPlayer()
-
+            if (thread.ext != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (inFocus) Color.Cyan else Color.Transparent)
+                        .height(300.dp)
+                        .padding(vertical = 4.dp)
+                        .clip(MaterialTheme.shapes.medium),
+                    contentAlignment = Alignment.Center
+                ) {
+                   /* ImageViewer(
+                        imageUrl = "https://i.4cdn.org/wsg/${thread.tim}",
+                        modifier = Modifier.blur(if (thread.ext == ".gif") 0.dp else 4.dp)
+                    )*/
+                }
+            }
 
             Row(
                 modifier = Modifier
@@ -131,7 +136,8 @@ fun ThreadCard(
 
                 Text(
                     text = "${thread.images} media file(s)",
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
                 )
 
             }
@@ -141,34 +147,28 @@ fun ThreadCard(
 }
 
 @Composable
-fun MediaPlayer(exoPlayer: ExoPlayer, context: Context) {
-    Box(
-        modifier = Modifier
-            .height(256.dp)
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.small)
-            .padding(vertical = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        AndroidView(
-            factory = {
-                StyledPlayerView(context).apply {
-                    layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                    player = exoPlayer
-                    setShowFastForwardButton(false)
-                    setShowRewindButton(false)
-                    setShowPreviousButton(false)
-                    setShowNextButton(false)
-                    useController = true
-                }
-            },
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.small)
-                .fillMaxSize()
-        )
-    }
+fun ImageViewer(
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val imageLoader = ImageLoader.Builder(context).components {
+        if (SDK_INT >= 28) add(ImageDecoderDecoder.Factory())
+        else add(GifDecoder.Factory())
+    }.build()
+
+    AsyncImage(
+        model = imageUrl,
+        imageLoader = imageLoader,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraSmall)
+            .fillMaxSize()
+    )
 
 }
+
 
 @Composable
 fun HtmlText(
@@ -179,6 +179,8 @@ fun HtmlText(
         TextView(context).apply {
             setText(HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY))
             setTextColor(color.toArgb())
+            typeface = Typeface.DEFAULT_BOLD
         }
-    })
+    }
+    )
 }

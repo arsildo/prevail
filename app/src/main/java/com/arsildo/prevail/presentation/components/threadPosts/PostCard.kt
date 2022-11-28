@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.components.thread
+package com.arsildo.prevail.presentation.components.threadPosts
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -10,25 +10,18 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arsildo.prevail.logic.network.models.thread.Post
-import com.arsildo.prevail.presentation.components.main.HtmlText
+import com.arsildo.prevail.presentation.components.shared.ContentCard
+import com.arsildo.prevail.presentation.components.threadList.HtmlText
 
 @Composable
 fun PostCard(post: Post) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
-            contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-        shape = MaterialTheme.shapes.large,
+    ContentCard(
+        onClick = {}
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -58,10 +51,10 @@ fun PostCard(post: Post) {
                     color = MaterialTheme.colorScheme.onBackground,
                 )
             }
-            if (post.ext!=null){
+            if (post.ext != null) {
                 Text(text = "Has Media")
             }
-            if (post.com!=null){
+            if (post.com != null) {
                 HtmlText(text = post.com, color = MaterialTheme.colorScheme.tertiary)
             }
 

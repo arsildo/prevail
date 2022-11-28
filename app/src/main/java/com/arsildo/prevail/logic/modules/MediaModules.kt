@@ -1,4 +1,4 @@
-package com.arsildo.prevail.logic
+package com.arsildo.prevail.logic.modules
 
 import android.app.Application
 import com.google.android.exoplayer2.ExoPlayer

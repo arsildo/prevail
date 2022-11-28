@@ -1,19 +1,17 @@
-package com.arsildo.prevail.presentation.screens
+package com.arsildo.prevail.presentation.screens.content
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
@@ -27,31 +25,31 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.logic.viewmodels.MainScreenState
-import com.arsildo.prevail.logic.viewmodels.ThreadsViewModel
-import com.arsildo.prevail.presentation.components.main.BottomSheet
-import com.arsildo.prevail.presentation.components.main.ThreadCard
+import com.arsildo.prevail.logic.viewModels.ThreadListScreenState
+import com.arsildo.prevail.logic.viewModels.ThreadListViewModel
+import com.arsildo.prevail.presentation.components.shared.AppBar
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
+import com.arsildo.prevail.presentation.components.threadList.BottomSheet
+import com.arsildo.prevail.presentation.components.threadList.ThreadCard
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun MainScreen(
-    navController: NavController, viewModel: ThreadsViewModel,
+fun ThreadListScreen(
+    navController: NavController, viewModel: ThreadListViewModel,
     onThreadClicked: (Int, String) -> Unit,
 ) {
     val topAppBarState = rememberTopAppBarState()
@@ -74,9 +72,7 @@ fun MainScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            TopAppBar(
-                windowInsets = WindowInsets(0, 0, 0, 0),
-                scrollBehavior = scrollBehavior,
+            AppBar(
                 title = {
                     Column(
                         modifier = Modifier
@@ -101,6 +97,7 @@ fun MainScreen(
                         Icon(
                             Icons.Rounded.Refresh,
                             contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(
@@ -109,19 +106,12 @@ fun MainScreen(
                         Icon(
                             Icons.Rounded.MoreVert,
                             contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                    titleContentColor = MaterialTheme.colorScheme.secondary,
-                    actionIconContentColor = MaterialTheme.colorScheme.secondary
-                ),
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp))
-                    .padding(top = statusBarPadding)
+                scrollBehavior = scrollBehavior,
+                statusBarPadding = statusBarPadding
             )
         },
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -133,10 +123,10 @@ fun MainScreen(
                 .padding(contentPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            when (viewModel.mainScreenState.value) {
-                is MainScreenState.Loading -> LoadingResponse(text = "Loading threads...")
+            when (viewModel.threadListScreenState.value) {
+                is ThreadListScreenState.Loading -> LoadingResponse(text = "Loading threads...")
 
-                is MainScreenState.Failed -> {
+                is ThreadListScreenState.Failed -> {
                     LoadingResponse(
                         text = "Failed to load threads.\n Please check your internet connection.",
                         failed = true,
@@ -144,32 +134,42 @@ fun MainScreen(
                     )
                 }
 
-                is MainScreenState.Responded -> {
+                is ThreadListScreenState.Responded -> {
 
                     val threadList = viewModel.threadList
-                    val context = LocalContext.current
-                    val listState = rememberLazyListState()
-                    val exoPlayer = remember { viewModel.exoPlayer }
-                    LazyColumn(state = listState) {
-                        items(threadList.size) { it ->
-                            threadList[it].threads.forEach { thread ->
-                                ThreadCard(
-                                    thread = thread,
-                                    mediaPlayer = {
-                                        Box(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.dp))
-                                        /*val url =
-                                            "https://i.4cdn.org/wsg/${thread.tim}${thread.ext}"
-                                        viewModel.playVideo(url)
-                                        MediaPlayer(
-                                            exoPlayer = exoPlayer,
-                                            context = context,
-                                        )*/
-                                    },
-                                    onClick = { onThreadClicked(thread.no, thread.semantic_url) }
-                                )
+
+                    val state = rememberLazyListState()
+                    // todo fix behavior and delay of item in focus
+                    val itemInFocus by remember {
+                        derivedStateOf {
+                            val firstVisibleItemIndex = state.firstVisibleItemIndex
+                            val visibleItems = state.layoutInfo.visibleItemsInfo
+
+                            val layoutInfo = state.layoutInfo
+                            val viewportHeight =
+                                layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset
+
+                            state.layoutInfo.visibleItemsInfo.run {
+                                if (isEmpty()) -1
+                                else {
+                                    if (viewportHeight / 2 == 0) {
+                                        firstVisibleItemIndex + (last().index - firstVisibleItemIndex) / 2
+                                    } else {
+                                        firstVisibleItemIndex / 2
+                                    }
+                                }
                             }
+
+                        }
+                    }
+
+                    LazyColumn(state = state) {
+                        itemsIndexed(threadList) { index, thread ->
+                            ThreadCard(
+                                thread = thread,
+                                inFocus = (index == itemInFocus),
+                                onClick = { onThreadClicked(thread.no, thread.semantic_url) }
+                            )
                         }
                     }
 
