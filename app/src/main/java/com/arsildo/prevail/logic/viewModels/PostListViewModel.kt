@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.logic.network.NetworkRepository
 import com.arsildo.prevail.logic.network.models.thread.ThreadPosts
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,6 +47,7 @@ class PostListViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 postList = repository.getThread(threadNo)
+                delay(1024)
                 _screenState.value = PostListScreenState.Responded(postList)
             } catch (e: Exception) {
                 _screenState.value = PostListScreenState.Failed("Failed to load.")

@@ -4,7 +4,6 @@ import android.graphics.Typeface
 import android.os.Build.VERSION.SDK_INT
 import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,13 +18,13 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -40,12 +39,15 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.arsildo.prevail.logic.network.models.threads.Thread
 import com.arsildo.prevail.presentation.components.shared.ContentCard
+import com.arsildo.prevail.presentation.components.shared.MediaPlayer
+import com.google.android.exoplayer2.ExoPlayer
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThreadCard(
     thread: Thread,
     inFocus: Boolean,
+    exoPlayer: ExoPlayer,
+    onPositionSwitched: () -> Unit,
     onClick: () -> Unit,
 ) {
     ContentCard(
@@ -107,16 +109,23 @@ fun ThreadCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(if (inFocus) Color.Cyan else Color.Transparent)
                         .height(300.dp)
                         .padding(vertical = 4.dp)
-                        .clip(MaterialTheme.shapes.medium),
+                        .clip(MaterialTheme.shapes.small),
                     contentAlignment = Alignment.Center
                 ) {
-                   /* ImageViewer(
-                        imageUrl = "https://i.4cdn.org/wsg/${thread.tim}",
-                        modifier = Modifier.blur(if (thread.ext == ".gif") 0.dp else 4.dp)
-                    )*/
+                    if (inFocus) {
+                        val videoMedia = thread.ext != ".gif"
+                        if (videoMedia) MediaPlayer(exoPlayer = exoPlayer)
+                        else ImageViewer(imageUrl = "https://i.4cdn.org/wsg/${thread.tim}.gif")
+                        onPositionSwitched()
+
+                    } else {
+                        ImageViewer(
+                            imageUrl = "https://i.4cdn.org/wsg/${thread.tim}s.jpg",
+                            modifier = Modifier.blur(2.dp)
+                        )
+                    }
                 }
             }
 

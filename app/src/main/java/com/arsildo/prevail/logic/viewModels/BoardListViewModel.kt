@@ -9,6 +9,7 @@ import com.arsildo.prevail.logic.network.NetworkRepository
 import com.arsildo.prevail.logic.network.models.boards.Board
 import com.arsildo.prevail.logic.network.models.boards.Boards
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.internal.filterList
 import javax.inject.Inject
@@ -46,6 +47,7 @@ class BoardListViewModel @Inject constructor(
             try {
                 boardSelection = repository.getBoards()
                 boardList = transformBoards()
+                delay(1024)
                 _screenState.value = BoardListScreenState.Responded(boardList)
             } catch (e: Exception) {
                 _screenState.value = BoardListScreenState.Failed("Failed to load.")

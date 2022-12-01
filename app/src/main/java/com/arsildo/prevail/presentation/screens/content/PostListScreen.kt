@@ -117,7 +117,7 @@ fun PostListScreen(
                 .padding(horizontal = 16.dp)
         ) {
             when (viewModel.postListScreenState.value) {
-                is PostListScreenState.Loading -> LoadingResponse(text = "Loading thread...")
+                is PostListScreenState.Loading -> LoadingResponse(text = "Loading thread posts...")
 
                 is PostListScreenState.Failed -> {
                     LoadingResponse(

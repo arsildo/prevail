@@ -40,21 +40,23 @@ sealed class PreferencesRoute(val route: String) {
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
+    val threadListViewModel = hiltViewModel<ThreadListViewModel>()
     NavHost(
         navController = navController,
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
         startDestination = CONTENT_GRAPH_ROUTE,
         route = ROOT_GRAPH_ROUTE
     ) {
-
-        contentNavigationGraph(navController)
+        contentNavigationGraph(navController, threadListViewModel)
         preferencesNavigationGraph(navController)
-
     }
 }
 
 
-fun NavGraphBuilder.contentNavigationGraph(navController: NavHostController) {
+fun NavGraphBuilder.contentNavigationGraph(
+    navController: NavHostController,
+    threadListViewModel: ThreadListViewModel
+) {
     navigation(
         startDestination = ContentRoute.ThreadList.route,
         route = CONTENT_GRAPH_ROUTE
@@ -62,7 +64,6 @@ fun NavGraphBuilder.contentNavigationGraph(navController: NavHostController) {
 
         // Thread List
         composable(route = ContentRoute.ThreadList.route) {
-            val threadListViewModel = hiltViewModel<ThreadListViewModel>()
             ThreadListScreen(
                 navController = navController,
                 viewModel = threadListViewModel,
@@ -81,7 +82,6 @@ fun NavGraphBuilder.contentNavigationGraph(navController: NavHostController) {
                 viewModel = boardListViewModel
             )
         }
-
 
         // Thread Posts
         composable(

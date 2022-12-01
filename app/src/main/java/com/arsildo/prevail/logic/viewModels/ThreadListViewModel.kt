@@ -9,7 +9,9 @@ import com.arsildo.prevail.logic.network.NetworkRepository
 import com.arsildo.prevail.logic.network.models.threads.Thread
 import com.arsildo.prevail.logic.network.models.threads.ThreadCatalog
 import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +25,7 @@ sealed class ThreadListScreenState {
 @HiltViewModel
 class ThreadListViewModel @Inject constructor(
     private val repository: NetworkRepository,
-    val exoPlayer: ExoPlayer
+    val exoPlayer: ExoPlayer,
 ) : ViewModel() {
 
     private val _screenState: MutableState<ThreadListScreenState> =
@@ -35,7 +37,7 @@ class ThreadListViewModel @Inject constructor(
 
     init {
         try {
-            viewModelScope.launch { requestThreads() }
+            requestThreads()
         } catch (e: Exception) {
             _screenState.value = ThreadListScreenState.Failed("Failed to load.")
         }
@@ -47,12 +49,14 @@ class ThreadListViewModel @Inject constructor(
     }
 
 
-    suspend fun requestThreads() {
+    fun requestThreads() {
         _screenState.value = ThreadListScreenState.Loading
         viewModelScope.launch {
             try {
                 threadCatalog = repository.getThreadCatalog("wsg/catalog.json")
                 threadList = transformThreadCatalog()
+                prepareMediaPlayer()
+                delay(1024)
                 _screenState.value = ThreadListScreenState.Responded(threadList)
             } catch (e: Exception) {
                 _screenState.value = ThreadListScreenState.Failed("Failed to load.")
@@ -68,6 +72,16 @@ class ThreadListViewModel @Inject constructor(
             }
         }
         return threadList
+    }
+
+    private fun prepareMediaPlayer() {
+        threadList.forEachIndexed { index, thread ->
+            val mediaItem = MediaItem.fromUri("https://i.4cdn.org/wsg/${thread.tim}.webm")
+            exoPlayer.addMediaItem(index, mediaItem)
+        }
+        exoPlayer.prepare()
+        exoPlayer.repeatMode = ExoPlayer.REPEAT_MODE_ONE
+        exoPlayer.playWhenReady = false
     }
 
 }

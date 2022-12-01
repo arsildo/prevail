@@ -28,10 +28,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -43,6 +46,7 @@ import com.arsildo.prevail.presentation.components.shared.AppBar
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
 import com.arsildo.prevail.presentation.components.threadList.BottomSheet
 import com.arsildo.prevail.presentation.components.threadList.ThreadCard
+import com.google.android.exoplayer2.C
 import kotlinx.coroutines.launch
 
 
@@ -101,7 +105,12 @@ fun ThreadListScreen(
                         )
                     }
                     IconButton(
-                        onClick = { coroutineScope.launch { bottomSheetState.show() } }
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.exoPlayer.pause()
+                                bottomSheetState.show()
+                            }
+                        }
                     ) {
                         Icon(
                             Icons.Rounded.MoreVert,
@@ -143,24 +152,17 @@ fun ThreadListScreen(
                     val itemInFocus by remember {
                         derivedStateOf {
                             val firstVisibleItemIndex = state.firstVisibleItemIndex
-                            val visibleItems = state.layoutInfo.visibleItemsInfo
-
-                            val layoutInfo = state.layoutInfo
-                            val viewportHeight =
-                                layoutInfo.viewportEndOffset + layoutInfo.viewportStartOffset
-
                             state.layoutInfo.visibleItemsInfo.run {
-                                if (isEmpty()) -1
-                                else {
-                                    if (viewportHeight / 2 == 0) {
-                                        firstVisibleItemIndex + (last().index - firstVisibleItemIndex) / 2
-                                    } else {
-                                        firstVisibleItemIndex / 2
-                                    }
-                                }
+                                if (isEmpty()) -1f else firstVisibleItemIndex + (last().index - firstVisibleItemIndex) / 2
                             }
-
                         }
+                    }
+
+                    var currentItem by remember { mutableStateOf(1) }
+
+                    LaunchedEffect(itemInFocus) {
+                        viewModel.exoPlayer.pause()
+                        viewModel.exoPlayer.seekTo(currentItem, C.TIME_UNSET)
                     }
 
                     LazyColumn(state = state) {
@@ -168,7 +170,12 @@ fun ThreadListScreen(
                             ThreadCard(
                                 thread = thread,
                                 inFocus = (index == itemInFocus),
-                                onClick = { onThreadClicked(thread.no, thread.semantic_url) }
+                                exoPlayer = viewModel.exoPlayer,
+                                onPositionSwitched = { currentItem = index },
+                                onClick = {
+                                    viewModel.exoPlayer.pause()
+                                    onThreadClicked(thread.no, thread.semantic_url)
+                                }
                             )
                         }
                     }
