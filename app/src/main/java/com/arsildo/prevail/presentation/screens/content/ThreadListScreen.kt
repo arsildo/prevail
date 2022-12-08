@@ -31,13 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.logic.viewModels.ThreadListScreenState
@@ -46,7 +45,6 @@ import com.arsildo.prevail.presentation.components.shared.AppBar
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
 import com.arsildo.prevail.presentation.components.threadList.BottomSheet
 import com.arsildo.prevail.presentation.components.threadList.ThreadCard
-import com.google.android.exoplayer2.C
 import kotlinx.coroutines.launch
 
 
@@ -148,34 +146,30 @@ fun ThreadListScreen(
                     val threadList = viewModel.threadList
 
                     val state = rememberLazyListState()
-                    // todo fix behavior and delay of item in focus
+
                     val itemInFocus by remember {
                         derivedStateOf {
                             val firstVisibleItemIndex = state.firstVisibleItemIndex
                             state.layoutInfo.visibleItemsInfo.run {
-                                if (isEmpty()) -1f else firstVisibleItemIndex + (last().index - firstVisibleItemIndex) / 2
+                                if (isEmpty()) -1
+                                else firstVisibleItemIndex + (last().index - firstVisibleItemIndex) / 2
                             }
                         }
                     }
 
-                    var currentItem by remember { mutableStateOf(1) }
 
-                    LaunchedEffect(itemInFocus) {
-                        viewModel.exoPlayer.pause()
-                        viewModel.exoPlayer.seekTo(currentItem, C.TIME_UNSET)
-                    }
+                    val context = LocalContext.current
+
+
 
                     LazyColumn(state = state) {
-                        itemsIndexed(threadList) { index, thread ->
+                        itemsIndexed(
+                            items = threadList,
+                            key = { index, item -> item.no }
+                        ) { index, thread ->
                             ThreadCard(
                                 thread = thread,
-                                inFocus = (index == itemInFocus),
-                                exoPlayer = viewModel.exoPlayer,
-                                onPositionSwitched = { currentItem = index },
-                                onClick = {
-                                    viewModel.exoPlayer.pause()
-                                    onThreadClicked(thread.no, thread.semantic_url)
-                                }
+                                onClick = { onThreadClicked(thread.no, thread.semantic_url) }
                             )
                         }
                     }

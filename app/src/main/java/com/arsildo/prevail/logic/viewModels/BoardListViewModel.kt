@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.logic.network.NetworkRepository
-import com.arsildo.prevail.logic.network.models.boards.Board
-import com.arsildo.prevail.logic.network.models.boards.Boards
+import com.arsildo.prevail.logic.network.models.boardList.Board
+import com.arsildo.prevail.logic.network.models.boardList.Boards
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -68,5 +68,4 @@ class BoardListViewModel @Inject constructor(
             title.contains(query, ignoreCase = true) || board.contains(query, ignoreCase = true)
         }
     }
-
 }

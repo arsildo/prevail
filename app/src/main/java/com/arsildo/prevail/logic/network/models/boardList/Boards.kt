@@ -1,4 +1,4 @@
-package com.arsildo.prevail.logic.network.models.boards
+package com.arsildo.prevail.logic.network.models.boardList
 
 import androidx.annotation.Keep
 

@@ -1,4 +1,4 @@
-package com.arsildo.prevail.logic.network.models.thread
+package com.arsildo.prevail.logic.network.models.threadPosts
 
 import androidx.annotation.Keep
 

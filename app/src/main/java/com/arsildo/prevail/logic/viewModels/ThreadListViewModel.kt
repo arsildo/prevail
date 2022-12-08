@@ -1,13 +1,18 @@
 package com.arsildo.prevail.logic.viewModels
 
+import android.content.Context
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.size.Scale
+import coil.size.Size
 import com.arsildo.prevail.logic.network.NetworkRepository
-import com.arsildo.prevail.logic.network.models.threads.Thread
-import com.arsildo.prevail.logic.network.models.threads.ThreadCatalog
+import com.arsildo.prevail.logic.network.models.threadList.Thread
+import com.arsildo.prevail.logic.network.models.threadList.ThreadCatalog
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,19 +48,12 @@ class ThreadListViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        exoPlayer.release()
-    }
-
-
     fun requestThreads() {
         _screenState.value = ThreadListScreenState.Loading
         viewModelScope.launch {
             try {
-                threadCatalog = repository.getThreadCatalog("wsg/catalog.json")
+                threadCatalog = repository.getThreadCatalog("sp/catalog.json")
                 threadList = transformThreadCatalog()
-                prepareMediaPlayer()
                 delay(1024)
                 _screenState.value = ThreadListScreenState.Responded(threadList)
             } catch (e: Exception) {
@@ -72,16 +70,6 @@ class ThreadListViewModel @Inject constructor(
             }
         }
         return threadList
-    }
-
-    private fun prepareMediaPlayer() {
-        threadList.forEachIndexed { index, thread ->
-            val mediaItem = MediaItem.fromUri("https://i.4cdn.org/wsg/${thread.tim}.webm")
-            exoPlayer.addMediaItem(index, mediaItem)
-        }
-        exoPlayer.prepare()
-        exoPlayer.repeatMode = ExoPlayer.REPEAT_MODE_ONE
-        exoPlayer.playWhenReady = false
     }
 
 }

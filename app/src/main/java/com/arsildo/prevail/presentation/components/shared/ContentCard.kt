@@ -27,8 +27,8 @@ fun ContentCard(
         ),
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.dp,
-            pressedElevation = 2.dp
+            defaultElevation = 0.dp,
+            pressedElevation = 1.dp
         ),
         onClick = onClick
     ) { content() }

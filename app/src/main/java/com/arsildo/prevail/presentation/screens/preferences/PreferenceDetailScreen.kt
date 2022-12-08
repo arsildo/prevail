@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.logic.cache.ColorSchemePreferencesKeys
+import com.arsildo.prevail.logic.cache.MediaPlayerPreferenceKeys
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,8 +60,9 @@ fun PreferenceDetailScreen(
                 "appearances" -> {
                     Column {
                         PreferenceCategoryLabel(title = "Appearance", navController = navController)
-                        val colorSchemePreferencesKeys = ColorSchemePreferencesKeys(LocalContext.current)
-                        AppearancesScreen(dataStore = colorSchemePreferencesKeys)
+                        val colorSchemePreferences =
+                            ColorSchemePreferencesKeys(LocalContext.current)
+                        AppearancesScreen(dataStore = colorSchemePreferences)
                     }
                 }
 
@@ -70,7 +72,8 @@ fun PreferenceDetailScreen(
                             title = "Media Player",
                             navController = navController
                         )
-                        MediaPlayerScreen()
+                        val mediaPlayerPreferences = MediaPlayerPreferenceKeys(LocalContext.current)
+                        MediaPlayerScreen(dataStore = mediaPlayerPreferences)
                     }
                 }
 

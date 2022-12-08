@@ -1,9 +1,8 @@
 package com.arsildo.prevail.logic.network
 
-import com.arsildo.prevail.logic.network.models.boards.Boards
-import com.arsildo.prevail.logic.network.models.thread.ThreadPosts
-import com.arsildo.prevail.logic.network.models.threads.Thread
-import com.arsildo.prevail.logic.network.models.threads.ThreadCatalog
+import com.arsildo.prevail.logic.network.models.boardList.Boards
+import com.arsildo.prevail.logic.network.models.threadPosts.ThreadPosts
+import com.arsildo.prevail.logic.network.models.threadList.ThreadCatalog
 import javax.inject.Inject
 
 class NetworkRepository @Inject constructor(private val networkService: NetworkService) {

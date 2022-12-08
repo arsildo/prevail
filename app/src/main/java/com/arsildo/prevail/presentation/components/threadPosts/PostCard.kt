@@ -13,15 +13,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.logic.network.models.thread.Post
+import androidx.compose.ui.unit.sp
+import com.arsildo.prevail.logic.network.models.threadPosts.Post
 import com.arsildo.prevail.presentation.components.shared.ContentCard
-import com.arsildo.prevail.presentation.components.threadList.HtmlText
+import com.arsildo.prevail.presentation.components.shared.HtmlText
+import com.arsildo.prevail.presentation.components.shared.MediaController
+import com.arsildo.prevail.presentation.components.shared.getCountryFromCode
+import com.google.android.exoplayer2.ExoPlayer
 
 @Composable
-fun PostCard(post: Post) {
+fun PostCard(
+    post: Post,
+    inFocus: Boolean,
+    exoPlayer: ExoPlayer,
+    onPositionSwitched: () -> Unit,
+    onClick: () -> Unit,
+) {
     ContentCard(
-        onClick = {}
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -39,23 +50,33 @@ fun PostCard(post: Post) {
                     )
                 ) {
                     Text(
-                        text = "${post.no}",
+                        text = "no. ${post.no}",
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                     )
                 }
 
-                Text(
-                    text = post.name,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = post.name + if (post.country != null) " " + getCountryFromCode(post.country) else "",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                    )
+                    Text(
+                        text = post.now,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
             }
-            if (post.ext != null) {
-                Text(text = "Has Media")
-            }
+
             if (post.com != null) {
                 HtmlText(text = post.com, color = MaterialTheme.colorScheme.tertiary)
+            }
+
+            if (post.ext != null) {
+                MediaController(mediaType = post.ext, mediaID = post.tim)
             }
 
         }

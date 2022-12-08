@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Refresh
@@ -22,8 +24,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,6 +42,7 @@ import com.arsildo.prevail.logic.viewModels.PostListViewModel
 import com.arsildo.prevail.presentation.components.shared.AppBar
 import com.arsildo.prevail.presentation.components.shared.LoadingResponse
 import com.arsildo.prevail.presentation.components.threadPosts.PostCard
+import com.google.android.exoplayer2.C
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,16 +137,40 @@ fun PostListScreen(
 
                 is PostListScreenState.Responded -> {
 
-                    val postList = viewModel.postList.posts
-                    LazyColumn {
-                        items(postList.size) {
-                            postList.forEach { post -> PostCard(post = post) }
+                    val postList = viewModel.postList
+
+                    val state = rememberLazyListState()
+
+                    val itemInFocus by remember {
+                        derivedStateOf {
+                            val firstVisibleItemIndex = state.firstVisibleItemIndex
+                            state.layoutInfo.visibleItemsInfo.run {
+                                if (isEmpty()) -1
+                                else firstVisibleItemIndex + (last().index - firstVisibleItemIndex) / 2
+                            }
                         }
                     }
 
+                    LaunchedEffect(itemInFocus) {
+                        viewModel.exoPlayer.pause()
+                        viewModel.exoPlayer.seekTo(0, C.TIME_UNSET)
+                    }
+
+                    LazyColumn(state = state) {
+                        itemsIndexed(postList) { index, post ->
+                            PostCard(
+                                post = post,
+                                inFocus = (index == itemInFocus),
+                                exoPlayer = viewModel.exoPlayer,
+                                onPositionSwitched = {},
+                                onClick = { viewModel.exoPlayer.release() }
+                            )
+                        }
+                    }
                 }
 
             }
+
         }
     }
 }

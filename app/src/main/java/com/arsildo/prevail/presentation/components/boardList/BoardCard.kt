@@ -16,9 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.logic.network.models.boards.Board
+import com.arsildo.prevail.logic.network.models.boardList.Board
 import com.arsildo.prevail.presentation.components.shared.ContentCard
-import com.arsildo.prevail.presentation.components.threadList.HtmlText
+import com.arsildo.prevail.presentation.components.shared.HtmlText
 
 @Composable
 fun BoardCard(

@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.SelectAll
@@ -121,17 +122,26 @@ fun BoardListScreen(navController: NavController, viewModel: BoardListViewModel)
                     Column {
                         val boardList = viewModel.boardList
                         var boardSearch by remember { mutableStateOf("") }
+
+                        val state = rememberLazyListState()
+                        val coroutineScope = rememberCoroutineScope()
+
                         SearchBoard(
                             query = boardSearch,
                             onQueryChange = { query ->
                                 boardSearch = query
                                 viewModel.searchBoards(query)
+                                coroutineScope.launch { state.scrollToItem(0) }
                             },
                             topAppBarState = topAppBarState
                         )
 
-                        LazyColumn {
-                            itemsIndexed(boardList) { index, board ->
+
+                        LazyColumn(state = state) {
+                            items(
+                                items = boardList,
+                                key = { it.board }
+                            ) { board ->
                                 BoardCard(board = board)
                             }
                         }
