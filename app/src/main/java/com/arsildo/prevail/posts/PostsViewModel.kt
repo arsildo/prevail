@@ -40,7 +40,7 @@ class PostsViewModel @Inject constructor(
 
     init {
         try {
-            requestThread(threadNumber)
+            requestThread()
             playerConfiguration()
         } catch (e: Exception) {
             _screenState.value = PostsScreenState.Failed("Failed to load.")
@@ -52,11 +52,11 @@ class PostsViewModel @Inject constructor(
         player.release()
     }
 
-    fun requestThread(threadNo: Int) {
+    fun requestThread() {
         _screenState.value = PostsScreenState.Loading
         viewModelScope.launch {
             try {
-                postCatalog = repository.getThread(threadNo)
+                postCatalog = repository.getThread(threadNumber)
                 postList = transformThreadCatalog()
                 delay(1000)
                 _screenState.value = PostsScreenState.Responded(postList)

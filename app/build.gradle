@@ -81,6 +81,7 @@ dependencies {
 
     implementation "androidx.navigation:navigation-compose:$navVersion"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
+    implementation "com.google.accompanist:accompanist-placeholder:$accompanistVersion"
 
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"

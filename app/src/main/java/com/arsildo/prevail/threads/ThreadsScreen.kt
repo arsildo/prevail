@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.presentation.components.threadList.BottomSheet
@@ -79,17 +80,17 @@ fun ThreadsScreen(
     val videoPlayerVisible = remember { mutableStateOf(false) }
 
     var refreshing by remember { mutableStateOf(false) }
+    fun refreshThreadList() = coroutineScope.launch {
+        refreshing = true
+        delay(1000)
+        viewModel.requestThreads()
+        refreshing = false
+        lazyListState.animateScrollToItem(0)
+    }
+
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
-        onRefresh = {
-            coroutineScope.launch {
-                refreshing = true
-                delay(1000)
-                viewModel.requestThreads()
-                refreshing = false
-                lazyListState.animateScrollToItem(0)
-            }
-        }
+        onRefresh = ::refreshThreadList
     )
 
     Scaffold(
@@ -152,7 +153,7 @@ fun ThreadsScreen(
         ) {
             when (viewModel.threadsScreenState.value) {
                 is ThreadsScreenState.Loading -> LoadingAnimation()
-                is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = { viewModel.requestThreads() })
+                is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
                 is ThreadsScreenState.Responded -> {
 
                     val threadList = viewModel.threadList
@@ -168,8 +169,8 @@ fun ThreadsScreen(
                             ThreadCard(
                                 thread = thread,
                                 onClick = { onThreadClicked(thread.no) },
-                                onPlayVideoClick = {
-                                    viewModel.playMediaFile(it)
+                                onPlayVideoClick = { mediaId ->
+                                    viewModel.playMediaFile(mediaId)
                                     videoPlayerVisible.value = true
                                 }
                             )

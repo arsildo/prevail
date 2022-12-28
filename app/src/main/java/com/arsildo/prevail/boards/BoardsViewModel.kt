@@ -55,9 +55,7 @@ class BoardsViewModel @Inject constructor(
 
     private fun transformBoards(): List<Board> {
         val boardList = mutableListOf<Board>()
-        boardSelection.boards.forEach { board ->
-            boardList.add(board)
-        }
+        boardSelection.boards.forEach { board -> boardList.add(board) }
         return boardList
     }
 

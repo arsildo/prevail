@@ -11,7 +11,6 @@ import com.arsildo.prevail.data.Thread
 import com.arsildo.prevail.data.ThreadCatalog
 import com.arsildo.prevail.di.CURRENT_BOARD
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,7 +27,7 @@ sealed class ThreadsScreenState {
 class ThreadsViewModel @Inject constructor(
     private val repository: ContentRepository,
     val player: ExoPlayer,
-    private val playerRepository: PlayerRepository,
+    val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
     private val _screenState: MutableState<ThreadsScreenState> =
@@ -74,9 +73,6 @@ class ThreadsViewModel @Inject constructor(
             }
         }
         return threadList
-    }
-
-    private fun playerConfiguration() {
     }
 
     fun playMediaFile(mediaID: Long) = playerRepository.playMediaFile(mediaID)

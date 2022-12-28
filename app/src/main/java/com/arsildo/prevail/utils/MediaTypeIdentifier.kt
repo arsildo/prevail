@@ -9,12 +9,21 @@ import com.arsildo.prevail.presentation.components.shared.GIFMediaLoader
 @Composable
 fun MediaTypeIdentifier(
     mediaType: String,
+    mediaHeight: Int,
     mediaID: Long,
     onPlayVideoClick: () -> Unit = {},
 ) {
     when (mediaType) {
-        ".jpg" -> ImageMediaLoader(imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.jpg")
-        ".png" -> ImageMediaLoader(imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.png")
+        ".jpg" -> ImageMediaLoader(
+            imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.jpg",
+            mediaHeight = mediaHeight
+        )
+
+        ".png" -> ImageMediaLoader(
+            imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.png",
+            mediaHeight = mediaHeight
+        )
+
         ".gif" -> GIFMediaLoader(gifUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.gif")
         ".pdf" -> Text(text = "PDF")
         ".webm" -> VideoThumbnail(

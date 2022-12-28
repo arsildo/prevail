@@ -36,8 +36,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
-import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.LoadingAnimation
+import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ fun PostsScreen(
     fun refreshPostList() = coroutineScope.launch {
         refreshing = true
         delay(1000)
-        viewModel.requestThread(threadNumber)
+        viewModel.requestThread()
         refreshing = false
         lazyListState.animateScrollToItem(viewModel.postList.lastIndex)
     }
@@ -118,11 +118,7 @@ fun PostsScreen(
         ) {
             when (viewModel.postsScreenState.value) {
                 is PostsScreenState.Loading -> LoadingAnimation()
-                is PostsScreenState.Failed -> RetryConnectionButton(onClick = {
-                    viewModel.requestThread(
-                        threadNumber
-                    )
-                })
+                is PostsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThread)
 
                 is PostsScreenState.Responded -> {
                     val postList = viewModel.postList

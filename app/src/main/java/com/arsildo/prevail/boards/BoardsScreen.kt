@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
+
     val coroutineScope = rememberCoroutineScope()
 
     val topAppBarState = rememberTopAppBarState()
@@ -95,7 +96,7 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
         ) {
             when (viewModel.boardsScreenState.value) {
                 is BoardsScreenState.Loading -> LoadingAnimation()
-                is BoardsScreenState.Failed -> RetryConnectionButton(onClick = { viewModel.requestBoards() })
+                is BoardsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestBoards)
 
                 is BoardsScreenState.Responded -> {
 

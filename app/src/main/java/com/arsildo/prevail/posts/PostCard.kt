@@ -69,7 +69,11 @@ fun PostCard(
                 HtmlText(htmlText = post.com)
             }
             if (post.ext != null) {
-                MediaTypeIdentifier(mediaType = post.ext, mediaID = post.tim)
+                MediaTypeIdentifier(
+                    mediaType = post.ext,
+                    mediaID = post.tim,
+                    mediaHeight = post.h,
+                )
             }
 
         }

@@ -1,9 +1,6 @@
 package com.arsildo.prevail.utils
 
 import android.content.Context
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -19,22 +16,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Replay
-import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
@@ -69,201 +63,84 @@ fun VideoPlayerDialog(
     viewModel: ThreadsViewModel,
 ) {
 
-    var playerState by remember { mutableStateOf(1) }
-    var isPlaying by remember { mutableStateOf(false) }
-    var isMuted by remember { mutableStateOf(false) }
-    var videoDuration by remember { mutableStateOf(0L) }
     var durationLeft by remember { mutableStateOf(1L) }
-
     var progress by remember { mutableStateOf(1.0) }
     val animatedProgress: Float by animateFloatAsState(
-        if (isPlaying) progress.toFloat() else progress.toFloat(),
+        if (viewModel.playerRepository.isPlaying.value) progress.toFloat() else progress.toFloat(),
         animationSpec = tween(easing = LinearOutSlowInEasing)
     )
 
-    fun exitDialogAndClearPlayer() {
+    var videoHeight by remember { mutableStateOf(1) }
+
+    fun onDismiss() {
         viewModel.clearPlayer()
         visible.value = !visible.value
     }
 
-    if (visible.value) {
+
+    AnimatedVisibility(
+        visible = visible.value,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+
         Dialog(
-            onDismissRequest = { exitDialogAndClearPlayer() },
+            onDismissRequest = ::onDismiss,
             properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-
             Box(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(.01f))
+                    .padding(horizontal = 16.dp)
+                    .clickable { onDismiss() },
                 contentAlignment = Alignment.Center
             ) {
-                AnimatedVisibility(
-                    visible = playerState==Player.STATE_READY,
-                    enter = fadeIn(tween(durationMillis = 1000)),
-                    exit = fadeOut(),
-                    modifier = Modifier.animateContentSize(tween(durationMillis = 1000))
-                ) {
-
+                if (!viewModel.playerRepository.isLoading.value) {
                     Box(
                         modifier = Modifier
-                            .clip(MaterialTheme.shapes.medium)
-                            .clickable { if (isPlaying) player.pause() else player.play() },
+                            .heightIn(with(LocalDensity.current) { videoHeight.toDp() })
+                            .clickable { if (viewModel.playerRepository.isPlaying.value) player.pause() else player.play() },
                         contentAlignment = Alignment.Center
                     ) {
-
                         ExoPlayerAndroidView(exoPlayer = player)
-
                         VidePlayerControls(
-                            isPlaying = isPlaying,
-                            isVideoMuted = isMuted,
-                            videoDuration = videoDuration,
+                            isPlaying = viewModel.playerRepository.isPlaying.value,
+                            isVideoMuted = viewModel.playerRepository.isMuted.value,
+                            videoDuration = viewModel.playerRepository.videoDuration.value,
                             videoProgress = animatedProgress,
                             timeLeft = durationLeft,
-                            onPlayOrPauseClick = { if (isPlaying) player.pause() else player.play() },
-                            onMuteUnMuteClick = { if (isMuted) viewModel.unMutePlayer() else viewModel.mutePlayer() },
+                            onPlayOrPauseClick = { if (viewModel.playerRepository.isPlaying.value) player.pause() else player.play() },
+                            onMuteUnMuteClick =
+                            { if (viewModel.playerRepository.isMuted.value) viewModel.unMutePlayer() else viewModel.mutePlayer() },
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .clip(MaterialTheme.shapes.large)
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
-
-                ) {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Download, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Share, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    IconButton(
-                        onClick = { player.seekTo(0) },
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Replay,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                    IconButton(
-                        onClick = { exitDialogAndClearPlayer() },
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
-
-                if (playerState == Player.STATE_BUFFERING || playerState == Player.STATE_IDLE) CircularProgressIndicator()
-
+                } else
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(.2f))
+                            .padding(4.dp)
+                    )
             }
-
-            /* Box(
-                 modifier = Modifier
-                     .padding(start = 16.dp, end = 16.dp, top = 32.dp)
-                     .clip(MaterialTheme.shapes.medium)
-                     .background(backgroundColor)
-                     .padding(16.dp)
-                     .fillMaxSize(),
-                 contentAlignment = Alignment.Center
-             ) {
-
-                 AnimatedVisibility(
-                     visible = playerState == Player.STATE_READY,
-                     enter = fadeIn(tween(delayMillis = 256, durationMillis = 1000)),
-                     exit = fadeOut(),
-                     modifier = Modifier
-                         .align(Alignment.Center)
-                         .clip(MaterialTheme.shapes.medium)
-                         .background(MaterialTheme.colorScheme.background)
-                         .padding(4.dp)
-                         .clickable { if (isPlaying) player.pause() else player.play() },
-                 ) {
-                     *//*Box(contentAlignment = Alignment.Center) {
-                        ExoPlayerAndroidView(exoPlayer = player)
-
-                        VidePlayerControls(
-                            isPlaying = isPlaying,
-                            isVideoMuted = isMuted,
-                            videoDuration = videoDuration,
-                            videoProgress = animatedProgress,
-                            timeLeft = durationLeft,
-                            onPlayOrPauseClick = { if (isPlaying) player.pause() else player.play() },
-                            onMuteUnMuteClick = { if (isMuted) viewModel.unMutePlayer() else viewModel.mutePlayer() },
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        )
-                    }*//*
-
-                }
-
-
-
-
-
-            }*/
         }
     }
 
-    if (isPlaying) LaunchedEffect(Unit) {
+    if (viewModel.playerRepository.isPlaying.value) LaunchedEffect(Unit) {
         while (true) {
             durationLeft = player.duration - player.currentPosition
-            progress =
-                1.0 - (player.currentPosition.toDouble() / player.duration)
+            progress = 1.0 - (player.currentPosition.toDouble() / player.duration)
             delay(1000)
         }
     }
 
     DisposableEffect(Unit) {
-        val listener = object : Player.Listener {
-
-            override fun onIsPlayingChanged(_isPlaying: Boolean) {
-                super.onIsPlayingChanged(_isPlaying)
-                isPlaying = _isPlaying
-            }
-
-
-            override fun onEvents(player: Player, events: Player.Events) {
-                super.onEvents(player, events)
-                isMuted = when (player.volume) {
-                    1f -> false
-                    0f -> true
-                    else -> false
-                }
-            }
-
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
-                videoDuration = player.duration
-                progress = 1.0
-                when (playbackState) {
-                    Player.STATE_IDLE -> Player.STATE_IDLE
-                    Player.STATE_BUFFERING -> Player.STATE_BUFFERING
-                    Player.STATE_READY -> playerState = Player.STATE_READY
-                    Player.STATE_ENDED -> playerState = Player.STATE_ENDED
-                }
-            }
-        }
-        player.addListener(listener)
-        onDispose { player.removeListener(listener) }
+        onDispose { player.removeListener(viewModel.playerRepository.listener) }
     }
 
-    BackHandler { exitDialogAndClearPlayer() }
+    BackHandler { onDismiss() }
 
 }
 
@@ -351,9 +228,8 @@ private fun ExoPlayerAndroidView(
         factory = {
             StyledPlayerView(context).apply {
                 useController = false
-                layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                player = exoPlayer
             }
-        },
-        update = { it.player = exoPlayer },
+        }
     )
 }
