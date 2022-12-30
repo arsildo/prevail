@@ -3,13 +3,9 @@ package com.arsildo.prevail.utils
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
@@ -30,11 +26,13 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.fade
 import com.google.accompanist.placeholder.placeholder
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageMediaLoader(
     imageUri: String,
     mediaHeight: Int,
+    mediaWidth: Int,
     onImageClick: () -> Unit = {},
     onImageLongClick: () -> Unit = {},
 ) {
@@ -42,33 +40,42 @@ fun ImageMediaLoader(
     var loadingImage by remember { mutableStateOf(false) }
     var failedToLoad by remember { mutableStateOf(false) }
 
-    val imageModel = ImageRequest.Builder(LocalContext.current)
-        .data(imageUri)
-        .listener(
-            onStart = { loadingImage = true },
-            onError = { _, _ -> failedToLoad = true },
-            onSuccess = { _, _ -> loadingImage = false }
-        )
-        .crossfade(true)
-        .crossfade(512)
-        .build()
+    val context = LocalContext.current
 
-    val mediaH = with(LocalDensity.current) { mediaHeight.toDp() }
-    Box(
-        contentAlignment = Alignment.Center
-    ) {
+    val imageModel = remember {
+        ImageRequest.Builder(context)
+            .data(imageUri)
+            .listener(
+                onStart = { loadingImage = true },
+                onSuccess = { _, _ -> loadingImage = false },
+                onError = { _, _ -> failedToLoad = true }
+            )
+            .size(width = mediaWidth, height = mediaHeight)
+            .scale(Scale.FIT)
+            .crossfade(true)
+            .crossfade(512)
+            .build()
+    }
+
+    val aspectRatio = remember {
+        val ratio = mediaWidth.toFloat() / mediaHeight
+        ratio.coerceIn(minimumValue = 0.5f, maximumValue = 2f)
+    }
+
+    Box(contentAlignment = Alignment.Center) {
         AsyncImage(
             model = imageModel,
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
+                .padding(vertical = 4.dp)
                 .clip(MaterialTheme.shapes.small)
-                .requiredHeightIn(mediaH)
-                .fillMaxWidth()
+                .aspectRatio(aspectRatio)
+                .fillMaxSize()
                 .placeholder(
                     visible = loadingImage,
-                    highlight = PlaceholderHighlight.fade(highlightColor = MaterialTheme.colorScheme.primary),
-                    color = MaterialTheme.colorScheme.background,
+                    highlight = PlaceholderHighlight.fade(highlightColor = MaterialTheme.colorScheme.primaryContainer),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                 )
                 .combinedClickable(
                     onClick = onImageClick,

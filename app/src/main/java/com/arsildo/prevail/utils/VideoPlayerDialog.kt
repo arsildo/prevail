@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -44,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
@@ -70,10 +69,9 @@ fun VideoPlayerDialog(
         animationSpec = tween(easing = LinearOutSlowInEasing)
     )
 
-    var videoHeight by remember { mutableStateOf(1) }
-
     fun onDismiss() {
         viewModel.clearPlayer()
+
         visible.value = !visible.value
     }
 
@@ -96,10 +94,11 @@ fun VideoPlayerDialog(
                     .clickable { onDismiss() },
                 contentAlignment = Alignment.Center
             ) {
-                if (!viewModel.playerRepository.isLoading.value) {
+                if (viewModel.playerRepository.playerStateListener.value == Player.STATE_READY) {
                     Box(
                         modifier = Modifier
-                            .heightIn(with(LocalDensity.current) { videoHeight.toDp() })
+                            .animateContentSize(tween(durationMillis = 5000))
+                            .let { if (!viewModel.playerRepository.isPlaying.value) it else it.height(1.dp) }
                             .clickable { if (viewModel.playerRepository.isPlaying.value) player.pause() else player.play() },
                         contentAlignment = Alignment.Center
                     ) {
@@ -116,7 +115,7 @@ fun VideoPlayerDialog(
                             modifier = Modifier.align(Alignment.BottomCenter)
                         )
                     }
-                } else
+                } else {
                     CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -124,6 +123,7 @@ fun VideoPlayerDialog(
                             .background(Color.Black.copy(.2f))
                             .padding(4.dp)
                     )
+                }
             }
         }
     }

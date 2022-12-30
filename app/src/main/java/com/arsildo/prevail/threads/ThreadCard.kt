@@ -30,7 +30,6 @@ import com.arsildo.prevail.utils.getCountryFromCode
 fun ThreadCard(
     thread: Thread,
     onClick: () -> Unit,
-    onPlayVideoClick: (Long) -> Unit,
 ) {
     ContentCardWrapper(onClick = onClick) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -120,8 +119,8 @@ fun ThreadCard(
                 MediaTypeIdentifier(
                     mediaType = thread.ext,
                     mediaHeight = thread.h,
+                    mediaWidth = thread.w,
                     mediaID = thread.tim,
-                    onPlayVideoClick = { onPlayVideoClick(thread.tim) }
                 )
             }
 

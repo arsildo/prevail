@@ -6,7 +6,6 @@ import com.arsildo.prevail.di.MEDIA_BASE_URL
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.video.VideoSize
 import javax.inject.Inject
 
 
@@ -15,7 +14,7 @@ class PlayerRepository @Inject constructor(
 ) {
 
     var isPlaying = mutableStateOf(false)
-    var isLoading = mutableStateOf(false)
+    var playerStateListener = mutableStateOf(1)
     var isMuted = mutableStateOf(false)
 
     var videoDuration = mutableStateOf(0L)
@@ -24,6 +23,7 @@ class PlayerRepository @Inject constructor(
         player.pause()
         player.clearMediaItems()
         player.clearVideoSurface()
+        player.removeMediaItem(0)
     }
 
     fun mutePlayer() {
@@ -39,7 +39,6 @@ class PlayerRepository @Inject constructor(
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.prepare()
-        player.playWhenReady = false
     }
 
 
@@ -52,11 +51,11 @@ class PlayerRepository @Inject constructor(
         override fun onEvents(player: Player, events: Player.Events) {
             super.onEvents(player, events)
             videoDuration.value = player.duration
+            playerStateListener.value = player.playbackState
         }
 
         override fun onIsLoadingChanged(_isLoading: Boolean) {
             super.onIsLoadingChanged(_isLoading)
-            isLoading.value = _isLoading
         }
 
 
@@ -68,6 +67,7 @@ class PlayerRepository @Inject constructor(
     }
 
     init {
+        player.playWhenReady = false
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.addListener(listener)
     }

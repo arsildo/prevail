@@ -169,19 +169,9 @@ fun ThreadsScreen(
                             ThreadCard(
                                 thread = thread,
                                 onClick = { onThreadClicked(thread.no) },
-                                onPlayVideoClick = { mediaId ->
-                                    viewModel.playMediaFile(mediaId)
-                                    videoPlayerVisible.value = true
-                                }
                             )
                         }
                     }
-
-                    VideoPlayerDialog(
-                        visible = videoPlayerVisible,
-                        player = viewModel.player,
-                        viewModel = viewModel
-                    )
 
                 }
 

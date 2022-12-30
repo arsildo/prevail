@@ -10,28 +10,32 @@ import com.arsildo.prevail.presentation.components.shared.GIFMediaLoader
 fun MediaTypeIdentifier(
     mediaType: String,
     mediaHeight: Int,
+    mediaWidth: Int,
     mediaID: Long,
-    onPlayVideoClick: () -> Unit = {},
 ) {
     when (mediaType) {
         ".jpg" -> ImageMediaLoader(
             imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.jpg",
-            mediaHeight = mediaHeight
+            mediaHeight = mediaHeight,
+            mediaWidth = mediaWidth
         )
-
         ".png" -> ImageMediaLoader(
             imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.png",
-            mediaHeight = mediaHeight
+            mediaHeight = mediaHeight,
+            mediaWidth = mediaWidth
         )
-
-        ".gif" -> GIFMediaLoader(gifUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.gif")
-        ".pdf" -> Text(text = "PDF")
+        ".gif" -> GIFMediaLoader(
+            gifUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.gif",
+            mediaHeight = mediaHeight,
+            mediaWidth = mediaWidth
+        )
         ".webm" -> VideoThumbnail(
             preloadedThumbnailUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID" + "s.jpg",
             videoUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.webm",
-            onPlayVideoClick = onPlayVideoClick
+            mediaHeight = mediaHeight,
+            mediaWidth = mediaWidth
         )
-
+        ".pdf" -> Text(text = "PDF")
         else -> Text(text = "Media $mediaType")
     }
 }

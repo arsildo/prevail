@@ -71,8 +71,9 @@ fun PostCard(
             if (post.ext != null) {
                 MediaTypeIdentifier(
                     mediaType = post.ext,
-                    mediaID = post.tim,
                     mediaHeight = post.h,
+                    mediaWidth = post.w,
+                    mediaID = post.tim,
                 )
             }
 
