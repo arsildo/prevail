@@ -1,6 +1,7 @@
 package com.arsildo.prevail.threads
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,18 +46,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.presentation.components.threadList.BottomSheet
 import com.arsildo.prevail.utils.LoadingAnimation
+import com.arsildo.prevail.utils.MediaPlayerDialog
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
-import com.arsildo.prevail.utils.VideoPlayerDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterialApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 fun ThreadsScreen(
     navController: NavController,
@@ -76,8 +81,6 @@ fun ThreadsScreen(
 
     val lazyListState = rememberLazyListState()
     val firstVisibleItemIndexVisible by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
-
-    val videoPlayerVisible = remember { mutableStateOf(false) }
 
     var refreshing by remember { mutableStateOf(false) }
     fun refreshThreadList() = coroutineScope.launch {
@@ -157,6 +160,23 @@ fun ThreadsScreen(
                 is ThreadsScreenState.Responded -> {
 
                     val threadList = viewModel.threadList
+
+                    val centerScreenItem by remember {
+                        derivedStateOf {
+                            lazyListState.layoutInfo.visibleItemsInfo.run {
+                                val firstVisibleIndex = lazyListState.firstVisibleItemIndex
+                                if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                            }
+                        }
+                    }
+                    LaunchedEffect(centerScreenItem) {
+                        if (threadList[centerScreenItem].ext == ".webm")
+                            viewModel.playerRepository.playMediaFile(threadList[centerScreenItem].tim)
+                    }
+
+                    var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
+                    var aspectRatioMediaPlayer by remember { mutableStateOf(1f) }
+
                     LazyColumn(
                         state = lazyListState,
                         contentPadding = PaddingValues(vertical = 16.dp),
@@ -164,16 +184,34 @@ fun ThreadsScreen(
                     ) {
                         itemsIndexed(
                             items = threadList,
-                            key = { index, _ -> index }
+                            key = { index, thread -> thread.no },
                         ) { index, thread ->
                             ThreadCard(
                                 thread = thread,
+                                playerRepository = viewModel.playerRepository,
+                                inFocus = centerScreenItem == index,
                                 onClick = { onThreadClicked(thread.no) },
+                                onPlayVideoNotInFocus = { mediaID, aspectRatio ->
+                                    viewModel.playerRepository.playMediaFile(mediaID)
+                                    aspectRatioMediaPlayer = aspectRatio
+                                    mediaPlayerDialogVisible = true
+                                },
                             )
                         }
                     }
 
+                    MediaPlayerDialog(
+                        visible = mediaPlayerDialogVisible,
+                        videoAspectRatio = aspectRatioMediaPlayer,
+                        onDismissRequest = {
+                            mediaPlayerDialogVisible = false
+                            viewModel.playerRepository.player.clearMediaItems()
+                            viewModel.playerRepository.player.clearVideoSurface()
+                        },
+                        playerRepository = viewModel.playerRepository
+                    )
                 }
+
 
             }
 
@@ -186,9 +224,7 @@ fun ThreadsScreen(
             )
 
         }
-
     }
-
     BottomSheet(bottomSheetState, navController)
 }
 
@@ -209,4 +245,3 @@ private fun LazyListState.isScrollingUp(): Boolean {
         }
     }.value
 }
-

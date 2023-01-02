@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -123,6 +125,21 @@ fun PostsScreen(
                 is PostsScreenState.Responded -> {
                     val postList = viewModel.postList
 
+
+                    val midIndex by remember {
+                        derivedStateOf {
+                            lazyListState.layoutInfo.visibleItemsInfo.run {
+                                val firstVisibleIndex = lazyListState.firstVisibleItemIndex
+                                if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                            }
+                        }
+                    }
+
+                    LaunchedEffect(midIndex) {
+                        if (postList[midIndex].ext == ".webm")
+                            viewModel.playerRepository.playMediaFile(postList[midIndex].tim)
+                    }
+
                     LazyColumn(
                         state = lazyListState,
                         contentPadding = PaddingValues(vertical = 16.dp),
@@ -130,11 +147,12 @@ fun PostsScreen(
                     ) {
                         itemsIndexed(
                             items = postList,
-                            key = { index, item -> item.no }
+                            key = { index, post -> post.no },
                         ) { index, post ->
                             PostCard(
                                 post = post,
-                                onClick = { }
+                                playerRepository = viewModel.playerRepository,
+                                inFocus = midIndex == index,
                             )
                         }
                     }

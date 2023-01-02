@@ -1,4 +1,4 @@
-package com.arsildo.prevail.data
+package com.arsildo.prevail.data.models
 
 import androidx.annotation.Keep
 

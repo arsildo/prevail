@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 const val API_BASE_URL = "https://a.4cdn.org/"
 const val MEDIA_BASE_URL = "https://i.4cdn.org/"
-const val CURRENT_BOARD = "sp/" // -> todo remove hardcoded value
+const val CURRENT_BOARD = "wsg/" // -> todo remove hardcoded value
 
 @Module
 @InstallIn(SingletonComponent::class)

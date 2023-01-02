@@ -14,7 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.data.Post
+import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.models.Post
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeIdentifier
@@ -23,6 +24,8 @@ import com.arsildo.prevail.utils.getCountryFromCode
 @Composable
 fun PostCard(
     post: Post,
+    playerRepository: PlayerRepository,
+    inFocus: Boolean,
     onClick: () -> Unit = {},
 ) {
     ContentCardWrapper {
@@ -74,6 +77,9 @@ fun PostCard(
                     mediaHeight = post.h,
                     mediaWidth = post.w,
                     mediaID = post.tim,
+                    inFocus = inFocus,
+                    playerRepository = playerRepository,
+                    onPlayVideoNotInFocus = { /*aspectRatio ->*/ }
                 )
             }
 

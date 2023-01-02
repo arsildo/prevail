@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
+import coil.size.Size
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.fade
 import com.google.accompanist.placeholder.placeholder
@@ -31,8 +32,7 @@ import com.google.accompanist.placeholder.placeholder
 @Composable
 fun ImageMediaLoader(
     imageUri: String,
-    mediaHeight: Int,
-    mediaWidth: Int,
+    aspectRatio: Float,
     onImageClick: () -> Unit = {},
     onImageLongClick: () -> Unit = {},
 ) {
@@ -50,17 +50,14 @@ fun ImageMediaLoader(
                 onSuccess = { _, _ -> loadingImage = false },
                 onError = { _, _ -> failedToLoad = true }
             )
-            .size(width = mediaWidth, height = mediaHeight)
+            .size(Size.ORIGINAL)
             .scale(Scale.FIT)
             .crossfade(true)
             .crossfade(512)
             .build()
     }
 
-    val aspectRatio = remember {
-        val ratio = mediaWidth.toFloat() / mediaHeight
-        ratio.coerceIn(minimumValue = 0.5f, maximumValue = 2f)
-    }
+
 
     Box(contentAlignment = Alignment.Center) {
         AsyncImage(
@@ -69,7 +66,7 @@ fun ImageMediaLoader(
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .padding(vertical = 4.dp)
-                .clip(MaterialTheme.shapes.small)
+                .clip(MaterialTheme.shapes.large)
                 .aspectRatio(aspectRatio)
                 .fillMaxSize()
                 .placeholder(

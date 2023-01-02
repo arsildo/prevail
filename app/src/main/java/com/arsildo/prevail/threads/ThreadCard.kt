@@ -20,7 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.arsildo.prevail.data.Thread
+import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.models.Thread
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeIdentifier
@@ -29,7 +30,10 @@ import com.arsildo.prevail.utils.getCountryFromCode
 @Composable
 fun ThreadCard(
     thread: Thread,
+    playerRepository: PlayerRepository,
+    inFocus: Boolean,
     onClick: () -> Unit,
+    onPlayVideoNotInFocus: (Long, Float) -> Unit,
 ) {
     ContentCardWrapper(onClick = onClick) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -121,6 +125,11 @@ fun ThreadCard(
                     mediaHeight = thread.h,
                     mediaWidth = thread.w,
                     mediaID = thread.tim,
+                    inFocus = inFocus,
+                    playerRepository = playerRepository,
+                    onPlayVideoNotInFocus = { aspectRatio ->
+                        onPlayVideoNotInFocus(thread.tim, aspectRatio)
+                    }
                 )
             }
 

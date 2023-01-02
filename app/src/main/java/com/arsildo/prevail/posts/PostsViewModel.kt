@@ -7,10 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.data.ContentRepository
-import com.arsildo.prevail.data.Post
-import com.arsildo.prevail.data.ThreadPosts
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
+import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.models.Post
+import com.arsildo.prevail.data.models.ThreadPosts
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,9 +25,8 @@ sealed class PostsScreenState {
 class PostsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ContentRepository,
-    val player: ExoPlayer,
+    val playerRepository: PlayerRepository,
 ) : ViewModel() {
-
     private val _screenState: MutableState<PostsScreenState> =
         mutableStateOf(PostsScreenState.Loading)
     val postsScreenState: State<PostsScreenState> = _screenState
@@ -41,15 +39,9 @@ class PostsViewModel @Inject constructor(
     init {
         try {
             requestThread()
-            playerConfiguration()
         } catch (e: Exception) {
             _screenState.value = PostsScreenState.Failed("Failed to load.")
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        player.release()
     }
 
     fun requestThread() {
@@ -71,11 +63,6 @@ class PostsViewModel @Inject constructor(
         val postList = mutableListOf<Post>()
         postCatalog.posts.forEach { post -> postList.add(post) }
         return postList
-    }
-
-    private fun playerConfiguration() {
-        player.repeatMode = Player.REPEAT_MODE_ONE
-        player.playWhenReady = false
     }
 
 }

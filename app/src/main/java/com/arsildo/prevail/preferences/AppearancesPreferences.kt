@@ -2,7 +2,7 @@ package com.arsildo.prevail.preferences
 
 import android.os.Build
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -109,15 +109,15 @@ fun AnimateColorSchemeTransition(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme.copy(
         background = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.background,
-            animationSpec = tween(
-                delayMillis = 256,
-                durationMillis = 2048,
-                easing = FastOutSlowInEasing
-            )
+            animationSpec = spring(stiffness = 32f, dampingRatio = Spring.DampingRatioMediumBouncy)
         ).value,
         primary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = spring(stiffness = 32f, dampingRatio = Spring.DampingRatioMediumBouncy)
+            animationSpec = tween(
+                delayMillis = 256,
+                durationMillis = 4000,
+                easing = LinearEasing
+            )
         ).value,
     )
     MaterialTheme(colorScheme = colors, content = content)

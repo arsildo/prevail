@@ -1,10 +1,10 @@
 package com.arsildo.prevail.utils
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -14,7 +14,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,23 +31,20 @@ import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
 import coil.size.Precision
+import coil.size.Size
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.fade
+import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun VideoThumbnail(
     preloadedThumbnailUri: String,
     videoUri: String,
-    mediaHeight: Int,
-    mediaWidth: Int,
+    onPlayVideoNotInFocus : () -> Unit,
 ) {
     val context = LocalContext.current
 
-    val lowQualityThumbnail = remember {
-        ImageRequest.Builder(context)
-            .data(preloadedThumbnailUri)
-            .size(width = mediaWidth, height = mediaHeight)
-            .precision(Precision.INEXACT)
-            .build()
-    }
+    var loadingImage by remember { mutableStateOf(false) }
 
     val thumbnailLoader = remember {
         ImageLoader.Builder(context)
@@ -53,23 +53,33 @@ fun VideoThumbnail(
             .build()
     }
 
+
+    val lowQualityThumbnail = remember {
+        ImageRequest.Builder(context)
+            .data(preloadedThumbnailUri)
+            .size(Size.ORIGINAL)
+            .listener(
+                onStart = { loadingImage = true },
+                onSuccess = { _, _ -> loadingImage = false },
+            )
+            .build()
+    }
+
     val imageModel = remember {
         ImageRequest.Builder(context)
             .data(videoUri)
-            .size(width = mediaWidth, height = mediaHeight)
+            .size(Size.ORIGINAL)
+            .listener(
+                onStart = { loadingImage = true },
+                onSuccess = { _, _ -> loadingImage = false },
+            )
             .build()
     }
 
 
-    val aspectRatio = remember {
-        val ratio = mediaWidth.toFloat() / mediaHeight
-        ratio.coerceIn(minimumValue = 0.5f, maximumValue = 2f)
-    }
 
     Box(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.medium)
-            .aspectRatio(aspectRatio),
+        modifier = Modifier.fillMaxSize().clickable(onClick = onPlayVideoNotInFocus),
         contentAlignment = Alignment.Center
     ) {
 
@@ -77,11 +87,10 @@ fun VideoThumbnail(
             model = lowQualityThumbnail,
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
-            filterQuality = FilterQuality.Low,
+            filterQuality = FilterQuality.Medium,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.medium)
                 .fillMaxWidth()
-                .heightIn((128 + 32).dp)
         )
 
         AsyncImage(
@@ -93,11 +102,10 @@ fun VideoThumbnail(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.medium)
                 .fillMaxWidth()
-                .heightIn((128 + 32).dp)
         )
 
         IconButton(
-            onClick = {},
+            onClick = onPlayVideoNotInFocus,
             modifier = Modifier
                 .clip(CircleShape)
                 .background(Color.Black.copy(.2f))

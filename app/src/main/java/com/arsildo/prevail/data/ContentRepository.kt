@@ -1,5 +1,8 @@
 package com.arsildo.prevail.data
 
+import com.arsildo.prevail.data.models.Boards
+import com.arsildo.prevail.data.models.ThreadCatalog
+import com.arsildo.prevail.data.models.ThreadPosts
 import javax.inject.Inject
 
 class ContentRepository @Inject constructor(private val retroFitService: RetroFitService) {

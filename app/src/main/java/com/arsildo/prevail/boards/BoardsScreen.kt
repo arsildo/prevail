@@ -1,6 +1,5 @@
 package com.arsildo.prevail.boards
 
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -32,8 +31,8 @@ import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
 import com.arsildo.prevail.presentation.components.boardList.BoardCard
 import com.arsildo.prevail.presentation.components.boardList.SearchBoard
-import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.LoadingAnimation
+import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
 import kotlinx.coroutines.launch
 

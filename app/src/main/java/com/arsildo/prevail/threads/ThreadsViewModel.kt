@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.data.ContentRepository
 import com.arsildo.prevail.data.PlayerRepository
-import com.arsildo.prevail.data.Thread
-import com.arsildo.prevail.data.ThreadCatalog
+import com.arsildo.prevail.data.models.Thread
+import com.arsildo.prevail.data.models.ThreadCatalog
 import com.arsildo.prevail.di.CURRENT_BOARD
 import com.google.android.exoplayer2.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,6 @@ sealed class ThreadsScreenState {
 @HiltViewModel
 class ThreadsViewModel @Inject constructor(
     private val repository: ContentRepository,
-    val player: ExoPlayer,
     val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
@@ -43,11 +42,6 @@ class ThreadsViewModel @Inject constructor(
         } catch (e: Exception) {
             _screenState.value = ThreadsScreenState.Failed("Failed to load.")
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        player.release()
     }
 
     fun requestThreads() {
@@ -67,18 +61,9 @@ class ThreadsViewModel @Inject constructor(
     private fun transformThreadCatalog(): List<Thread> {
         val threadList = mutableListOf<Thread>()
         threadCatalog.forEach { threadCatalogItem ->
-            threadCatalogItem.threads.forEach { thread ->
-                thread.semantic_url = thread.semantic_url.replace("-", " ")
-                threadList.add(thread)
-            }
+            threadCatalogItem.threads.forEach { thread -> threadList.add(thread) }
         }
         return threadList
     }
-
-    fun playMediaFile(mediaID: Long) = playerRepository.playMediaFile(mediaID)
-    fun mutePlayer() = playerRepository.mutePlayer()
-    fun unMutePlayer() = playerRepository.unMutePlayer()
-    fun clearPlayer() = playerRepository.clearPlayerResources()
-
 
 }

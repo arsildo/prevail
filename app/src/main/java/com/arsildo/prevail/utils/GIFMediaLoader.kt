@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.components.shared
+package com.arsildo.prevail.utils
 
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.background
@@ -22,33 +22,28 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
+import coil.size.Size
 
 @Composable
 fun GIFMediaLoader(
     gifUri: String,
-    mediaHeight: Int,
-    mediaWidth: Int
+    aspectRatio: Float,
 ) {
 
     val context = LocalContext.current
 
-    val imageLoader = ImageLoader.Builder(LocalContext.current).components {
+    val imageLoader = ImageLoader.Builder(context = context).components {
         if (SDK_INT >= 28) add(ImageDecoderDecoder.Factory())
         else add(GifDecoder.Factory())
     }.build()
 
     val imageModel = remember {
-        ImageRequest.Builder(context)
+        ImageRequest.Builder(context = context)
             .data(gifUri)
-            .size(width = mediaWidth, height = mediaHeight)
+            .size(Size.ORIGINAL)
             .crossfade(true)
             .crossfade(512)
             .build()
-    }
-
-    val aspectRatio = remember {
-        val ratio = mediaWidth.toFloat() / mediaHeight
-        ratio.coerceIn(minimumValue = 0.5f, maximumValue = 2f)
     }
 
     Box(contentAlignment = Alignment.Center) {
@@ -59,7 +54,7 @@ fun GIFMediaLoader(
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .padding(vertical = 4.dp)
-                .clip(MaterialTheme.shapes.small)
+                .clip(MaterialTheme.shapes.large)
                 .fillMaxWidth()
                 .aspectRatio(aspectRatio)
         )

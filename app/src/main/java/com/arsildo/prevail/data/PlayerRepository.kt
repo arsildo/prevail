@@ -3,73 +3,80 @@ package com.arsildo.prevail.data
 import androidx.compose.runtime.mutableStateOf
 import com.arsildo.prevail.di.CURRENT_BOARD
 import com.arsildo.prevail.di.MEDIA_BASE_URL
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import javax.inject.Inject
 
 
 class PlayerRepository @Inject constructor(
-    private val player: ExoPlayer
+    val player: ExoPlayer
 ) {
 
     var isPlaying = mutableStateOf(false)
-    var playerStateListener = mutableStateOf(1)
     var isMuted = mutableStateOf(false)
 
     var videoDuration = mutableStateOf(0L)
+    var durationLeft = mutableStateOf(1L)
+    var progressMade = mutableStateOf(1.0)
 
-    fun clearPlayerResources() {
-        player.pause()
-        player.clearMediaItems()
-        player.clearVideoSurface()
-        player.removeMediaItem(0)
+
+    fun muteUnMutePlayer() {
+        if (isMuted.value) player.volume = 1f else player.volume = 0f
     }
 
-    fun mutePlayer() {
-        player.volume = 0f
+    fun pauseUnPausePlayer() {
+        if (isPlaying.value) player.pause() else player.play()
     }
 
-    fun unMutePlayer() {
-        player.volume = 1f
-    }
 
     fun playMediaFile(mediaID: Long) {
         val uri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.webm"
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.prepare()
+        player.playWhenReady = false
     }
 
-
-    val listener = object : Player.Listener {
-        override fun onIsPlayingChanged(_isPlaying: Boolean) {
-            super.onIsPlayingChanged(_isPlaying)
-            isPlaying.value = _isPlaying
-        }
-
-        override fun onEvents(player: Player, events: Player.Events) {
-            super.onEvents(player, events)
-            videoDuration.value = player.duration
-            playerStateListener.value = player.playbackState
-        }
-
-        override fun onIsLoadingChanged(_isLoading: Boolean) {
-            super.onIsLoadingChanged(_isLoading)
-        }
-
-
-        override fun onVolumeChanged(volume: Float) {
-            super.onVolumeChanged(volume)
-            isMuted.value = volume == 0f
-        }
-
-    }
+    var playerState = mutableStateOf(1)
 
     init {
-        player.playWhenReady = false
+        player.addListener(
+            object : Player.Listener {
+                override fun onIsPlayingChanged(_isPlaying: Boolean) {
+                    super.onIsPlayingChanged(_isPlaying)
+                    isPlaying.value = _isPlaying
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    super.onPlaybackStateChanged(playbackState)
+                    videoDuration.value = player.duration
+                    progressMade.value = 1.0
+                    when (playbackState) {
+                        Player.STATE_IDLE -> playerState.value = Player.STATE_IDLE
+                        Player.STATE_BUFFERING -> playerState.value = Player.STATE_BUFFERING
+                        Player.STATE_READY -> playerState.value = Player.STATE_READY
+                        Player.STATE_ENDED -> playerState.value = Player.STATE_ENDED
+                    }
+                }
+
+
+                override fun onVolumeChanged(volume: Float) {
+                    super.onVolumeChanged(volume)
+                    isMuted.value = volume == 0f
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    super.onPlayerError(error)
+                    player.clearMediaItems()
+                }
+
+            }
+        )
         player.repeatMode = Player.REPEAT_MODE_ONE
-        player.addListener(listener)
+        player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
     }
 
 }
