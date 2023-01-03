@@ -10,7 +10,6 @@ import com.arsildo.prevail.data.PlayerRepository
 import com.arsildo.prevail.data.models.Thread
 import com.arsildo.prevail.data.models.ThreadCatalog
 import com.arsildo.prevail.di.CURRENT_BOARD
-import com.google.android.exoplayer2.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,9 +28,8 @@ class ThreadsViewModel @Inject constructor(
     val playerRepository: PlayerRepository,
 ) : ViewModel() {
 
-    private val _screenState: MutableState<ThreadsScreenState> =
-        mutableStateOf(ThreadsScreenState.Loading)
-    val threadsScreenState: State<ThreadsScreenState> = _screenState
+    private val _screenState: MutableState<ThreadsScreenState> = mutableStateOf(ThreadsScreenState.Loading)
+    val screenState: State<ThreadsScreenState> = _screenState
 
     private var threadCatalog: ThreadCatalog = ThreadCatalog()
     var threadList: List<Thread> = emptyList()
@@ -48,7 +46,7 @@ class ThreadsViewModel @Inject constructor(
         _screenState.value = ThreadsScreenState.Loading
         viewModelScope.launch {
             try {
-                threadCatalog = repository.getThreadCatalog("$CURRENT_BOARD/catalog.json")
+                threadCatalog = repository.getThreadCatalog(CURRENT_BOARD)
                 threadList = transformThreadCatalog()
                 delay(1000)
                 _screenState.value = ThreadsScreenState.Responded(threadList)

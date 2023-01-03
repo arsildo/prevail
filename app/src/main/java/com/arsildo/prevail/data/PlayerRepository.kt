@@ -11,9 +11,7 @@ import com.google.android.exoplayer2.Player
 import javax.inject.Inject
 
 
-class PlayerRepository @Inject constructor(
-    val player: ExoPlayer
-) {
+class PlayerRepository @Inject constructor(val player: ExoPlayer) {
 
     var isPlaying = mutableStateOf(false)
     var isMuted = mutableStateOf(false)
@@ -59,7 +57,7 @@ class PlayerRepository @Inject constructor(
         )
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
-        player.setForegroundMode(true)
+        player.setForegroundMode(false)
     }
 
     fun playMediaFile(mediaID: Long) {

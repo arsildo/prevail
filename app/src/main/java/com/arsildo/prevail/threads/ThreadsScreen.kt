@@ -35,7 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -155,7 +154,7 @@ fun ThreadsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
-            when (viewModel.threadsScreenState.value) {
+            when (viewModel.screenState.value) {
                 is ThreadsScreenState.Loading -> LoadingAnimation()
                 is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
                 is ThreadsScreenState.Responded -> {

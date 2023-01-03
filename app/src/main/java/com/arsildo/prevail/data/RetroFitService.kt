@@ -8,7 +8,6 @@ import com.arsildo.prevail.data.models.ThreadPosts
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Url
-import javax.inject.Inject
 
 
 @Keep
@@ -17,7 +16,7 @@ interface RetroFitService {
     suspend fun getCatalog(@Url board: String): ThreadCatalog
 
     @GET("$CURRENT_BOARD/thread/{threadNumber}.json")
-    suspend fun getThreadPosts(@Path("threadNumber") thread: Int): ThreadPosts
+    suspend fun getThreadPosts(@Path("threadNumber") threadNumber: Int): ThreadPosts
 
     @GET("boards.json")
     suspend fun getBoards(): Boards

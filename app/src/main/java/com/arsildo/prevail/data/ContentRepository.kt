@@ -8,11 +8,11 @@ import javax.inject.Inject
 class ContentRepository @Inject constructor(private val retroFitService: RetroFitService) {
 
     suspend fun getThreadCatalog(board: String): ThreadCatalog {
-        return retroFitService.getCatalog(board)
+        return retroFitService.getCatalog(board = "$board/catalog.json")
     }
 
-    suspend fun getThread(thread: Int): ThreadPosts {
-        return retroFitService.getThreadPosts(thread)
+    suspend fun getThread(threadNumber: Int): ThreadPosts {
+        return retroFitService.getThreadPosts(threadNumber = threadNumber)
     }
 
     suspend fun getBoards(): Boards {
