@@ -3,6 +3,7 @@ package com.arsildo.prevail.preferences
 import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -34,10 +35,7 @@ fun AppearancesPreferences(viewModel: AppearancesViewModel) {
         Column {
             SettingRow(
                 checked = automaticTheme,
-                onCheckedChange = {
-                    if (automaticTheme) viewModel.setSystemColorScheme(false)
-                    else viewModel.setSystemColorScheme(true)
-                },
+                onCheckedChange = { viewModel.setSystemColorScheme(it) },
                 enabled = true,
                 title = "Follow System Theme",
                 subtitle = "Automatically switch color scheme based on your system preferences."
@@ -85,7 +83,7 @@ fun SettingRow(
         Column(modifier = Modifier.fillMaxWidth(.7f)) {
             Text(
                 text = title,
-                color = if (enabled) MaterialTheme.colorScheme.tertiary
+                color = if (enabled) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
                 style = MaterialTheme.typography.titleMedium
             )
@@ -109,14 +107,25 @@ fun AnimateColorSchemeTransition(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme.copy(
         background = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.background,
-            animationSpec = spring(stiffness = 32f, dampingRatio = Spring.DampingRatioMediumBouncy)
+            animationSpec = spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioMediumBouncy
+            )
         ).value,
         primary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
             animationSpec = tween(
                 delayMillis = 256,
-                durationMillis = 4000,
+                durationMillis = 2000,
                 easing = LinearEasing
+            )
+        ).value,
+        secondary = animateColorAsState(
+            targetValue = MaterialTheme.colorScheme.primary,
+            animationSpec = tween(
+                delayMillis = 256,
+                durationMillis = 1000,
+                easing = LinearOutSlowInEasing
             )
         ).value,
     )

@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,15 +32,12 @@ import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
 import coil.size.Precision
 import coil.size.Size
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.fade
-import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun VideoThumbnail(
     preloadedThumbnailUri: String,
     videoUri: String,
-    onPlayVideoNotInFocus : () -> Unit,
+    onPlayVideoNotInFocus: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -79,7 +76,9 @@ fun VideoThumbnail(
 
 
     Box(
-        modifier = Modifier.fillMaxSize().clickable(onClick = onPlayVideoNotInFocus),
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(onClick = onPlayVideoNotInFocus),
         contentAlignment = Alignment.Center
     ) {
 
@@ -104,16 +103,17 @@ fun VideoThumbnail(
                 .fillMaxWidth()
         )
 
+
         IconButton(
             onClick = onPlayVideoNotInFocus,
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(Color.Black.copy(.2f))
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondary.copy(.2f)
+            )
         ) {
             Icon(
                 Icons.Rounded.PlayArrow,
                 contentDescription = null,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.secondary.copy(.8f),
             )
         }
 

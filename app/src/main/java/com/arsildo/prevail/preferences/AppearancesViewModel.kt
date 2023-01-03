@@ -9,24 +9,18 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
-class AppearancesViewModel @Inject constructor(
-    private val repository: DataStoreRepository
-) : ViewModel() {
+class AppearancesViewModel @Inject constructor(private val repository: DataStoreRepository) : ViewModel() {
 
 
-    fun getSystemColorScheme() = runBlocking {
-        repository.getSystemColorScheme
-    }
+    fun getSystemColorScheme() = runBlocking { repository.getSystemColorScheme }
 
     fun setSystemColorScheme(enabled: Boolean) {
         viewModelScope.launch {
-            repository.setSystemColorScheme(enabled)
+            repository.setFollowSystemColorScheme(enabled)
         }
     }
 
-    fun getColorScheme() = runBlocking {
-        repository.getColorScheme
-    }
+    fun getColorScheme() = runBlocking { repository.getColorScheme }
 
     fun setColorScheme(enabled: Boolean) {
         viewModelScope.launch {
@@ -34,10 +28,7 @@ class AppearancesViewModel @Inject constructor(
         }
     }
 
-
-    fun getDynamicColorScheme() = runBlocking {
-        repository.getDynamicColorScheme
-    }
+    fun getDynamicColorScheme() = runBlocking { repository.getDynamicColorScheme }
 
     fun setDynamicColorScheme(enabled: Boolean) {
         viewModelScope.launch {

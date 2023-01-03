@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
 import com.arsildo.prevail.utils.LoadingAnimation
+import com.arsildo.prevail.utils.MediaPlayerDialog
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
 import kotlinx.coroutines.delay
@@ -136,9 +137,13 @@ fun PostsScreen(
                     }
 
                     LaunchedEffect(midIndex) {
+                        viewModel.playerRepository.player.pause()
                         if (postList[midIndex].ext == ".webm")
                             viewModel.playerRepository.playMediaFile(postList[midIndex].tim)
                     }
+
+                    var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
+                    var aspectRatioMediaPlayer by remember { mutableStateOf(1f) }
 
                     LazyColumn(
                         state = lazyListState,
@@ -153,9 +158,26 @@ fun PostsScreen(
                                 post = post,
                                 playerRepository = viewModel.playerRepository,
                                 inFocus = midIndex == index,
+                                onPlayVideoNotInFocus = { mediaID, aspectRatio ->
+                                    viewModel.playerRepository.playMediaFile(mediaID)
+                                    aspectRatioMediaPlayer = aspectRatio
+                                    mediaPlayerDialogVisible = true
+                                }
+
                             )
                         }
                     }
+
+                    MediaPlayerDialog(
+                        visible = mediaPlayerDialogVisible,
+                        videoAspectRatio = aspectRatioMediaPlayer,
+                        playerRepository = viewModel.playerRepository,
+                        onDismissRequest = {
+                            mediaPlayerDialogVisible = false
+                            viewModel.playerRepository.player.clearMediaItems()
+                            viewModel.playerRepository.player.clearVideoSurface()
+                        }
+                    )
                 }
             }
 

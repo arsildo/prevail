@@ -22,27 +22,10 @@ class PlayerRepository @Inject constructor(
     var durationLeft = mutableStateOf(1L)
     var progressMade = mutableStateOf(1.0)
 
-
-    fun muteUnMutePlayer() {
-        if (isMuted.value) player.volume = 1f else player.volume = 0f
-    }
-
-    fun pauseUnPausePlayer() {
-        if (isPlaying.value) player.pause() else player.play()
-    }
-
-
-    fun playMediaFile(mediaID: Long) {
-        val uri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.webm"
-        val mediaItem = MediaItem.fromUri(uri)
-        player.setMediaItem(mediaItem)
-        player.prepare()
-        player.playWhenReady = false
-    }
-
     var playerState = mutableStateOf(1)
 
     init {
+
         player.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(_isPlaying: Boolean) {
@@ -72,11 +55,32 @@ class PlayerRepository @Inject constructor(
                     super.onPlayerError(error)
                     player.clearMediaItems()
                 }
-
             }
         )
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
+        player.setForegroundMode(true)
     }
 
+    fun playMediaFile(mediaID: Long) {
+        val uri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.webm"
+        val mediaItem = MediaItem.fromUri(uri)
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.playWhenReady = false
+    }
+
+    fun muteUnMutePlayer() {
+        if (isMuted.value) player.volume = 1f else player.volume = 0f
+    }
+
+
+    fun pauseUnPausePlayer() {
+        if (isPlaying.value) player.pause() else player.play()
+    }
+
+    fun clearPlayer() {
+        player.clearMediaItems()
+        player.clearVideoSurface()
+    }
 }

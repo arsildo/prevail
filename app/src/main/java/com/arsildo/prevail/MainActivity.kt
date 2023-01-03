@@ -24,13 +24,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            val colorSchemeViewModel = hiltViewModel<AppearancesViewModel>()
-            val systemColorScheme =
-                colorSchemeViewModel.getSystemColorScheme().collectAsState(initial = true).value
-            val colorScheme = colorSchemeViewModel
-                .getColorScheme().collectAsState(true).value
-            val dynamicColorScheme =
-                colorSchemeViewModel.getDynamicColorScheme().collectAsState(initial = true).value
+            val viewModel = hiltViewModel<AppearancesViewModel>()
+            val systemColorScheme = viewModel.getSystemColorScheme().collectAsState(true).value
+            val colorScheme = viewModel.getColorScheme().collectAsState(true).value
+            val dynamicColorScheme = viewModel.getDynamicColorScheme().collectAsState(true).value
 
             PrevailTheme(
                 darkTheme = if (systemColorScheme) isSystemInDarkTheme() else colorScheme,

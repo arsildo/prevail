@@ -59,13 +59,15 @@ fun ImageMediaLoader(
 
 
 
-    Box(contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.padding(vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
         AsyncImage(
             model = imageModel,
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .padding(vertical = 4.dp)
                 .clip(MaterialTheme.shapes.large)
                 .aspectRatio(aspectRatio)
                 .fillMaxSize()
@@ -79,11 +81,10 @@ fun ImageMediaLoader(
                     onLongClick = onImageLongClick
                 )
         )
-        if (failedToLoad)
-            Text(
-                text = "Failed to load image.",
-                color = MaterialTheme.colorScheme.primary
-            )
+        if (failedToLoad) Text(
+            text = "Failed to load image.",
+            color = MaterialTheme.colorScheme.error
+        )
     }
 
 }

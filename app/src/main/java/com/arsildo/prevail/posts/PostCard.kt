@@ -26,7 +26,7 @@ fun PostCard(
     post: Post,
     playerRepository: PlayerRepository,
     inFocus: Boolean,
-    onClick: () -> Unit = {},
+    onPlayVideoNotInFocus: (Long,Float) -> Unit,
 ) {
     ContentCardWrapper {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -79,7 +79,7 @@ fun PostCard(
                     mediaID = post.tim,
                     inFocus = inFocus,
                     playerRepository = playerRepository,
-                    onPlayVideoNotInFocus = { /*aspectRatio ->*/ }
+                    onPlayVideoNotInFocus = { aspectRatio -> onPlayVideoNotInFocus(post.tim,aspectRatio) }
                 )
             }
 

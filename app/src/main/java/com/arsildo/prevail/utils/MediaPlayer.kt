@@ -30,9 +30,11 @@ import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -92,7 +94,7 @@ fun MediaPlayer(
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            ExoPlayerAndroidView(exoPlayer = playerRepository.player)
+            ExoPlayerAndroidView(playerRepository.player)
             VidePlayerControls(
                 isPlaying = isPlaying,
                 isVideoMuted = isMuted,
@@ -105,11 +107,11 @@ fun MediaPlayer(
             if (isPlaying) LaunchedEffect(Unit) {
                 while (true) {
                     playerRepository.durationLeft.value = videoDuration - player.currentPosition
-                    playerRepository.progressMade.value =
-                        1.0 - (player.currentPosition.toDouble() / videoDuration)
+                    playerRepository.progressMade.value = 1.0 - (player.currentPosition.toDouble() / videoDuration)
                     delay(1000)
                 }
             }
+
         }
 
         if (playerState == Player.STATE_BUFFERING && inFocus) {
@@ -137,7 +139,7 @@ private fun ExoPlayerAndroidView(
                 layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().animateContentSize(tween(durationMillis = 128))
     )
 }
 
@@ -165,14 +167,14 @@ private fun VidePlayerControls(
         ) {
             IconButton(
                 onClick = onPlayOrPauseClick,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(.2f))
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(.2f)
+                ),
             ) {
                 Icon(
                     Icons.Rounded.PlayArrow,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -199,7 +201,7 @@ private fun VidePlayerControls(
                 Icon(
                     imageVector = if (isVideoMuted) Icons.Rounded.VolumeOff else Icons.Rounded.VolumeUp,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = if (isVideoMuted) Color.White.copy(.5f) else Color.White,
                     modifier = Modifier
                         .clip(CircleShape)
                         .background(Color.Black.copy(.2f))
@@ -213,11 +215,11 @@ private fun VidePlayerControls(
         LinearProgressIndicator(
             progress = videoProgress,
             color = Color.White.copy(.8f),
-            backgroundColor = Color.Black.copy(.2f),
+            backgroundColor = MaterialTheme.colorScheme.primary.copy(.2f),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(2.dp)
+                .height(4.dp)
                 .padding(horizontal = 16.dp)
                 .clip(MaterialTheme.shapes.small)
         )

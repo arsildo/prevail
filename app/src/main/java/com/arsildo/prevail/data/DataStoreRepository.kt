@@ -26,10 +26,8 @@ class DataStoreRepository @Inject constructor(
         preferences[AUTOMATIC_COLOR_SCHEME] ?: true
     }
 
-    suspend fun setSystemColorScheme(automatic: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[AUTOMATIC_COLOR_SCHEME] = automatic
-        }
+    suspend fun setFollowSystemColorScheme(automatic: Boolean) {
+        dataStore.edit { preferences -> preferences[AUTOMATIC_COLOR_SCHEME] = automatic }
     }
 
     // Color Scheme
@@ -37,21 +35,17 @@ class DataStoreRepository @Inject constructor(
         preferences[COLOR_SCHEME] ?: false
     }
 
-    suspend fun setColorScheme(dark: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[COLOR_SCHEME] = dark
-        }
+    suspend fun setColorScheme(darkMode: Boolean) {
+        dataStore.edit { preferences -> preferences[COLOR_SCHEME] = darkMode }
     }
 
-    // Dynamic Color Scheme
+    // Dynamic Color Scheme [API 31+]
     val getDynamicColorScheme: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[DYNAMIC_COLOR_SCHEME] ?: true
     }
 
     suspend fun setDynamicColorScheme(enabled: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[DYNAMIC_COLOR_SCHEME] = enabled
-        }
+        dataStore.edit { preferences -> preferences[DYNAMIC_COLOR_SCHEME] = enabled }
     }
 
 }

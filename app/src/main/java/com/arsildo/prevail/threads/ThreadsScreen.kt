@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -170,6 +171,7 @@ fun ThreadsScreen(
                         }
                     }
                     LaunchedEffect(centerScreenItem) {
+                        viewModel.playerRepository.player.pause()
                         if (threadList[centerScreenItem].ext == ".webm")
                             viewModel.playerRepository.playMediaFile(threadList[centerScreenItem].tim)
                     }
@@ -203,13 +205,13 @@ fun ThreadsScreen(
                     MediaPlayerDialog(
                         visible = mediaPlayerDialogVisible,
                         videoAspectRatio = aspectRatioMediaPlayer,
+                        playerRepository = viewModel.playerRepository,
                         onDismissRequest = {
                             mediaPlayerDialogVisible = false
-                            viewModel.playerRepository.player.clearMediaItems()
-                            viewModel.playerRepository.player.clearVideoSurface()
-                        },
-                        playerRepository = viewModel.playerRepository
+                            viewModel.playerRepository.clearPlayer()
+                        }
                     )
+
                 }
 
 
