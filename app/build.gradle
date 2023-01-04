@@ -65,6 +65,7 @@ dependencies {
     def exoPlayerVersion = "2.18.2"
     def coilVersion = "2.2.2"
     def timberVersion = "4.7.1"
+    def roomVersion = "2.4.3"
 
     implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
@@ -73,32 +74,49 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview"
     implementation "com.jakewharton.timber:timber:$timberVersion"
 
+    // Material Components
     implementation "androidx.compose.material:material"
     implementation "androidx.compose.material3:material3:$material3Version"
     implementation "androidx.compose.material:material-icons-extended"
 
-    implementation "androidx.datastore:datastore-preferences:$datastoreVersion"
-
+    // Navigation
     implementation "androidx.navigation:navigation-compose:$navVersion"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+
+    // Compose Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
     implementation "com.google.accompanist:accompanist-placeholder:$accompanistVersion"
 
+    // Datastore
+    implementation "androidx.datastore:datastore-preferences:$datastoreVersion"
+
+    // Room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+
+    // Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"
-    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+
+    // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
+    // Coil
     implementation "io.coil-kt:coil-compose:$coilVersion"
     implementation "io.coil-kt:coil-gif:$coilVersion"
     implementation "io.coil-kt:coil-video:$coilVersion"
+
+    // ExoPlayer
     implementation "com.google.android.exoplayer:exoplayer:$exoPlayerVersion"
 
+    // Splash Screen
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4"
     debugImplementation "androidx.compose.ui:ui-tooling"
     debugImplementation "androidx.compose.ui:ui-test-manifest"
