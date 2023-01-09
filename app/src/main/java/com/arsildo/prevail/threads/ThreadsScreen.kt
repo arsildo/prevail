@@ -1,7 +1,6 @@
 package com.arsildo.prevail.threads
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,7 +48,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.arsildo.prevail.presentation.components.threadList.BottomSheet
 import com.arsildo.prevail.utils.LoadingAnimation
 import com.arsildo.prevail.utils.MediaPlayerDialog
 import com.arsildo.prevail.utils.PrevailAppBar
@@ -59,7 +58,6 @@ import kotlinx.coroutines.launch
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalMaterialApi::class,
-    ExperimentalAnimationApi::class
 )
 @Composable
 fun ThreadsScreen(
@@ -226,7 +224,9 @@ fun ThreadsScreen(
 
         }
     }
-    BottomSheet(bottomSheetState, navController)
+    val favoriteBoards by viewModel.savedBoards.observeAsState()
+    BottomSheet(bottomSheetState, savedBoards = favoriteBoards, navController)
+
 }
 
 @Composable

@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.data.models.Post
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText

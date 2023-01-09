@@ -10,7 +10,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 
 @Module
 @InstallIn(ViewModelComponent::class)
-class VideoPlayerModule {
+object VideoPlayerModule {
     @Provides
     @ViewModelScoped
     fun provideExoPlayer(application: Application): ExoPlayer {

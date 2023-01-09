@@ -1,4 +1,4 @@
-package com.arsildo.prevail.data
+package com.arsildo.prevail.data.source
 
 import com.arsildo.prevail.data.models.Boards
 import com.arsildo.prevail.data.models.ThreadCatalog

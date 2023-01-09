@@ -1,6 +1,6 @@
 package com.arsildo.prevail.di
 
-import com.arsildo.prevail.data.RetroFitService
+import com.arsildo.prevail.data.source.RetroFitService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ const val CURRENT_BOARD = "wsg/" // -> todo remove hardcoded value
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NetworkModule {
+object NetworkModule {
 
     @Provides
     @Singleton

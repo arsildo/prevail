@@ -29,7 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.source.PlayerRepository
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

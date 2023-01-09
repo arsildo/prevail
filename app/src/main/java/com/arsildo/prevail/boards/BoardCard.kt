@@ -1,5 +1,6 @@
-package com.arsildo.prevail.presentation.components.boardList
+package com.arsildo.prevail.boards
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,15 +23,16 @@ import com.arsildo.prevail.utils.HtmlText
 
 @Composable
 fun BoardCard(
-    board: Board
+    board: Board,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
 ) {
-    ContentCardWrapper(
-        onClick = {}
-    ) {
+    ContentCardWrapper(onClick = { onCheckedChange(checked) }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp)
+                .animateContentSize(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -55,11 +57,14 @@ fun BoardCard(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
-                HtmlText(
-                    htmlText = board.meta_description + "\"",
-                )
+                HtmlText(htmlText = board.meta_description + "\"")
             }
-            Checkbox(checked = false, onCheckedChange = {})
+
+            Checkbox(
+                checked = checked,
+                onCheckedChange = { onCheckedChange(checked) }
+            )
+
         }
     }
 }

@@ -1,4 +1,6 @@
--dontwarn okhttp3.internal.platform.**
+##---------------  Room  ----------------------------------------
+-keep class * extends androidx.room.RoomDatabase
+-dontwarn androidx.room.paging.**
 
 ##---------------  Hilt  ----------------------------------------
 -keepnames @dagger.hilt.android.lifecycle.HiltViewModel class * extends androidx.lifecycle.ViewModel
@@ -18,6 +20,8 @@
 -keepclassmembers,allowshrinking,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
+
+-dontwarn okhttp3.internal.platform.**
 
 # Ignore JSR 305 annotations for embedding nullability information.
 -dontwarn javax.annotation.**

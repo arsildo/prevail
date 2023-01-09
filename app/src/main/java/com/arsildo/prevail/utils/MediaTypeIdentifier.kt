@@ -3,7 +3,7 @@ package com.arsildo.prevail.utils
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.di.CURRENT_BOARD
 import com.arsildo.prevail.di.MEDIA_BASE_URL
 

@@ -34,7 +34,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,7 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.di.CURRENT_BOARD
 import com.arsildo.prevail.di.MEDIA_BASE_URL
 import com.google.android.exoplayer2.Player

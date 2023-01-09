@@ -1,4 +1,4 @@
-package com.arsildo.prevail.data
+package com.arsildo.prevail.data.source
 
 import androidx.annotation.Keep
 import com.arsildo.prevail.di.CURRENT_BOARD

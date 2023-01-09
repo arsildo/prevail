@@ -1,12 +1,12 @@
-package com.arsildo.prevail.data
+package com.arsildo.prevail.data.source
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import com.arsildo.prevail.data.DataStoreRepository.ColorSchemePreferencesKeys.AUTOMATIC_COLOR_SCHEME
-import com.arsildo.prevail.data.DataStoreRepository.ColorSchemePreferencesKeys.COLOR_SCHEME
-import com.arsildo.prevail.data.DataStoreRepository.ColorSchemePreferencesKeys.DYNAMIC_COLOR_SCHEME
+import com.arsildo.prevail.data.source.DataStoreRepository.ColorSchemePreferencesKeys.AUTOMATIC_COLOR_SCHEME
+import com.arsildo.prevail.data.source.DataStoreRepository.ColorSchemePreferencesKeys.COLOR_SCHEME
+import com.arsildo.prevail.data.source.DataStoreRepository.ColorSchemePreferencesKeys.DYNAMIC_COLOR_SCHEME
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

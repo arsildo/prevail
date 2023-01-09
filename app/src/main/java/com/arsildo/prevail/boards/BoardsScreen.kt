@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,6 +22,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,7 +32,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
-import com.arsildo.prevail.presentation.components.boardList.BoardCard
 import com.arsildo.prevail.presentation.components.boardList.SearchBoard
 import com.arsildo.prevail.utils.LoadingAnimation
 import com.arsildo.prevail.utils.PrevailAppBar
@@ -51,11 +53,7 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
             PrevailAppBar(
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(ContentScreens.THREADS_SCREEN) }) {
-                        Icon(
-                            Icons.Rounded.ArrowBack,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = null)
                     }
                 },
                 title = {
@@ -71,13 +69,18 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = { }
-                    ) {
+                    IconButton(onClick = {  }) {
                         Icon(
                             Icons.Rounded.SelectAll,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    IconButton(onClick = viewModel::removeAllBoards,) {
+                        Icon(
+                            Icons.Rounded.DeleteSweep,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
                         )
                     }
                 },
@@ -93,7 +96,7 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                 .padding(contentPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            when (viewModel.boardsScreenState.value) {
+            when (viewModel.screenState.value) {
                 is BoardsScreenState.Loading -> LoadingAnimation()
                 is BoardsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestBoards)
 
@@ -101,27 +104,36 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
 
                     Column {
                         val boardList = viewModel.boardList
+                        val savedBoards by viewModel.savedBoards.observeAsState()
                         var boardSearch by remember { mutableStateOf("") }
 
-                        val state = rememberLazyListState()
+
+                        val lazyListState = rememberLazyListState()
 
                         SearchBoard(
                             query = boardSearch,
                             onQueryChange = { query ->
                                 boardSearch = query
                                 viewModel.searchBoards(query)
-                                coroutineScope.launch { state.animateScrollToItem(0) }
+                                coroutineScope.launch { lazyListState.animateScrollToItem(0) }
                             },
                             topAppBarState = topAppBarState
                         )
 
 
-                        LazyColumn(state = state) {
-                            items(
+                        LazyColumn(state = lazyListState) {
+                            itemsIndexed(
                                 items = boardList,
-                                key = { it.board }
-                            ) { board ->
-                                BoardCard(board = board)
+                                key = { index, board -> board.title }
+                            ) { index, board ->
+                                BoardCard(
+                                    board = board,
+                                    checked = !savedBoards.isNullOrEmpty() && savedBoards!!.contains(board),
+                                    onCheckedChange = { checked ->
+                                        if (checked) viewModel.removeFavoriteBoard(board)
+                                        else viewModel.insertFavoriteBoard(board)
+                                    }
+                                )
                             }
                         }
                     }

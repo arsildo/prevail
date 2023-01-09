@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arsildo.prevail.data.ContentRepository
-import com.arsildo.prevail.data.PlayerRepository
+import com.arsildo.prevail.data.source.ContentRepository
+import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.data.models.Post
 import com.arsildo.prevail.data.models.ThreadPosts
 import dagger.hilt.android.lifecycle.HiltViewModel
