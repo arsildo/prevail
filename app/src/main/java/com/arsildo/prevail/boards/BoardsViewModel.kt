@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.data.models.Board
 import com.arsildo.prevail.data.models.Boards
 import com.arsildo.prevail.data.source.ContentRepository
-import com.arsildo.prevail.data.source.FavoriteBoardsRepository
+import com.arsildo.prevail.data.source.SavedBoardsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +28,7 @@ sealed class BoardsScreenState {
 @HiltViewModel
 class BoardsViewModel @Inject constructor(
     private val repository: ContentRepository,
-    private val favoriteBoardsRepository: FavoriteBoardsRepository,
+    private val savedBoardsRepository: SavedBoardsRepository,
 ) : ViewModel() {
 
     private val _screenState: MutableState<BoardsScreenState> =
@@ -43,7 +43,7 @@ class BoardsViewModel @Inject constructor(
     init {
         try {
             requestBoards()
-            getAllFavoriteBoards()
+            getSavedBoards()
         } catch (e: Exception) {
             _screenState.value = BoardsScreenState.Failed("Failed to load.")
         }
@@ -74,26 +74,26 @@ class BoardsViewModel @Inject constructor(
         }
     }
 
-    private fun getAllFavoriteBoards() {
+    private fun getSavedBoards() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { savedBoards = favoriteBoardsRepository.getAllFavoriteBoards() }
+            withContext(Dispatchers.IO) { savedBoards = savedBoardsRepository.getSavedBoards() }
         }
     }
 
-    fun insertFavoriteBoard(board: Board) {
+    fun insertToSavedBoards(board: Board) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { favoriteBoardsRepository.insertFavoriteBoard(board) }
+            withContext(Dispatchers.IO) { savedBoardsRepository.insertToSavedBoards(board) }
         }
     }
 
-    fun removeFavoriteBoard(board: Board) {
+    fun removeFromSavedBoards(board: Board) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { favoriteBoardsRepository.removeFavoriteBoard(board) }
+            withContext(Dispatchers.IO) { savedBoardsRepository.removeFromSavedBoards(board) }
         }
     }
 
     fun removeAllBoards() {
-        viewModelScope.launch { withContext(Dispatchers.IO) { favoriteBoardsRepository.deleteSavedBoards() } }
+        viewModelScope.launch { withContext(Dispatchers.IO) { savedBoardsRepository.deleteAllSavedBoards() } }
     }
 
 }

@@ -15,11 +15,11 @@ interface SavedBoardsDao {
     fun getAllBoards(): LiveData<List<Board>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFavoriteBoard(board: Board)
+    fun insertToSavedBoards(board: Board)
 
     @Delete
-    fun removeFavoriteBoard(board: Board)
+    fun removeFromSavedBoards(board: Board)
 
     @Query("DELETE FROM board")
-    fun deleteSavedBoards()
+    fun deleteAllSavedBoards()
 }

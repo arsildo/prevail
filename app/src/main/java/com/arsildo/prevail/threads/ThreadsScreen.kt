@@ -77,22 +77,29 @@ fun ThreadsScreen(
         skipHalfExpanded = true
     )
 
+    val lastBoard by viewModel.boardPreferencesRepository.currentBoard
+    val lastBoardDesc by viewModel.boardPreferencesRepository.currentBoardDesc
+
     val lazyListState = rememberLazyListState()
     val firstVisibleItemIndexVisible by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
 
     var refreshing by remember { mutableStateOf(false) }
-    fun refreshThreadList() = coroutineScope.launch {
+    fun pullRefresh() = coroutineScope.launch {
         refreshing = true
         delay(1000)
         viewModel.requestThreads()
         refreshing = false
-        lazyListState.animateScrollToItem(0)
+        lazyListState.scrollToItem(0)
+        delay(500)
+        bottomSheetState.hide()
     }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
-        onRefresh = ::refreshThreadList
+        onRefresh = ::pullRefresh
     )
+
+
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -105,11 +112,12 @@ fun ThreadsScreen(
                             .padding(horizontal = 8.dp)
                     ) {
                         Text(
-                            text = "/board/",
+                            text = "/${lastBoard}/",
                             style = MaterialTheme.typography.titleLarge,
                         )
+
                         Text(
-                            text = "board desc",
+                            text = lastBoardDesc,
                             style = MaterialTheme.typography.titleSmall,
                         )
                     }
@@ -152,7 +160,8 @@ fun ThreadsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
-            when (viewModel.screenState.value) {
+            if (lastBoard == "empty") Text(text = "Please add board(s)")
+            else when (viewModel.screenState.value) {
                 is ThreadsScreenState.Loading -> LoadingAnimation()
                 is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
                 is ThreadsScreenState.Responded -> {
@@ -170,7 +179,10 @@ fun ThreadsScreen(
                     LaunchedEffect(centerScreenItem) {
                         viewModel.playerRepository.player.pause()
                         if (threadList[centerScreenItem].ext == ".webm")
-                            viewModel.playerRepository.playMediaFile(threadList[centerScreenItem].tim)
+                            viewModel.playerRepository.playMediaFile(
+                                currentBoard = lastBoard,
+                                mediaID = threadList[centerScreenItem].tim
+                            )
                     }
 
                     var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
@@ -189,9 +201,13 @@ fun ThreadsScreen(
                                 thread = thread,
                                 playerRepository = viewModel.playerRepository,
                                 inFocus = centerScreenItem == index,
+                                currentBoard = lastBoard,
                                 onClick = { onThreadClicked(thread.no) },
                                 onPlayVideoNotInFocus = { mediaID, aspectRatio ->
-                                    viewModel.playerRepository.playMediaFile(mediaID)
+                                    viewModel.playerRepository.playMediaFile(
+                                        currentBoard = lastBoard,
+                                        mediaID = mediaID
+                                    )
                                     aspectRatioMediaPlayer = aspectRatio
                                     mediaPlayerDialogVisible = true
                                 },
@@ -203,6 +219,7 @@ fun ThreadsScreen(
                         visible = mediaPlayerDialogVisible,
                         videoAspectRatio = aspectRatioMediaPlayer,
                         playerRepository = viewModel.playerRepository,
+                        currentBoard = lastBoard,
                         onDismissRequest = {
                             mediaPlayerDialogVisible = false
                             viewModel.playerRepository.clearPlayer()
@@ -225,7 +242,16 @@ fun ThreadsScreen(
         }
     }
     val favoriteBoards by viewModel.savedBoards.observeAsState()
-    BottomSheet(bottomSheetState, savedBoards = favoriteBoards, navController)
+    BottomSheet(
+        bottomSheetState = bottomSheetState,
+        savedBoards = favoriteBoards,
+        lastBoard = lastBoard,
+        setLastBoard = { boardName, boardDesc ->
+            viewModel.setLastBoard(board = boardName, boardDesc = boardDesc)
+            pullRefresh()
+        },
+        navController = navController
+    )
 
 }
 

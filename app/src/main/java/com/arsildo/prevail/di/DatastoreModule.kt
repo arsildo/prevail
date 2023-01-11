@@ -15,19 +15,19 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
-const val COLOR_SCHEME_PREFERENCES_KEY = "color_scheme_preferences"
+const val PREFERENCES_KEY = "prevail_preferences"
 
 @InstallIn(SingletonComponent::class)
 @Module
 object DatastoreModule {
 
+    // Board Preferences
     @Singleton
     @Provides
-    fun provideColorSchemeDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> {
+    fun provideDatastore(@ApplicationContext appContext: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
-            produceFile = { appContext.preferencesDataStoreFile(COLOR_SCHEME_PREFERENCES_KEY) },
+            produceFile = { appContext.preferencesDataStoreFile(PREFERENCES_KEY) },
             corruptionHandler = ReplaceFileCorruptionHandler(produceNewData = { emptyPreferences() })
         )
     }
-
 }

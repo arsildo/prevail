@@ -10,13 +10,14 @@ import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.data.models.Board
 import com.arsildo.prevail.data.models.Thread
 import com.arsildo.prevail.data.models.ThreadCatalog
+import com.arsildo.prevail.data.source.BoardPreferencesRepository
 import com.arsildo.prevail.data.source.ContentRepository
-import com.arsildo.prevail.data.source.FavoriteBoardsRepository
 import com.arsildo.prevail.data.source.PlayerRepository
-import com.arsildo.prevail.di.CURRENT_BOARD
+import com.arsildo.prevail.data.source.SavedBoardsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -30,9 +31,10 @@ sealed class ThreadsScreenState {
 
 @HiltViewModel
 class ThreadsViewModel @Inject constructor(
-    private val repository: ContentRepository,
+    private val contentRepository: ContentRepository,
     val playerRepository: PlayerRepository,
-    private val favoriteBoardsRepository: FavoriteBoardsRepository,
+    private val savedBoardsRepository: SavedBoardsRepository,
+    val boardPreferencesRepository: BoardPreferencesRepository,
 ) : ViewModel() {
 
     private val _screenState: MutableState<ThreadsScreenState> =
@@ -55,9 +57,11 @@ class ThreadsViewModel @Inject constructor(
 
     fun requestThreads() {
         _screenState.value = ThreadsScreenState.Loading
+        getSelectedBoard()
         viewModelScope.launch {
             try {
-                threadCatalog = repository.getThreadCatalog(CURRENT_BOARD)
+                threadCatalog =
+                    contentRepository.getThreadCatalog(boardPreferencesRepository.currentBoard.value)
                 threadList = transformThreadCatalog()
                 delay(1000)
                 _screenState.value = ThreadsScreenState.Responded(threadList)
@@ -66,6 +70,21 @@ class ThreadsViewModel @Inject constructor(
             }
         }
     }
+
+
+    private fun getSelectedBoard() = viewModelScope.launch {
+        boardPreferencesRepository.currentBoard.value =
+            boardPreferencesRepository.getLastBoard.stateIn(this).value
+        boardPreferencesRepository.currentBoardDesc.value =
+            boardPreferencesRepository.getLastBoardDescription.stateIn(this).value
+    }
+
+
+    fun setLastBoard(board: String, boardDesc: String) = viewModelScope.launch {
+        boardPreferencesRepository.setLastBoard(board)
+        boardPreferencesRepository.setLastBoardDescription(boardDesc)
+    }
+
 
     private fun transformThreadCatalog(): List<Thread> {
         val threadList = mutableListOf<Thread>()
@@ -78,7 +97,7 @@ class ThreadsViewModel @Inject constructor(
     private fun getAllFavoriteBoards() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                savedBoards = favoriteBoardsRepository.getAllFavoriteBoards()
+                savedBoards = savedBoardsRepository.getSavedBoards()
             }
         }
     }

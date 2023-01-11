@@ -5,8 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
@@ -37,10 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,6 +52,8 @@ import com.arsildo.prevail.data.models.Board
 fun BottomSheet(
     bottomSheetState: ModalBottomSheetState,
     savedBoards: List<Board>?,
+    lastBoard: String,
+    setLastBoard: (String, String) -> Unit,
     navController: NavController
 ) {
     ModalBottomSheetLayout(
@@ -85,7 +81,6 @@ fun BottomSheet(
                 verticalArrangement = Arrangement.Center
             ) {
 
-                var selectedIndex by remember { mutableStateOf(1) }
                 if (!savedBoards.isNullOrEmpty()) {
                     Text(
                         text = "Saved Boards",
@@ -98,15 +93,20 @@ fun BottomSheet(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        itemsIndexed(savedBoards) { index, board ->
+                        items(savedBoards) { board ->
                             FavoriteBoardCard(
                                 savedBoard = board,
-                                selected = index == selectedIndex,
-                                onClick = { selectedIndex = index }
+                                selected = board.board == lastBoard,
+                                onClick = { if (board.board != lastBoard) setLastBoard(board.board, board.title) }
                             )
                         }
                     }
                 }
+                else Text(
+                    text = "No Saved Boards Actions",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
 
                 Text(
                     text = "More Actions",

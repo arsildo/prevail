@@ -11,8 +11,14 @@ class ContentRepository @Inject constructor(private val retroFitService: RetroFi
         return retroFitService.getCatalog(board = "$board/catalog.json")
     }
 
-    suspend fun getThread(threadNumber: Int): ThreadPosts {
-        return retroFitService.getThreadPosts(threadNumber = threadNumber)
+    suspend fun getThread(
+        currentThread: String,
+        threadNumber: Int
+    ): ThreadPosts {
+        return retroFitService.getThreadPosts(
+            currentThread = currentThread,
+            threadNumber = threadNumber
+        )
     }
 
     suspend fun getBoards(): Boards {

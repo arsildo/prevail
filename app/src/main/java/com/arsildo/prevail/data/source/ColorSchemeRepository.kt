@@ -4,16 +4,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import com.arsildo.prevail.data.source.DataStoreRepository.ColorSchemePreferencesKeys.AUTOMATIC_COLOR_SCHEME
-import com.arsildo.prevail.data.source.DataStoreRepository.ColorSchemePreferencesKeys.COLOR_SCHEME
-import com.arsildo.prevail.data.source.DataStoreRepository.ColorSchemePreferencesKeys.DYNAMIC_COLOR_SCHEME
+import com.arsildo.prevail.data.source.ColorSchemeRepository.ColorSchemePreferencesKeys.AUTOMATIC_COLOR_SCHEME
+import com.arsildo.prevail.data.source.ColorSchemeRepository.ColorSchemePreferencesKeys.COLOR_SCHEME
+import com.arsildo.prevail.data.source.ColorSchemeRepository.ColorSchemePreferencesKeys.DYNAMIC_COLOR_SCHEME
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class DataStoreRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>
-) {
+class ColorSchemeRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     private object ColorSchemePreferencesKeys {
         val AUTOMATIC_COLOR_SCHEME = booleanPreferencesKey("automatic_color_scheme")

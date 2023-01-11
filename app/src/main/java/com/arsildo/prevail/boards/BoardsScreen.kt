@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,14 +68,14 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = { }) {
                         Icon(
                             Icons.Rounded.SelectAll,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
-                    IconButton(onClick = viewModel::removeAllBoards,) {
+                    IconButton(onClick = viewModel::removeAllBoards) {
                         Icon(
                             Icons.Rounded.DeleteSweep,
                             contentDescription = null,
@@ -128,10 +127,12 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                             ) { index, board ->
                                 BoardCard(
                                     board = board,
-                                    checked = !savedBoards.isNullOrEmpty() && savedBoards!!.contains(board),
+                                    checked = !savedBoards.isNullOrEmpty() && savedBoards!!.contains(
+                                        board
+                                    ),
                                     onCheckedChange = { checked ->
-                                        if (checked) viewModel.removeFavoriteBoard(board)
-                                        else viewModel.insertFavoriteBoard(board)
+                                        if (checked) viewModel.removeFromSavedBoards(board)
+                                        else viewModel.insertToSavedBoards(board)
                                     }
                                 )
                             }
