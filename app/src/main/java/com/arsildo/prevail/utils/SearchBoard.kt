@@ -1,4 +1,4 @@
-package com.arsildo.prevail.presentation.components.boardList
+package com.arsildo.prevail.utils
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -11,13 +11,12 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -54,18 +53,6 @@ fun SearchBoard(
             )
         },
         textStyle = MaterialTheme.typography.titleMedium,
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = MaterialTheme.colorScheme.primary,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-        ),
-        shape = MaterialTheme.shapes.extraLarge,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Search
-        ),
         leadingIcon = {
             Icon(
                 Icons.Rounded.Search,
@@ -73,7 +60,19 @@ fun SearchBoard(
                 tint = MaterialTheme.colorScheme.primary
             )
         },
+        shape = MaterialTheme.shapes.extraLarge,
         singleLine = true,
+        colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+            textColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Search
+        ),
         keyboardActions = KeyboardActions(
             onSearch = { focusManager.clearFocus() },
             onDone = { focusManager.clearFocus() }
@@ -82,7 +81,6 @@ fun SearchBoard(
             .fillMaxWidth()
             .padding(vertical = 16.dp)
             .padding(top = topPadding)
-
     )
 }
 

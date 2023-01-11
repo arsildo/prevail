@@ -33,8 +33,8 @@ sealed class ThreadsScreenState {
 class ThreadsViewModel @Inject constructor(
     private val contentRepository: ContentRepository,
     val playerRepository: PlayerRepository,
+    private val boardPreferencesRepository: BoardPreferencesRepository,
     private val savedBoardsRepository: SavedBoardsRepository,
-    val boardPreferencesRepository: BoardPreferencesRepository,
 ) : ViewModel() {
 
     private val _screenState: MutableState<ThreadsScreenState> =
@@ -44,11 +44,13 @@ class ThreadsViewModel @Inject constructor(
     private var threadCatalog: ThreadCatalog = ThreadCatalog()
     var threadList: List<Thread> = emptyList()
 
+    var currentBoard = mutableStateOf("no board")
+    var currentBoardDesc = mutableStateOf("no board desc")
     var savedBoards: LiveData<List<Board>> = MutableLiveData(emptyList())
 
     init {
+        getAllFavoriteBoards()
         try {
-            getAllFavoriteBoards()
             requestThreads()
         } catch (e: Exception) {
             _screenState.value = ThreadsScreenState.Failed("Failed to load.")
@@ -57,11 +59,11 @@ class ThreadsViewModel @Inject constructor(
 
     fun requestThreads() {
         _screenState.value = ThreadsScreenState.Loading
-        getSelectedBoard()
         viewModelScope.launch {
             try {
-                threadCatalog =
-                    contentRepository.getThreadCatalog(boardPreferencesRepository.currentBoard.value)
+                currentBoard.value = boardPreferencesRepository.getLastBoard.stateIn(this).value
+                currentBoardDesc.value = boardPreferencesRepository.getLastBoardDescription.stateIn(this).value
+                threadCatalog = contentRepository.getThreadCatalog(currentBoard.value)
                 threadList = transformThreadCatalog()
                 delay(1000)
                 _screenState.value = ThreadsScreenState.Responded(threadList)
@@ -71,34 +73,26 @@ class ThreadsViewModel @Inject constructor(
         }
     }
 
-
-    private fun getSelectedBoard() = viewModelScope.launch {
-        boardPreferencesRepository.currentBoard.value =
-            boardPreferencesRepository.getLastBoard.stateIn(this).value
-        boardPreferencesRepository.currentBoardDesc.value =
-            boardPreferencesRepository.getLastBoardDescription.stateIn(this).value
-    }
-
-
     fun setLastBoard(board: String, boardDesc: String) = viewModelScope.launch {
         boardPreferencesRepository.setLastBoard(board)
         boardPreferencesRepository.setLastBoardDescription(boardDesc)
+        requestThreads()
     }
 
 
     private fun transformThreadCatalog(): List<Thread> {
         val threadList = mutableListOf<Thread>()
-        threadCatalog.forEach { threadCatalogItem ->
-            threadCatalogItem.threads.forEach { thread -> threadList.add(thread) }
+        threadCatalog.forEach { catalogItem ->
+            catalogItem.threads.forEach { thread ->
+                threadList.add(thread)
+            }
         }
         return threadList
     }
 
     private fun getAllFavoriteBoards() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                savedBoards = savedBoardsRepository.getSavedBoards()
-            }
+            withContext(Dispatchers.IO) { savedBoards = savedBoardsRepository.getSavedBoards() }
         }
     }
 

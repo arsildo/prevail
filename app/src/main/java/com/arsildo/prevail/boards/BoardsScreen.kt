@@ -22,16 +22,13 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
-import com.arsildo.prevail.presentation.components.boardList.SearchBoard
+import com.arsildo.prevail.utils.SearchBoard
 import com.arsildo.prevail.utils.LoadingAnimation
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
@@ -103,18 +100,16 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
 
                     Column {
                         val boardList = viewModel.boardList
+                        val boardSearch by viewModel.searchBoard
                         val savedBoards by viewModel.savedBoards.observeAsState()
-                        var boardSearch by remember { mutableStateOf("") }
-
 
                         val lazyListState = rememberLazyListState()
 
                         SearchBoard(
                             query = boardSearch,
                             onQueryChange = { query ->
-                                boardSearch = query
                                 viewModel.searchBoards(query)
-                                coroutineScope.launch { lazyListState.animateScrollToItem(0) }
+                                coroutineScope.launch { lazyListState.scrollToItem(0) }
                             },
                             topAppBarState = topAppBarState
                         )
@@ -127,9 +122,7 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                             ) { index, board ->
                                 BoardCard(
                                     board = board,
-                                    checked = !savedBoards.isNullOrEmpty() && savedBoards!!.contains(
-                                        board
-                                    ),
+                                    checked = !savedBoards.isNullOrEmpty() && savedBoards!!.contains(board),
                                     onCheckedChange = { checked ->
                                         if (checked) viewModel.removeFromSavedBoards(board)
                                         else viewModel.insertToSavedBoards(board)

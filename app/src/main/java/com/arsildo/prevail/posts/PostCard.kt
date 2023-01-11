@@ -10,12 +10,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.data.models.Post
+import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeIdentifier
@@ -26,7 +27,8 @@ fun PostCard(
     post: Post,
     playerRepository: PlayerRepository,
     inFocus: Boolean,
-    onPlayVideoNotInFocus: (Long,Float) -> Unit,
+    currentBoard: String,
+    onPlayVideoNotInFocus: (Long, Float) -> Unit,
 ) {
     ContentCardWrapper {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -78,8 +80,11 @@ fun PostCard(
                     mediaWidth = post.w,
                     mediaID = post.tim,
                     inFocus = inFocus,
+                    currentBoard = currentBoard,
                     playerRepository = playerRepository,
-                    onPlayVideoNotInFocus = { aspectRatio -> onPlayVideoNotInFocus(post.tim,aspectRatio) }
+                    onPlayVideoNotInFocus = { aspectRatio ->
+                        onPlayVideoNotInFocus(post.tim, aspectRatio)
+                    }
                 )
             }
 

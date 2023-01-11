@@ -14,6 +14,7 @@ fun MediaTypeIdentifier(
     mediaWidth: Int,
     mediaID: Long,
     inFocus: Boolean,
+    currentBoard : String,
     playerRepository: PlayerRepository,
     onPlayVideoNotInFocus: (Float) -> Unit,
 ) {
@@ -25,22 +26,23 @@ fun MediaTypeIdentifier(
 
     when (mediaType) {
         ".jpg" -> ImageMediaLoader(
-            imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.jpg",
+            imageUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.jpg",
             aspectRatio = aspectRatio
         )
 
         ".png" -> ImageMediaLoader(
-            imageUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.png",
+            imageUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.png",
             aspectRatio = aspectRatio
         )
 
         ".gif" -> GIFMediaLoader(
-            gifUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.gif",
+            gifUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.gif",
             aspectRatio = aspectRatio
         )
 
         ".webm" -> MediaPlayer(
             mediaID = mediaID,
+            currentBoard = currentBoard,
             aspectRatio = aspectRatio,
             inFocus = inFocus,
             playerRepository = playerRepository,

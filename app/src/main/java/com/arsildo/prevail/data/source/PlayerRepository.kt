@@ -1,7 +1,6 @@
 package com.arsildo.prevail.data.source
 
 import androidx.compose.runtime.mutableStateOf
-import com.arsildo.prevail.di.CURRENT_BOARD
 import com.arsildo.prevail.di.MEDIA_BASE_URL
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
@@ -60,8 +59,8 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
         player.setForegroundMode(false)
     }
 
-    fun playMediaFile(mediaID: Long) {
-        val uri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.webm"
+    fun playMediaFile(currentBoard: String, mediaID: Long) {
+        val uri = "$MEDIA_BASE_URL$currentBoard/$mediaID.webm"
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.prepare()

@@ -97,13 +97,14 @@ fun BottomSheet(
                             FavoriteBoardCard(
                                 savedBoard = board,
                                 selected = board.board == lastBoard,
-                                onClick = { if (board.board != lastBoard) setLastBoard(board.board, board.title) }
+                                onClick = {
+                                    if (board.board != lastBoard) setLastBoard(board.board, board.title)
+                                }
                             )
                         }
                     }
-                }
-                else Text(
-                    text = "No Saved Boards Actions",
+                } else Text(
+                    text = "No Saved Boards",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.tertiary,
                 )

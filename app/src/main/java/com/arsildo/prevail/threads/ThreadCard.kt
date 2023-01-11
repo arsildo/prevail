@@ -32,6 +32,7 @@ fun ThreadCard(
     thread: Thread,
     playerRepository: PlayerRepository,
     inFocus: Boolean,
+    currentBoard : String,
     onClick: () -> Unit,
     onPlayVideoNotInFocus: (Long, Float) -> Unit,
 ) {
@@ -125,6 +126,7 @@ fun ThreadCard(
                     mediaHeight = thread.h,
                     mediaWidth = thread.w,
                     mediaID = thread.tim,
+                    currentBoard = currentBoard,
                     inFocus = inFocus,
                     playerRepository = playerRepository,
                     onPlayVideoNotInFocus = { aspectRatio ->

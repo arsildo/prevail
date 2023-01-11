@@ -51,8 +51,7 @@ fun NavGraphBuilder.contentNavigationGraph(
                 navController = navController,
                 viewModel = threadsListViewModel,
                 onThreadClicked = { threadNumber ->
-                    PrevailNavigationActions(navController)
-                        .navigateToPosts(threadNumber)
+                    PrevailNavigationActions(navController).navigateToPosts(threadNumber)
                 }
             )
         }

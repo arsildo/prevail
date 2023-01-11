@@ -44,7 +44,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arsildo.prevail.data.source.PlayerRepository
-import com.arsildo.prevail.di.CURRENT_BOARD
 import com.arsildo.prevail.di.MEDIA_BASE_URL
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
@@ -54,6 +53,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun MediaPlayer(
     mediaID: Long,
+    currentBoard : String,
     aspectRatio: Float,
     inFocus: Boolean,
     playerRepository: PlayerRepository,
@@ -84,8 +84,8 @@ fun MediaPlayer(
     ) {
 
         VideoThumbnail(
-            preloadedThumbnailUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID" + "s.jpg",
-            videoUri = "$MEDIA_BASE_URL$CURRENT_BOARD$mediaID.webm",
+            preloadedThumbnailUri = "$MEDIA_BASE_URL$currentBoard/$mediaID" + "s.jpg",
+            videoUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.webm",
             onPlayVideoNotInFocus = onPlayVideoNotInFocus
         )
         AnimatedVisibility(

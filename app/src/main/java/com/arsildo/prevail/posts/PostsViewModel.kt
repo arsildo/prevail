@@ -6,12 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arsildo.prevail.data.source.ContentRepository
-import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.data.models.Post
 import com.arsildo.prevail.data.models.ThreadPosts
+import com.arsildo.prevail.data.source.BoardPreferencesRepository
+import com.arsildo.prevail.data.source.ContentRepository
+import com.arsildo.prevail.data.source.PlayerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,15 +28,18 @@ class PostsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ContentRepository,
     val playerRepository: PlayerRepository,
+    private val boardPreferencesRepository: BoardPreferencesRepository
 ) : ViewModel() {
-    private val _screenState: MutableState<PostsScreenState> =
-        mutableStateOf(PostsScreenState.Loading)
+    private val _screenState: MutableState<PostsScreenState> = mutableStateOf(PostsScreenState.Loading)
     val postsScreenState: State<PostsScreenState> = _screenState
 
     val threadNumber: Int = checkNotNull(savedStateHandle["threadNumber"])
 
     var postCatalog: ThreadPosts = ThreadPosts(emptyList())
     var postList: List<Post> = emptyList()
+
+    var currentBoard = mutableStateOf("no board")
+
 
     init {
         try {
@@ -48,7 +53,8 @@ class PostsViewModel @Inject constructor(
         _screenState.value = PostsScreenState.Loading
         viewModelScope.launch {
             try {
-                postCatalog = repository.getThread(threadNumber)
+                currentBoard.value = boardPreferencesRepository.getLastBoard.stateIn(this).value
+                postCatalog = repository.getThread(currentThread = currentBoard.value, threadNumber = threadNumber)
                 postList = transformThreadCatalog()
                 delay(1000)
                 _screenState.value = PostsScreenState.Responded(postList)
@@ -64,5 +70,6 @@ class PostsViewModel @Inject constructor(
         postCatalog.posts.forEach { post -> postList.add(post) }
         return postList
     }
+
 
 }

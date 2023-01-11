@@ -53,6 +53,7 @@ fun PostsScreen(
 ) {
 
     val threadNumber = viewModel.threadNumber
+    val currentBoard by viewModel.currentBoard
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -91,7 +92,7 @@ fun PostsScreen(
                 },
                 title = {
                     Text(
-                        text = "${viewModel.threadNumber}",
+                        text = "$currentBoard - $threadNumber",
                         style = MaterialTheme.typography.titleMedium,
                     )
                 },
@@ -139,7 +140,10 @@ fun PostsScreen(
                     LaunchedEffect(midIndex) {
                         viewModel.playerRepository.player.pause()
                         if (postList[midIndex].ext == ".webm")
-                            viewModel.playerRepository.playMediaFile(postList[midIndex].tim)
+                            viewModel.playerRepository.playMediaFile(
+                                currentBoard,
+                                postList[midIndex].tim
+                            )
                     }
 
                     var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
@@ -158,8 +162,9 @@ fun PostsScreen(
                                 post = post,
                                 playerRepository = viewModel.playerRepository,
                                 inFocus = midIndex == index,
+                                currentBoard = currentBoard,
                                 onPlayVideoNotInFocus = { mediaID, aspectRatio ->
-                                    viewModel.playerRepository.playMediaFile(mediaID)
+                                    viewModel.playerRepository.playMediaFile("wsg", mediaID)
                                     aspectRatioMediaPlayer = aspectRatio
                                     mediaPlayerDialogVisible = true
                                 }
@@ -172,6 +177,7 @@ fun PostsScreen(
                         visible = mediaPlayerDialogVisible,
                         videoAspectRatio = aspectRatioMediaPlayer,
                         playerRepository = viewModel.playerRepository,
+                        currentBoard = currentBoard,
                         onDismissRequest = {
                             mediaPlayerDialogVisible = false
                             viewModel.playerRepository.player.clearMediaItems()

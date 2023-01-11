@@ -36,6 +36,7 @@ import com.arsildo.prevail.data.source.PlayerRepository
 fun MediaPlayerDialog(
     visible: Boolean,
     videoAspectRatio: Float,
+    currentBoard: String,
     playerRepository: PlayerRepository,
     onDismissRequest: () -> Unit,
 ) {
@@ -64,6 +65,7 @@ fun MediaPlayerDialog(
                         mediaID = 1,
                         aspectRatio = videoAspectRatio,
                         inFocus = true,
+                        currentBoard = currentBoard,
                         playerRepository = playerRepository,
                     )
 

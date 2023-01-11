@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.data.models.Board
 import com.arsildo.prevail.data.models.Boards
+import com.arsildo.prevail.data.source.BoardPreferencesRepository
 import com.arsildo.prevail.data.source.ContentRepository
 import com.arsildo.prevail.data.source.SavedBoardsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,7 @@ sealed class BoardsScreenState {
 class BoardsViewModel @Inject constructor(
     private val repository: ContentRepository,
     private val savedBoardsRepository: SavedBoardsRepository,
+    private val boardsPreferencesRepository: BoardPreferencesRepository
 ) : ViewModel() {
 
     private val _screenState: MutableState<BoardsScreenState> =
@@ -37,6 +39,8 @@ class BoardsViewModel @Inject constructor(
 
     private var boardSelection: Boards = Boards(emptyList())
     var boardList: List<Board> = mutableListOf()
+
+    val searchBoard = mutableStateOf("")
 
     var savedBoards: LiveData<List<Board>> = MutableLiveData(emptyList())
 
@@ -69,6 +73,7 @@ class BoardsViewModel @Inject constructor(
     }
 
     fun searchBoards(query: String) {
+        searchBoard.value = query
         boardList = transformBoards().filterList {
             title.contains(query, ignoreCase = true) || board.contains(query, ignoreCase = true)
         }
@@ -93,7 +98,9 @@ class BoardsViewModel @Inject constructor(
     }
 
     fun removeAllBoards() {
-        viewModelScope.launch { withContext(Dispatchers.IO) { savedBoardsRepository.deleteAllSavedBoards() } }
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { savedBoardsRepository.deleteAllSavedBoards() }
+        }
     }
 
 }

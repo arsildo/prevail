@@ -1,8 +1,12 @@
 package com.arsildo.prevail.data.source
 
+import androidx.compose.runtime.mutableStateOf
 import com.arsildo.prevail.data.models.Boards
 import com.arsildo.prevail.data.models.ThreadCatalog
 import com.arsildo.prevail.data.models.ThreadPosts
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ContentRepository @Inject constructor(private val retroFitService: RetroFitService) {
