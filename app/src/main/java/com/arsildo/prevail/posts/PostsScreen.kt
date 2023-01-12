@@ -79,11 +79,7 @@ fun PostsScreen(
         topBar = {
             PrevailAppBar(
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(ContentScreens.THREADS_SCREEN)
-                        }
-                    ) {
+                    IconButton(onClick = { navController.navigate(ContentScreens.THREADS_SCREEN) }) {
                         Icon(
                             Icons.Rounded.ArrowBack,
                             contentDescription = null,
@@ -97,9 +93,7 @@ fun PostsScreen(
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = {}
-                    ) {
+                    IconButton(onClick = {}) {
                         Icon(
                             Icons.Rounded.BookmarkAdd,
                             contentDescription = null,

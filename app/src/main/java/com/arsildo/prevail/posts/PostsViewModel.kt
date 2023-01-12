@@ -39,7 +39,7 @@ class PostsViewModel @Inject constructor(
     var postList: List<Post> = emptyList()
 
     var currentBoard = mutableStateOf("no board")
-
+    var currentBoardDesc = mutableStateOf("no board desc")
 
     init {
         try {
@@ -54,6 +54,7 @@ class PostsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 currentBoard.value = boardPreferencesRepository.getLastBoard.stateIn(this).value
+                currentBoardDesc.value = boardPreferencesRepository.getLastBoardDescription.stateIn(this).value
                 postCatalog = repository.getThread(currentThread = currentBoard.value, threadNumber = threadNumber)
                 postList = transformThreadCatalog()
                 delay(1000)
@@ -64,12 +65,10 @@ class PostsViewModel @Inject constructor(
         }
     }
 
-
     private fun transformThreadCatalog(): List<Post> {
         val postList = mutableListOf<Post>()
         postCatalog.posts.forEach { post -> postList.add(post) }
         return postList
     }
-
 
 }

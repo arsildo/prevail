@@ -230,7 +230,6 @@ fun ThreadsScreen(
 
                 }
 
-
             }
 
             PullRefreshIndicator(
@@ -247,7 +246,7 @@ fun ThreadsScreen(
     BottomSheet(
         bottomSheetState = bottomSheetState,
         savedBoards = favoriteBoards,
-        lastBoard = currentBoard,
+        currentBoard = currentBoard,
         setLastBoard = { boardName, boardDesc ->
             viewModel.setLastBoard(board = boardName, boardDesc = boardDesc)
             pullRefresh()

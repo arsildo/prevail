@@ -52,7 +52,7 @@ import com.arsildo.prevail.data.models.Board
 fun BottomSheet(
     bottomSheetState: ModalBottomSheetState,
     savedBoards: List<Board>?,
-    lastBoard: String,
+    currentBoard: String,
     setLastBoard: (String, String) -> Unit,
     navController: NavController
 ) {
@@ -96,9 +96,9 @@ fun BottomSheet(
                         items(savedBoards) { board ->
                             FavoriteBoardCard(
                                 savedBoard = board,
-                                selected = board.board == lastBoard,
+                                selected = board.board == currentBoard,
                                 onClick = {
-                                    if (board.board != lastBoard) setLastBoard(board.board, board.title)
+                                    if (board.board != currentBoard) setLastBoard(board.board, board.title)
                                 }
                             )
                         }
