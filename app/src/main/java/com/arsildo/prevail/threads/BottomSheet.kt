@@ -80,7 +80,6 @@ fun BottomSheet(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center
             ) {
-
                 if (!savedBoards.isNullOrEmpty()) {
                     CategoryLabel(text = "Saved Boards")
                     LazyVerticalGrid(
@@ -94,12 +93,13 @@ fun BottomSheet(
                                 savedBoard = board,
                                 selected = board.board == currentBoard,
                                 onClick = {
-                                    if (board.board != currentBoard) setLastBoard(board.board, board.title)
+                                    if (board.board != currentBoard)
+                                        setLastBoard(board.board, board.title)
                                 }
                             )
                         }
                     }
-                } else CategoryLabel(text = "No Saved Boards")
+                }
 
                 // Quick Actions
                 CategoryLabel(text = "More Actions")
@@ -112,7 +112,7 @@ fun BottomSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     item {
-                        OptionCard(icon = Icons.Rounded.Dashboard, title = "Boards") {
+                        OptionCard(icon = Icons.Rounded.Dashboard, title = "Your Boards") {
                             navController.navigate(ContentScreens.BOARDS_SCREEN)
                         }
                     }
@@ -230,7 +230,7 @@ fun OptionCard(
 }
 
 @Composable
-fun CategoryLabel(text:String) {
+fun CategoryLabel(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,

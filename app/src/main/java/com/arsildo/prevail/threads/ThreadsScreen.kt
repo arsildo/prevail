@@ -24,6 +24,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -32,8 +33,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -70,7 +73,8 @@ fun ThreadsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val topAppBarState = rememberTopAppBarState()
-    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
+    val topAppBarScrollBehavior =
+        TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -158,7 +162,10 @@ fun ThreadsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
-            if (currentBoard == "no board") SelectBoardFirst(modifier = Modifier.align(Alignment.TopCenter))
+            if (currentBoard == "no board") SelectBoardFirst(
+                modifier = Modifier.align(Alignment.TopCenter),
+                onClick = { coroutineScope.launch { bottomSheetState.show() } }
+            )
             else when (viewModel.screenState.value) {
                 is ThreadsScreenState.Loading -> LoadingAnimation()
                 is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
@@ -275,11 +282,13 @@ private fun LazyListState.isScrollingUp(): Boolean {
 }
 
 @Composable
-fun SelectBoardFirst(modifier: Modifier = Modifier) {
-    Text(
-        text = "Please select a board from Quick Actions.",
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = modifier.padding(top = 32.dp)
-    )
+fun SelectBoardFirst(onClick: () -> Unit,modifier: Modifier = Modifier) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier.padding(top = 32.dp),
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp),
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        )
+    ) { Text(text = "Please select a board from Quick Actions") }
 }
