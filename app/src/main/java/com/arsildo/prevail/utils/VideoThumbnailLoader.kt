@@ -107,13 +107,13 @@ fun VideoThumbnail(
         IconButton(
             onClick = onPlayVideoNotInFocus,
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.secondary.copy(.2f)
+                containerColor = Color.White.copy(.2f)
             )
         ) {
             Icon(
                 Icons.Rounded.PlayArrow,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary.copy(.8f),
+                tint = Color.White.copy(.8f),
             )
         }
 

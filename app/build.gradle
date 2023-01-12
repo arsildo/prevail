@@ -57,7 +57,7 @@ dependencies {
     androidTestImplementation composeBom
 
     def navVersion = "2.5.3"
-    def accompanistVersion = "0.28.0"
+    def accompanistVersion = "0.29.0-alpha"
     def datastoreVersion = "1.0.0"
     def material3Version = "1.1.0-alpha04"
     def hiltVersion = '2.44.2'

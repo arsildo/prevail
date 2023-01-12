@@ -90,8 +90,8 @@ fun MediaPlayer(
         )
         AnimatedVisibility(
             visible = inFocus && playerState == Player.STATE_READY,
-            enter = fadeIn(),
-            exit = fadeOut(),
+            enter = fadeIn(tween(durationMillis = 1000)),
+            exit = fadeOut(tween(durationMillis = 1000)),
         ) {
             ExoPlayerAndroidView(playerRepository.player)
             VidePlayerControls(
@@ -99,7 +99,7 @@ fun MediaPlayer(
                 isVideoMuted = isMuted,
                 videoDuration = videoDuration,
                 videoProgress = animatedProgress,
-                timeLeft = durationLeft,
+                durationLeft = durationLeft,
                 onPlayOrPauseClick = { if (inFocus) playerRepository.pauseUnPausePlayer() else onPlayVideoNotInFocus() },
                 onMuteUnMuteClick = ::muteUnMute,
             )
@@ -114,10 +114,7 @@ fun MediaPlayer(
         }
 
         if (playerState == Player.STATE_BUFFERING && inFocus) {
-            CircularProgressIndicator(
-                color = Color.White.copy(.2f),
-                strokeWidth = 2.dp,
-            )
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, strokeWidth = 3.dp,)
         }
 
     }
@@ -138,7 +135,7 @@ private fun ExoPlayerAndroidView(
                 layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             }
         },
-        modifier = Modifier.fillMaxSize().animateContentSize(tween(durationMillis = 128))
+        modifier = Modifier.fillMaxSize()
     )
 }
 
@@ -147,7 +144,7 @@ private fun VidePlayerControls(
     isPlaying: Boolean,
     isVideoMuted: Boolean,
     videoDuration: Long,
-    timeLeft: Long,
+    durationLeft: Long,
     videoProgress: Float,
     onPlayOrPauseClick: () -> Unit,
     onMuteUnMuteClick: () -> Unit,
@@ -167,13 +164,13 @@ private fun VidePlayerControls(
             IconButton(
                 onClick = onPlayOrPauseClick,
                 colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(.2f)
+                    containerColor = Color.White.copy(.2f)
                 ),
             ) {
                 Icon(
                     Icons.Rounded.PlayArrow,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.White,
                 )
             }
         }
@@ -187,7 +184,7 @@ private fun VidePlayerControls(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (isPlaying) timeLeft.formatMinSec() else videoDuration.formatMinSec(),
+                text = if (isPlaying) durationLeft.formatMinSec() else videoDuration.formatMinSec(),
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.White,
                 modifier = Modifier
