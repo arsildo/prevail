@@ -70,14 +70,14 @@ fun ThreadsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val topAppBarState = rememberTopAppBarState()
-    val topAppBarScrollBehavior =
-        TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
+    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
 
+    val favoriteBoards by viewModel.savedBoards.observeAsState()
     val currentBoard by viewModel.currentBoard
     val currentBoardDesc by viewModel.currentBoardDesc
 
@@ -158,14 +158,7 @@ fun ThreadsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
-            if (currentBoard == "no board")
-                Text(
-                    text = "Please add board(s)",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 32.dp)
-                )
+            if (currentBoard == "no board") SelectBoardFirst(modifier = Modifier.align(Alignment.TopCenter))
             else when (viewModel.screenState.value) {
                 is ThreadsScreenState.Loading -> LoadingAnimation()
                 is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
@@ -245,7 +238,7 @@ fun ThreadsScreen(
 
         }
     }
-    val favoriteBoards by viewModel.savedBoards.observeAsState()
+
     BottomSheet(
         bottomSheetState = bottomSheetState,
         savedBoards = favoriteBoards,
@@ -279,4 +272,14 @@ private fun LazyListState.isScrollingUp(): Boolean {
             }
         }
     }.value
+}
+
+@Composable
+fun SelectBoardFirst(modifier: Modifier = Modifier) {
+    Text(
+        text = "Please select a board from Quick Actions.",
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = modifier.padding(top = 32.dp)
+    )
 }
