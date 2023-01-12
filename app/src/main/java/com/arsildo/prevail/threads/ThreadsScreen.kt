@@ -1,5 +1,6 @@
 package com.arsildo.prevail.threads
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -161,7 +162,9 @@ fun ThreadsScreen(
                 Text(
                     text = "Please add board(s)",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.align(Alignment.TopCenter).padding(top = 32.dp)
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 32.dp)
                 )
             else when (viewModel.screenState.value) {
                 is ThreadsScreenState.Loading -> LoadingAnimation()
@@ -253,6 +256,10 @@ fun ThreadsScreen(
         },
         navController = navController
     )
+
+    BackHandler {
+        if (bottomSheetState.isVisible) coroutineScope.launch { bottomSheetState.hide() }
+    }
 
 }
 

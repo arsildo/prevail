@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -21,6 +22,7 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bookmarks
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Dashboard
@@ -58,15 +60,15 @@ fun BottomSheet(
 ) {
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
-        sheetBackgroundColor = MaterialTheme.colorScheme.background,
-        sheetContentColor = MaterialTheme.colorScheme.tertiary,
-        sheetShape = MaterialTheme.shapes.small,
+        sheetBackgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp),
+        sheetContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        sheetShape = MaterialTheme.shapes.large,
         sheetElevation = 8.dp,
         sheetContent = {
             Icon(
                 Icons.Rounded.HorizontalRule,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .size(32.dp)
@@ -82,11 +84,7 @@ fun BottomSheet(
             ) {
 
                 if (!savedBoards.isNullOrEmpty()) {
-                    Text(
-                        text = "Saved Boards",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.tertiary,
-                    )
+                    CategoryLabel(text = "Saved Boards")
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
@@ -103,17 +101,10 @@ fun BottomSheet(
                             )
                         }
                     }
-                } else Text(
-                    text = "No Saved Boards",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
+                } else CategoryLabel(text = "No Saved Boards")
 
-                Text(
-                    text = "More Actions",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
+                // Quick Actions
+                CategoryLabel(text = "More Actions")
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
@@ -128,17 +119,12 @@ fun BottomSheet(
                         }
                     }
                     item {
+                        OptionCard(icon = Icons.Outlined.Bookmarks, title = "Saved Threads") {
+                            navController.navigate(PrevailDestinations.PREFERENCES_ROUTE)
+                        }
+                    }
+                    item {
                         OptionCard(icon = Icons.Outlined.Settings, title = "Preferences") {
-                            navController.navigate(PrevailDestinations.PREFERENCES_ROUTE)
-                        }
-                    }
-                    item {
-                        OptionCard(icon = Icons.Outlined.Bookmarks, title = "Saved Threads") {
-                            navController.navigate(PrevailDestinations.PREFERENCES_ROUTE)
-                        }
-                    }
-                    item {
-                        OptionCard(icon = Icons.Outlined.Bookmarks, title = "Saved Threads") {
                             navController.navigate(PrevailDestinations.PREFERENCES_ROUTE)
                         }
                     }
@@ -192,16 +178,15 @@ fun FavoriteBoardCard(
             }
         },
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-            selectedLabelColor = MaterialTheme.colorScheme.onSurface,
-            labelColor = MaterialTheme.colorScheme.tertiary,
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledSelectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
         border = FilterChipDefaults.filterChipBorder(
-            borderWidth = 0.dp,
-            borderColor = MaterialTheme.colorScheme.primaryContainer
+            borderColor = MaterialTheme.colorScheme.secondaryContainer,
+            selectedBorderColor = MaterialTheme.colorScheme.primaryContainer,
         ),
         shape = MaterialTheme.shapes.medium,
         onClick = onClick,
@@ -244,4 +229,14 @@ fun OptionCard(
         }
 
     }
+}
+
+@Composable
+fun CategoryLabel(text:String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier.padding(start = 8.dp)
+    )
 }
