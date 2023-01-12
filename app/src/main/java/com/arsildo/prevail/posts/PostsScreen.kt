@@ -158,7 +158,7 @@ fun PostsScreen(
                                 inFocus = midIndex == index,
                                 currentBoard = currentBoard,
                                 onPlayVideoNotInFocus = { mediaID, aspectRatio ->
-                                    viewModel.playerRepository.playMediaFile("wsg", mediaID)
+                                    viewModel.playerRepository.playMediaFile(currentBoard, mediaID)
                                     aspectRatioMediaPlayer = aspectRatio
                                     mediaPlayerDialogVisible = true
                                 }
