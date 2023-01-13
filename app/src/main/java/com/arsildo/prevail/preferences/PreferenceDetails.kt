@@ -57,8 +57,7 @@ fun PreferenceDetails(
                 "appearances" -> {
                     Column {
                         PreferenceCategoryLabel(title = "Appearance", navController = navController)
-                        val appearancesViewModel = hiltViewModel<AppearancesViewModel>()
-                        AppearancesPreferences(appearancesViewModel)
+                        AppearancesPreferences()
                     }
                 }
                 else -> Text(text = "Category not found!")

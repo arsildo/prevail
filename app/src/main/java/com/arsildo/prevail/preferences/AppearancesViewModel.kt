@@ -4,36 +4,34 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.prevail.data.source.ColorSchemeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class AppearancesViewModel @Inject constructor(private val repository: ColorSchemeRepository) : ViewModel() {
+class AppearancesViewModel @Inject constructor(
+    private val repository: ColorSchemeRepository
+) : ViewModel() {
 
 
     fun getSystemColorScheme() = runBlocking { repository.getSystemColorScheme }
 
     fun setSystemColorScheme(enabled: Boolean) {
-        viewModelScope.launch {
-            repository.setFollowSystemColorScheme(enabled)
-        }
+        viewModelScope.launch { repository.setFollowSystemColorScheme(enabled) }
     }
 
     fun getColorScheme() = runBlocking { repository.getColorScheme }
 
     fun setColorScheme(enabled: Boolean) {
-        viewModelScope.launch {
-            repository.setColorScheme(enabled)
-        }
+        viewModelScope.launch { repository.setColorScheme(enabled) }
     }
 
     fun getDynamicColorScheme() = runBlocking { repository.getDynamicColorScheme }
 
     fun setDynamicColorScheme(enabled: Boolean) {
-        viewModelScope.launch {
-            repository.setDynamicColorScheme(enabled)
-        }
+        viewModelScope.launch { repository.setDynamicColorScheme(enabled) }
     }
 
 }

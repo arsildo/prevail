@@ -7,7 +7,6 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,25 +15,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
-fun AppearancesPreferences(viewModel: AppearancesViewModel) {
-    val automaticTheme = viewModel.getSystemColorScheme().collectAsState(initial = true).value
-    val colorScheme =
-        viewModel.getColorScheme().collectAsState(initial = isSystemInDarkTheme()).value
-    val dynamicColorScheme = viewModel.getDynamicColorScheme().collectAsState(initial = true).value
+fun AppearancesPreferences() {
+
+    val viewModel = hiltViewModel<AppearancesViewModel>()
+    val followSystem by viewModel.getSystemColorScheme().collectAsState(initial = true)
+    val colorScheme by viewModel.getColorScheme().collectAsState(initial = false)
+    val dynamicColorScheme by viewModel.getDynamicColorScheme().collectAsState(initial = true)
 
     AnimateColorSchemeTransition {
         Column {
             SettingRow(
-                checked = automaticTheme,
+                checked = followSystem,
                 onCheckedChange = { viewModel.setSystemColorScheme(it) },
                 enabled = true,
                 title = "Follow System Theme",
@@ -42,20 +43,14 @@ fun AppearancesPreferences(viewModel: AppearancesViewModel) {
             )
             SettingRow(
                 checked = colorScheme,
-                onCheckedChange = {
-                    if (colorScheme) viewModel.setColorScheme(false)
-                    else viewModel.setColorScheme(true)
-                },
-                enabled = !automaticTheme,
+                onCheckedChange = { viewModel.setColorScheme(it) },
+                enabled = !followSystem,
                 title = "Dark Theme",
                 subtitle = "Color scheme"
             )
             SettingRow(
                 checked = dynamicColorScheme,
-                onCheckedChange = {
-                    if (dynamicColorScheme) viewModel.setDynamicColorScheme(false)
-                    else viewModel.setDynamicColorScheme(true)
-                },
+                onCheckedChange = { viewModel.setDynamicColorScheme(it) },
                 enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
                 title = "Material You",
                 subtitle = "Dynamic colors from your wallpaper. Only supported in Android Version 12 (API 31) and later."
@@ -73,6 +68,8 @@ fun SettingRow(
     title: String,
     subtitle: String,
 ) {
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,17 +77,17 @@ fun SettingRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.fillMaxWidth(.7f)) {
+        Column(modifier = Modifier.fillMaxWidth(.8f)) {
             Text(
                 text = title,
                 color = if (enabled) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                else MaterialTheme.colorScheme.tertiary.copy(.5f),
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
                 text = subtitle,
-                color = if (enabled) MaterialTheme.colorScheme.secondary.copy(.5f)
-                else MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                color = if (enabled) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.tertiary.copy(.5f),
                 style = MaterialTheme.typography.labelMedium
             )
         }
@@ -107,26 +104,15 @@ fun AnimateColorSchemeTransition(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme.copy(
         background = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.background,
-            animationSpec = spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioMediumBouncy
-            )
+            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
         ).value,
         primary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = tween(
-                delayMillis = 256,
-                durationMillis = 2000,
-                easing = LinearEasing
-            )
+            animationSpec = tween(easing = LinearEasing)
         ).value,
         secondary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = tween(
-                delayMillis = 256,
-                durationMillis = 1000,
-                easing = LinearOutSlowInEasing
-            )
+            animationSpec = tween(easing = LinearOutSlowInEasing)
         ).value,
     )
     MaterialTheme(colorScheme = colors, content = content)

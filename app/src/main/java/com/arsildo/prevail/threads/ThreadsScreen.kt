@@ -73,8 +73,7 @@ fun ThreadsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val topAppBarState = rememberTopAppBarState()
-    val topAppBarScrollBehavior =
-        TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
+    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
