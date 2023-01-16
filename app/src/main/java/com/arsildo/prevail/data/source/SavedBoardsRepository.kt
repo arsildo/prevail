@@ -1,7 +1,7 @@
 package com.arsildo.prevail.data.source
 
 import androidx.lifecycle.LiveData
-import com.arsildo.prevail.data.models.Board
+import com.arsildo.prevail.data.Board
 import com.arsildo.prevail.data.source.local.SavedBoardsDao
 import javax.inject.Inject
 

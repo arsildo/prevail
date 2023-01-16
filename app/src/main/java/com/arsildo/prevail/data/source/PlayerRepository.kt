@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Tracks
 import javax.inject.Inject
 
 
@@ -14,6 +15,7 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
 
     var isPlaying = mutableStateOf(false)
     var isMuted = mutableStateOf(false)
+    var noTracks = mutableStateOf(false)
 
     var videoDuration = mutableStateOf(0L)
     var durationLeft = mutableStateOf(1L)
@@ -42,15 +44,14 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
                     }
                 }
 
-
                 override fun onVolumeChanged(volume: Float) {
                     super.onVolumeChanged(volume)
                     isMuted.value = volume == 0f
                 }
 
-                override fun onPlayerError(error: PlaybackException) {
-                    super.onPlayerError(error)
-                    player.clearMediaItems()
+                override fun onTracksChanged(tracks: Tracks) {
+                    super.onTracksChanged(tracks)
+                    noTracks.value = tracks.isEmpty
                 }
             }
         )

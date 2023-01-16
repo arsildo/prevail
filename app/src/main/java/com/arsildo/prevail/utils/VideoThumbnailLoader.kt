@@ -31,7 +31,6 @@ import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
 import coil.size.Precision
-import coil.size.Size
 
 @Composable
 fun VideoThumbnail(
@@ -54,7 +53,7 @@ fun VideoThumbnail(
     val lowQualityThumbnail = remember {
         ImageRequest.Builder(context)
             .data(preloadedThumbnailUri)
-            .size(Size.ORIGINAL)
+            .precision(Precision.INEXACT)
             .listener(
                 onStart = { loadingImage = true },
                 onSuccess = { _, _ -> loadingImage = false },
@@ -65,7 +64,6 @@ fun VideoThumbnail(
     val imageModel = remember {
         ImageRequest.Builder(context)
             .data(videoUri)
-            .size(Size.ORIGINAL)
             .listener(
                 onStart = { loadingImage = true },
                 onSuccess = { _, _ -> loadingImage = false },

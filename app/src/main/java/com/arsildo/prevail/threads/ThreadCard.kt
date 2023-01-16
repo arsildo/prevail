@@ -19,9 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.arsildo.prevail.data.source.PlayerRepository
-import com.arsildo.prevail.data.models.Thread
+import com.arsildo.prevail.data.Thread
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeIdentifier
@@ -50,7 +49,7 @@ fun ThreadCard(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Card(
-                        shape = MaterialTheme.shapes.extraSmall,
+                        shape = MaterialTheme.shapes.extraLarge,
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.tertiary,
                             contentColor = MaterialTheme.colorScheme.onTertiary
@@ -59,7 +58,7 @@ fun ThreadCard(
                         Text(
                             text = thread.no.toString(),
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
                         )
                     }
                     if (thread.capcode != null)
@@ -89,7 +88,6 @@ fun ThreadCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = thread.name + if (thread.country != null) " "
@@ -99,7 +97,7 @@ fun ThreadCard(
                         )
                         Text(
                             text = thread.now,
-                            fontSize = 10.sp,
+                            style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary,
                         )
@@ -120,17 +118,17 @@ fun ThreadCard(
                 )
 
 
-            if (thread.ext != null) {
+            if (thread.fileExtension != null) {
                 MediaTypeIdentifier(
-                    mediaType = thread.ext,
-                    mediaHeight = thread.h,
-                    mediaWidth = thread.w,
-                    mediaID = thread.tim,
+                    mediaType = thread.fileExtension,
+                    mediaHeight = thread.mediaHeight,
+                    mediaWidth = thread.mediaWidth,
+                    mediaID = thread.mediaId,
                     currentBoard = currentBoard,
                     inFocus = inFocus,
                     playerRepository = playerRepository,
                     onPlayVideoNotInFocus = { aspectRatio ->
-                        onPlayVideoNotInFocus(thread.tim, aspectRatio)
+                        onPlayVideoNotInFocus(thread.mediaId, aspectRatio)
                     }
                 )
             }

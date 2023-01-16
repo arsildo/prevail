@@ -21,6 +21,6 @@ fun ContentCardWrapper(
             contentColor = MaterialTheme.colorScheme.onBackground
         ),
         shape = MaterialTheme.shapes.medium,
-        onClick = onClick
+        onClick = onClick,
     ) { content() }
 }

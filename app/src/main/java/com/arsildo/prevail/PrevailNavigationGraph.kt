@@ -16,8 +16,8 @@ import com.arsildo.prevail.boards.BoardsScreen
 import com.arsildo.prevail.boards.BoardsViewModel
 import com.arsildo.prevail.posts.PostsScreen
 import com.arsildo.prevail.posts.PostsViewModel
-import com.arsildo.prevail.preferences.PreferenceDetails
-import com.arsildo.prevail.presentation.screens.preferences.PreferencesScreen
+import com.arsildo.prevail.preferences.AppearancesPreferences
+import com.arsildo.prevail.preferences.PreferencesScreen
 import com.arsildo.prevail.threads.ThreadsScreen
 import com.arsildo.prevail.threads.ThreadsViewModel
 
@@ -62,19 +62,13 @@ fun NavGraphBuilder.contentNavigationGraph(
             arguments = listOf(navArgument("threadNumber") { type = NavType.IntType })
         ) {
             val postsViewModel = hiltViewModel<PostsViewModel>()
-            PostsScreen(
-                navController = navController,
-                viewModel = postsViewModel,
-            )
+            PostsScreen(navController = navController, viewModel = postsViewModel)
         }
 
         // Board List
         composable(route = PrevailDestinations.BOARDS_ROUTE) {
             val boardsViewModel = hiltViewModel<BoardsViewModel>()
-            BoardsScreen(
-                navController = navController,
-                viewModel = boardsViewModel
-            )
+            BoardsScreen(navController = navController, viewModel = boardsViewModel)
         }
 
     }
@@ -88,23 +82,15 @@ fun NavGraphBuilder.preferencesNavigationGraph(navController: NavHostController)
 
         // Preference List
         composable(route = PrevailDestinations.PREFERENCES_ROUTE) {
-            PreferencesScreen(
-                navController = navController,
-                onPreferenceCategoryClicked = { category ->
-                    PrevailNavigationActions(navController).navigateToPreferenceDetails(category)
-                }
-            )
+            PreferencesScreen(navController = navController)
         }
 
-        // Preference Details
-        composable(
-            route = PrevailDestinations.PREFERENCE_DETAILS_ROUTE,
-            arguments = listOf(navArgument("category") { type = NavType.StringType }),
-        ) { backStackEntry ->
-            PreferenceDetails(
-                navController = navController,
-                category = backStackEntry.arguments?.getString("category")
-            )
+        // Appearance Preferences
+        composable(route = PrevailDestinations.APPEARANCE_PREFS_ROUTE) {
+            AppearancesPreferences(navController = navController)
+        }
+        // Player Preferences
+        composable(route = PrevailDestinations.PLAYER_PREFS_ROUTE) {
 
         }
 

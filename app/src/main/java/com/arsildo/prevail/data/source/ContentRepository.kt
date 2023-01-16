@@ -1,12 +1,9 @@
 package com.arsildo.prevail.data.source
 
-import androidx.compose.runtime.mutableStateOf
-import com.arsildo.prevail.data.models.Boards
-import com.arsildo.prevail.data.models.ThreadCatalog
-import com.arsildo.prevail.data.models.ThreadPosts
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.arsildo.prevail.data.Boards
+import com.arsildo.prevail.data.ThreadCatalog
+import com.arsildo.prevail.data.ThreadPosts
+import com.arsildo.prevail.data.source.remote.RetroFitService
 import javax.inject.Inject
 
 class ContentRepository @Inject constructor(private val retroFitService: RetroFitService) {
@@ -15,10 +12,7 @@ class ContentRepository @Inject constructor(private val retroFitService: RetroFi
         return retroFitService.getCatalog(board = "$board/catalog.json")
     }
 
-    suspend fun getThread(
-        currentThread: String,
-        threadNumber: Int
-    ): ThreadPosts {
+    suspend fun getThread(currentThread: String, threadNumber: Int): ThreadPosts {
         return retroFitService.getThreadPosts(
             currentThread = currentThread,
             threadNumber = threadNumber

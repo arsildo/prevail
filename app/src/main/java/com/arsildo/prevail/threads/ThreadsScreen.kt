@@ -1,7 +1,11 @@
 package com.arsildo.prevail.threads
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -47,9 +52,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.utils.LoadingAnimation
@@ -59,10 +65,8 @@ import com.arsildo.prevail.utils.RetryConnectionButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class,
-)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ThreadsScreen(
     navController: NavController,
@@ -72,14 +76,6 @@ fun ThreadsScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val topAppBarState = rememberTopAppBarState()
-    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
-
-    val bottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
-    )
-
     val favoriteBoards by viewModel.savedBoards.observeAsState()
     val currentBoard by viewModel.currentBoard
     val currentBoardDesc by viewModel.currentBoardDesc
@@ -87,18 +83,31 @@ fun ThreadsScreen(
     val lazyListState = rememberLazyListState()
     val firstVisibleItemIndexVisible by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
 
-    var refreshing by remember { mutableStateOf(false) }
+    // AppBar
+    val appBarState = rememberTopAppBarState()
+    val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(appBarState)
+
+    // Bottom Sheet
+    val bottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
+
+    fun showBottomSheet() = coroutineScope.launch { bottomSheetState.show() }
+    fun hideBottomSheet() = coroutineScope.launch { bottomSheetState.hide() }
+
+    // Pull Refresh
+    var isRefreshing by remember { mutableStateOf(false) }
     fun pullRefresh() = coroutineScope.launch {
-        refreshing = true
+        isRefreshing = true
         delay(1000)
         viewModel.requestThreads()
-        refreshing = false
+        isRefreshing = false
         lazyListState.scrollToItem(0)
-        bottomSheetState.hide()
     }
 
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
+        refreshing = isRefreshing,
         onRefresh = ::pullRefresh
     )
 
@@ -107,31 +116,17 @@ fun ThreadsScreen(
         topBar = {
             PrevailAppBar(
                 title = {
-                    Column(
-                        modifier = Modifier
-                            .clip(MaterialTheme.shapes.medium)
-                            .padding(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text = "/${currentBoard}/",
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-
-                        Text(
-                            text = currentBoardDesc,
-                            style = MaterialTheme.typography.titleSmall,
-                        )
+                    Column {
+                        Text("/${currentBoard}/", style = MaterialTheme.typography.titleLarge)
+                        Text(text = currentBoardDesc, style = MaterialTheme.typography.titleSmall)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { coroutineScope.launch { bottomSheetState.show() } }) {
-                        Icon(
-                            Icons.Rounded.MoreVert,
-                            contentDescription = null,
-                        )
+                    IconButton(onClick = ::showBottomSheet) {
+                        Icon(Icons.Rounded.MoreVert, contentDescription = null)
                     }
                 },
-                scrollBehavior = topAppBarScrollBehavior,
+                scrollBehavior = appBarScrollBehavior,
             )
         },
         floatingActionButton = {
@@ -140,8 +135,9 @@ fun ThreadsScreen(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
+                fun scrollToTop() = coroutineScope.launch { lazyListState.animateScrollToItem(0) }
                 FloatingActionButton(
-                    onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0) } },
+                    onClick = ::scrollToTop,
                     shape = MaterialTheme.shapes.large,
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onTertiary,
@@ -152,7 +148,7 @@ fun ThreadsScreen(
         },
         contentColor = MaterialTheme.colorScheme.onBackground,
         containerColor = MaterialTheme.colorScheme.background,
-        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(appBarScrollBehavior.nestedScrollConnection),
     ) { contentPadding ->
         Box(
             modifier = Modifier
@@ -161,81 +157,84 @@ fun ThreadsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
-            if (currentBoard == "no board") SelectBoardFirst(
-                modifier = Modifier.align(Alignment.TopCenter),
-                onClick = { coroutineScope.launch { bottomSheetState.show() } }
-            )
-            else when (viewModel.screenState.value) {
-                is ThreadsScreenState.Loading -> LoadingAnimation()
-                is ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
-                is ThreadsScreenState.Responded -> {
+            val screenState by remember { viewModel.screenState }
+            val animationSpec: FiniteAnimationSpec<Float> = tween(durationMillis = 1000)
+            Crossfade(
+                targetState = screenState,
+                animationSpec = animationSpec
+            ) { screen ->
+                when (screen) {
+                    ThreadsScreenState.EmptyBoards -> SelectBoardFirst(onClick = ::showBottomSheet)
+                    ThreadsScreenState.Loading -> LoadingAnimation()
+                    ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
+                    ThreadsScreenState.Responded -> {
 
-                    val threadList = viewModel.threadList
+                        val threadList = viewModel.threadList
 
-                    val centerScreenItem by remember {
-                        derivedStateOf {
-                            lazyListState.layoutInfo.visibleItemsInfo.run {
-                                val firstVisibleIndex = lazyListState.firstVisibleItemIndex
-                                if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                        val centerScreenItem by remember {
+                            derivedStateOf {
+                                lazyListState.layoutInfo.visibleItemsInfo.run {
+                                    val firstVisibleIndex = lazyListState.firstVisibleItemIndex
+                                    if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                                }
                             }
                         }
-                    }
-                    LaunchedEffect(centerScreenItem) {
-                        viewModel.playerRepository.player.pause()
-                        if (threadList[centerScreenItem].ext == ".webm")
-                            viewModel.playerRepository.playMediaFile(
-                                currentBoard = currentBoard,
-                                mediaID = threadList[centerScreenItem].tim
-                            )
-                    }
-
-                    var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
-                    var aspectRatioMediaPlayer by remember { mutableStateOf(1f) }
-
-                    LazyColumn(
-                        state = lazyListState,
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        itemsIndexed(
-                            items = threadList,
-                            key = { index, thread -> thread.no },
-                        ) { index, thread ->
-                            ThreadCard(
-                                thread = thread,
-                                playerRepository = viewModel.playerRepository,
-                                inFocus = centerScreenItem == index,
-                                currentBoard = currentBoard,
-                                onClick = { onThreadClicked(thread.no) },
-                                onPlayVideoNotInFocus = { mediaID, aspectRatio ->
-                                    viewModel.playerRepository.playMediaFile(
-                                        currentBoard = currentBoard,
-                                        mediaID = mediaID
-                                    )
-                                    aspectRatioMediaPlayer = aspectRatio
-                                    mediaPlayerDialogVisible = true
-                                },
-                            )
+                        LaunchedEffect(centerScreenItem) {
+                            viewModel.playerRepository.player.pause()
+                            if (threadList[centerScreenItem].fileExtension == ".webm")
+                                viewModel.playerRepository.playMediaFile(
+                                    currentBoard = currentBoard,
+                                    mediaID = threadList[centerScreenItem].mediaId
+                                )
                         }
-                    }
 
-                    MediaPlayerDialog(
-                        visible = mediaPlayerDialogVisible,
-                        videoAspectRatio = aspectRatioMediaPlayer,
-                        playerRepository = viewModel.playerRepository,
-                        currentBoard = currentBoard,
-                        onDismissRequest = {
-                            mediaPlayerDialogVisible = false
-                            viewModel.playerRepository.clearPlayer()
+                        var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
+                        var aspectRatioMediaPlayer by remember { mutableStateOf(1f) }
+
+                        LazyColumn(
+                            state = lazyListState,
+                            contentPadding = PaddingValues(vertical = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(
+                                items = threadList,
+                                key = { index, thread -> thread.no },
+                            ) { index, thread ->
+                                ThreadCard(
+                                    thread = thread,
+                                    playerRepository = viewModel.playerRepository,
+                                    inFocus = centerScreenItem == index,
+                                    currentBoard = currentBoard,
+                                    onClick = { onThreadClicked(thread.no) },
+                                    onPlayVideoNotInFocus = { mediaID, aspectRatio ->
+                                        viewModel.playerRepository.playMediaFile(
+                                            currentBoard = currentBoard,
+                                            mediaID = mediaID
+                                        )
+                                        aspectRatioMediaPlayer = aspectRatio
+                                        mediaPlayerDialogVisible = true
+                                    },
+                                )
+                            }
                         }
-                    )
 
+                        MediaPlayerDialog(
+                            visible = mediaPlayerDialogVisible,
+                            videoAspectRatio = aspectRatioMediaPlayer,
+                            playerRepository = viewModel.playerRepository,
+                            currentBoard = currentBoard,
+                            onDismissRequest = {
+                                mediaPlayerDialogVisible = false
+                                viewModel.playerRepository.clearPlayer()
+                            }
+                        )
+
+                    }
                 }
-
             }
 
             PullRefreshIndicator(
-                refreshing = refreshing,
+                refreshing = isRefreshing,
                 state = pullRefreshState,
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -243,21 +242,33 @@ fun ThreadsScreen(
             )
 
         }
+
     }
 
+
+
+    fun changeBoard(board: String, boardDesc: String) = coroutineScope.launch {
+        viewModel.setLastBoard(board, boardDesc)
+        delay(500)
+        lazyListState.scrollToItem(0)
+        hideBottomSheet()
+    }
     BottomSheet(
         bottomSheetState = bottomSheetState,
         savedBoards = favoriteBoards,
         currentBoard = currentBoard,
-        setLastBoard = { boardName, boardDesc ->
-            viewModel.setLastBoard(board = boardName, boardDesc = boardDesc)
-            pullRefresh()
-        },
+        setLastBoard = ::changeBoard,
         navController = navController
     )
 
+    val context = LocalContext.current
     BackHandler {
-        if (bottomSheetState.isVisible) coroutineScope.launch { bottomSheetState.hide() }
+        if (bottomSheetState.isVisible) hideBottomSheet()
+        else Toast.makeText(
+            context,
+            "Swipe back once more to leave the app.",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
 }
@@ -281,13 +292,17 @@ private fun LazyListState.isScrollingUp(): Boolean {
 }
 
 @Composable
-fun SelectBoardFirst(onClick: () -> Unit,modifier: Modifier = Modifier) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier.padding(top = 32.dp),
-        colors = ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp),
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-    ) { Text(text = "Please select a board from Quick Actions") }
+fun SelectBoardFirst(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(Modifier.fillMaxWidth()) {
+        TextButton(
+            onClick = onClick,
+            modifier = modifier
+                .align(CenterHorizontally)
+                .padding(top = 32.dp),
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp),
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        ) { Text(text = "Please select a board from Quick Actions") }
+    }
 }

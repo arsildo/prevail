@@ -40,7 +40,6 @@ fun GIFMediaLoader(
     val imageModel = remember {
         ImageRequest.Builder(context = context)
             .data(gifUri)
-            .size(Size.ORIGINAL)
             .crossfade(true)
             .crossfade(512)
             .build()

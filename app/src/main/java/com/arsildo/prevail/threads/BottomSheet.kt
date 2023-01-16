@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -44,7 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
 import com.arsildo.prevail.PrevailDestinations
-import com.arsildo.prevail.data.models.Board
+import com.arsildo.prevail.data.Board
+import com.arsildo.prevail.utils.SavedBoardCard
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -69,7 +69,6 @@ fun BottomSheet(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(32.dp)
                     .align(Alignment.CenterHorizontally)
             )
             Column(
@@ -89,7 +88,7 @@ fun BottomSheet(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(savedBoards) { board ->
-                            FavoriteBoardCard(
+                            SavedBoardCard(
                                 savedBoard = board,
                                 selected = board.board == currentBoard,
                                 onClick = {
@@ -101,9 +100,7 @@ fun BottomSheet(
                     }
                 }
 
-                // Quick Actions
                 CategoryLabel(text = "More Actions")
-
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     userScrollEnabled = false,
@@ -132,67 +129,6 @@ fun BottomSheet(
         },
         content = {}
     )
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FavoriteBoardCard(
-    savedBoard: Board,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    FilterChip(
-        selected = selected,
-        label = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 4.dp)
-                    .animateContentSize(tween(256))
-            ) {
-                Text(
-                    text = "/${savedBoard.board}/",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = savedBoard.title,
-                    style = MaterialTheme.typography.labelMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        },
-        leadingIcon = {
-            AnimatedVisibility(
-                visible = selected,
-                enter = fadeIn(),
-                exit = fadeOut(tween(durationMillis = 0))
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Check,
-                    contentDescription = null
-                )
-            }
-        },
-        colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        ),
-        border = FilterChipDefaults.filterChipBorder(
-            borderColor = MaterialTheme.colorScheme.secondaryContainer,
-            selectedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-        ),
-        shape = MaterialTheme.shapes.medium,
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxSize()
-            .animateContentSize()
-    )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

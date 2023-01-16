@@ -1,6 +1,17 @@
-package com.arsildo.prevail.data.models
+package com.arsildo.prevail.data
 
 import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
+
+@Keep
+class ThreadCatalog : ArrayList<ThreadCatalogItem>()
+
+@Keep
+data class ThreadCatalogItem(
+    val page: Int,
+    val threads: List<Thread>
+)
+
 
 @Keep
 data class Thread(
@@ -8,17 +19,17 @@ data class Thread(
     val capcode: String?,
     val closed: Int,
     val com: String? = null,
-    val ext: String ? = null,
+    @SerializedName("ext")
+    val fileExtension: String?,
     val filename: String,
-    val fsize: Int,
+    @SerializedName("fsize")
+    val fileSize: Int,
     val country: String?,
     val country_name: String?,
-    val h: Int,
     val imagelimit: Int,
     val images: Int,
     val last_modified: Int,
     val last_replies: List<LastReply>,
-    val md5: String,
     val name: String,
     val no: Int,
     val now: String,
@@ -29,9 +40,12 @@ data class Thread(
     val semantic_url: String,
     val sticky: Int,
     val sub: String? = null,
-    val tim: Long,
-    val time: Int,
-    val tn_h: Int,
-    val tn_w: Int,
-    val w: Int
+    @SerializedName("tim")
+    val mediaId: Long,
+    @SerializedName("time")
+    val timeStamp: Int,
+    @SerializedName("w")
+    val mediaWidth: Int,
+    @SerializedName("h")
+    val mediaHeight: Int
 )

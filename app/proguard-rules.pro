@@ -1,3 +1,5 @@
+-keep class androidx.compose.ui.focus.**  { *; }
+
 ##---------------  Room  ----------------------------------------
 -keep class * extends androidx.room.RoomDatabase
 -dontwarn androidx.room.paging.**

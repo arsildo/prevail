@@ -1,9 +1,9 @@
-package com.arsildo.prevail.data.source
+package com.arsildo.prevail.data.source.remote
 
 import androidx.annotation.Keep
-import com.arsildo.prevail.data.models.Boards
-import com.arsildo.prevail.data.models.ThreadCatalog
-import com.arsildo.prevail.data.models.ThreadPosts
+import com.arsildo.prevail.data.Boards
+import com.arsildo.prevail.data.ThreadCatalog
+import com.arsildo.prevail.data.ThreadPosts
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Url

@@ -1,19 +1,21 @@
-package com.arsildo.prevail.presentation.screens.preferences
+package com.arsildo.prevail.preferences
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,27 +34,44 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
+import com.arsildo.prevail.PrevailDestinations
 import com.arsildo.prevail.utils.PrevailAppBar
 
 data class PreferenceCategoryModel(
-    val route: String,
     val icon: ImageVector,
     val title: String,
     val subtitle: String,
     val action: () -> Unit,
 )
 
-sealed class PreferenceCategoryRoute(val route: String) {
-    object Appearances : PreferenceCategoryRoute(route = "appearances")
-}
+fun providePreferenceList(navController: NavController) = listOf(
+    PreferenceCategoryModel(
+        title = "Appearance",
+        subtitle = "Customize the look of your experience.",
+        icon = Icons.Outlined.Palette,
+        action = { navController.navigate(PrevailDestinations.APPEARANCE_PREFS_ROUTE) }
+    ),
+    PreferenceCategoryModel(
+        title = "Player",
+        subtitle = "Customize how the vide player behaves.",
+        icon = Icons.Outlined.PlayArrow,
+        action = { navController.navigate(PrevailDestinations.PLAYER_PREFS_ROUTE) }
+    ),
+    PreferenceCategoryModel(
+        title = "About",
+        subtitle = "Version 1.0",
+        icon = Icons.Outlined.Info,
+        action = {}
+    )
 
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreferencesScreen(
-    navController: NavController,
-    onPreferenceCategoryClicked: (String) -> Unit
-) {
+fun PreferencesScreen(navController: NavController) {
+
+
+    val preferenceList = providePreferenceList(navController)
 
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
@@ -82,25 +101,13 @@ fun PreferencesScreen(
                 .padding(contentPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            val preferenceList = listOf(
-                PreferenceCategoryModel(
-                    route = PreferenceCategoryRoute.Appearances.route,
-                    icon = Icons.Outlined.Palette,
-                    title = "Appearance",
-                    subtitle = "Customize the look of your experience.",
-                    action = { onPreferenceCategoryClicked(PreferenceCategoryRoute.Appearances.route) }
-                ),
-                PreferenceCategoryModel(
-                    route = "about",
-                    icon = Icons.Outlined.Info,
-                    title = "About",
-                    subtitle = "Version 1.0",
-                    action = {}
-                )
-
-            )
-            LazyColumn {
-                items(preferenceList.size) { PreferenceCategory(preference = preferenceList[it]) }
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(items = preferenceList) { preference ->
+                    PreferenceCategoryItem(preference = preference, onClick = preference.action)
+                }
             }
         }
     }
@@ -109,16 +116,18 @@ fun PreferencesScreen(
 }
 
 @Composable
-fun PreferenceCategory(preference: PreferenceCategoryModel) {
+fun PreferenceCategoryItem(
+    preference: PreferenceCategoryModel,
+    onClick: () -> Unit,
+) {
     val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = { preference.action() }
+                onClick = onClick
             )
     ) {
         Row(
@@ -129,7 +138,6 @@ fun PreferenceCategory(preference: PreferenceCategoryModel) {
                 preference.icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.size(32.dp)
             )
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -138,7 +146,7 @@ fun PreferenceCategory(preference: PreferenceCategoryModel) {
                 Text(
                     text = preference.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
                     text = preference.subtitle,

@@ -1,6 +1,6 @@
 package com.arsildo.prevail.di
 
-import com.arsildo.prevail.data.source.RetroFitService
+import com.arsildo.prevail.data.source.remote.RetroFitService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

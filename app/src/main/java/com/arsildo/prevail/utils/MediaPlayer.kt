@@ -53,7 +53,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun MediaPlayer(
     mediaID: Long,
-    currentBoard : String,
+    currentBoard: String,
     aspectRatio: Float,
     inFocus: Boolean,
     playerRepository: PlayerRepository,
@@ -61,17 +61,18 @@ fun MediaPlayer(
 ) {
 
     val player = playerRepository.player
-    val isPlaying = playerRepository.isPlaying.value
-    val isMuted = playerRepository.isMuted.value
-    val videoDuration = playerRepository.videoDuration.value
-    val progressMade = playerRepository.progressMade.value.toFloat()
-    val durationLeft = playerRepository.durationLeft.value
+    val isPlaying by playerRepository.isPlaying
+    val isMuted by playerRepository.isMuted
+    val noTracks by playerRepository.noTracks
+    val videoDuration by playerRepository.videoDuration
+    val progressMade by playerRepository.progressMade
+    val durationLeft by playerRepository.durationLeft
 
     val playerState = playerRepository.playerState.value
     fun muteUnMute() = playerRepository.muteUnMutePlayer()
 
     val animatedProgress: Float by animateFloatAsState(
-        if (isPlaying) progressMade else progressMade,
+        (if (isPlaying) progressMade else progressMade).toFloat(),
         animationSpec = tween(easing = LinearOutSlowInEasing)
     )
 
@@ -103,10 +104,12 @@ fun MediaPlayer(
                 onPlayOrPauseClick = { if (inFocus) playerRepository.pauseUnPausePlayer() else onPlayVideoNotInFocus() },
                 onMuteUnMuteClick = ::muteUnMute,
             )
+            if (noTracks) Text(text = "NO TRACKS")
             if (isPlaying) LaunchedEffect(Unit) {
                 while (true) {
                     playerRepository.durationLeft.value = videoDuration - player.currentPosition
-                    playerRepository.progressMade.value = 1.0 - (player.currentPosition.toDouble() / videoDuration)
+                    playerRepository.progressMade.value =
+                        1.0 - (player.currentPosition.toDouble() / videoDuration)
                     delay(1000)
                 }
             }
@@ -114,7 +117,10 @@ fun MediaPlayer(
         }
 
         if (playerState == Player.STATE_BUFFERING && inFocus) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, strokeWidth = 3.dp,)
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 3.dp,
+            )
         }
 
     }

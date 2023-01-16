@@ -10,12 +10,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.data.models.Post
+import com.arsildo.prevail.data.Post
 import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
@@ -33,14 +31,12 @@ fun PostCard(
     ContentCardWrapper {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    shape = MaterialTheme.shapes.extraSmall,
+                    shape = MaterialTheme.shapes.extraLarge,
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary
@@ -49,7 +45,7 @@ fun PostCard(
                     Text(
                         text = post.no.toString(),
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 1.dp)
                     )
                 }
 
@@ -62,7 +58,6 @@ fun PostCard(
                     Text(
                         text = post.now,
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.secondary,
                     )
                 }
@@ -73,18 +68,29 @@ fun PostCard(
             if (post.com != null) {
                 HtmlText(htmlText = post.com)
             }
-            if (post.ext != null) {
+            if (post.fileExtension != null) {
                 MediaTypeIdentifier(
-                    mediaType = post.ext,
-                    mediaHeight = post.h,
-                    mediaWidth = post.w,
-                    mediaID = post.tim,
+                    mediaType = post.fileExtension,
+                    mediaHeight = post.mediaHeight,
+                    mediaWidth = post.mediaWidth,
+                    mediaID = post.mediaId,
                     inFocus = inFocus,
                     currentBoard = currentBoard,
                     playerRepository = playerRepository,
                     onPlayVideoNotInFocus = { aspectRatio ->
-                        onPlayVideoNotInFocus(post.tim, aspectRatio)
+                        onPlayVideoNotInFocus(post.mediaId, aspectRatio)
                     }
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (post.replies > 0) Text(
+                    text = "${post.replies} replies",
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
 

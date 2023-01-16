@@ -3,6 +3,7 @@ package com.arsildo.prevail.utils
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,7 @@ fun SearchBoard(
         else WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
         animationSpec = tween(delayMillis = 0, easing = LinearOutSlowInEasing)
     )
+
     TextField(
         value = query,
         onValueChange = onQueryChange,
@@ -53,21 +55,17 @@ fun SearchBoard(
             )
         },
         textStyle = MaterialTheme.typography.titleMedium,
-        leadingIcon = {
-            Icon(
-                Icons.Rounded.Search,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        },
+        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
         shape = MaterialTheme.shapes.extraLarge,
         singleLine = true,
         colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
-            textColor = MaterialTheme.colorScheme.primary,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            textColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            cursorColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.tertiary
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,

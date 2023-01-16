@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
-import coil.size.Size
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.fade
 import com.google.accompanist.placeholder.placeholder
@@ -50,7 +49,6 @@ fun ImageMediaLoader(
                 onSuccess = { _, _ -> loadingImage = false },
                 onError = { _, _ -> failedToLoad = true }
             )
-            .size(Size.ORIGINAL)
             .scale(Scale.FIT)
             .crossfade(true)
             .crossfade(512)

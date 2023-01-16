@@ -4,38 +4,40 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.arsildo.prevail.data.source.BoardPreferencesRepository.BoardPreferencesKeys.LAST_BOARD
-import com.arsildo.prevail.data.source.BoardPreferencesRepository.BoardPreferencesKeys.LAST_BOARD_DESCRIPTION
-import kotlinx.coroutines.CoroutineScope
+import com.arsildo.prevail.data.source.BoardPreferencesRepository.BoardPreferencesKeys.CURRENT_BOARD
+import com.arsildo.prevail.data.source.BoardPreferencesRepository.BoardPreferencesKeys.CURRENT_BOARD_DESCRIPTION
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+
+const val NO_BOARD = "no board"
+const val NO_BOARD_DESC = "no board desc"
 
 class BoardPreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     private object BoardPreferencesKeys {
-        val LAST_BOARD = stringPreferencesKey("last_board")
-        val LAST_BOARD_DESCRIPTION = stringPreferencesKey("last_board_description")
+        val CURRENT_BOARD = stringPreferencesKey("last_board")
+        val CURRENT_BOARD_DESCRIPTION = stringPreferencesKey("last_board_description")
     }
 
 
-    // Last Board
-    val getLastBoard: Flow<String> = dataStore.data.map { preferences ->
-        preferences[LAST_BOARD] ?: "no board"
+    // Current Selected Board
+    val getCurrentBoard: Flow<String> = dataStore.data.map { preferences ->
+        preferences[CURRENT_BOARD] ?: NO_BOARD
     }
 
-    suspend fun setLastBoard(board: String) {
-        dataStore.edit { preferences -> preferences[LAST_BOARD] = board }
+    suspend fun setCurrentBoard(board: String) {
+        dataStore.edit { preferences -> preferences[CURRENT_BOARD] = board }
     }
 
-    // Last Board Desc
-    val getLastBoardDescription: Flow<String> = dataStore.data.map { preferences ->
-        preferences[LAST_BOARD_DESCRIPTION] ?: "no board desc"
+    // Current Selected Board Desc
+    val getCurrentBoardDescription: Flow<String> = dataStore.data.map { preferences ->
+        preferences[CURRENT_BOARD_DESCRIPTION] ?: NO_BOARD_DESC
     }
 
-    suspend fun setLastBoardDescription(boardDesc: String) {
-        dataStore.edit { preferences -> preferences[LAST_BOARD_DESCRIPTION] = boardDesc }
+    suspend fun setCurrentBoardDescription(boardDesc: String) {
+        dataStore.edit { preferences -> preferences[CURRENT_BOARD_DESCRIPTION] = boardDesc }
     }
 
 }

@@ -22,71 +22,78 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 
 
 @Composable
-fun AppearancesPreferences() {
+fun AppearancesPreferences(navController: NavController) {
 
     val viewModel = hiltViewModel<AppearancesViewModel>()
     val followSystem by viewModel.getSystemColorScheme().collectAsState(initial = true)
     val colorScheme by viewModel.getColorScheme().collectAsState(initial = false)
     val dynamicColorScheme by viewModel.getDynamicColorScheme().collectAsState(initial = true)
-
     AnimateColorSchemeTransition {
-        Column {
-            SettingRow(
-                checked = followSystem,
-                onCheckedChange = { viewModel.setSystemColorScheme(it) },
-                enabled = true,
-                title = "Follow System Theme",
-                subtitle = "Automatically switch color scheme based on your system preferences."
-            )
-            SettingRow(
-                checked = colorScheme,
-                onCheckedChange = { viewModel.setColorScheme(it) },
-                enabled = !followSystem,
-                title = "Dark Theme",
-                subtitle = "Color scheme"
-            )
-            SettingRow(
-                checked = dynamicColorScheme,
-                onCheckedChange = { viewModel.setDynamicColorScheme(it) },
-                enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
-                title = "Material You",
-                subtitle = "Dynamic colors from your wallpaper. Only supported in Android Version 12 (API 31) and later."
-            )
-        }
+        PreferenceDetailsWrapper(
+            content = {
+                Column {
+                    PreferenceCategoryLabel(title = "Appearance", navController = navController)
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        SettingRow(
+                            settingTitle = "Follow System Theme",
+                            settingDescription = "Automatically switch color scheme based on your system preferences.",
+                            checked = followSystem,
+                            enabled = true,
+                            onCheckedChange = viewModel::setSystemColorScheme
+                        )
+                        SettingRow(
+                            settingTitle = "Dark Theme",
+                            settingDescription = "Color scheme",
+                            checked = colorScheme,
+                            enabled = !followSystem,
+                            onCheckedChange = viewModel::setColorScheme
+                        )
+                        SettingRow(
+                            settingTitle = "Material You",
+                            settingDescription = "Dynamic colors from your wallpaper. Supported in Android Version 12 (API 31) and later.",
+                            checked = dynamicColorScheme,
+                            enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+                            onCheckedChange = viewModel::setDynamicColorScheme
+                        )
+                    }
+                }
+            }
+        )
     }
+
 }
 
 
 @Composable
 fun SettingRow(
+    settingTitle: String,
+    settingDescription: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean,
-    title: String,
-    subtitle: String,
+    onCheckedChange: (Boolean) -> Unit,
 ) {
-
-
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.fillMaxWidth(.8f)) {
             Text(
-                text = title,
+                text = settingTitle,
                 color = if (enabled) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.tertiary.copy(.5f),
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = subtitle,
-                color = if (enabled) MaterialTheme.colorScheme.primary
+                text = settingDescription,
+                color = if (enabled) MaterialTheme.colorScheme.tertiary
                 else MaterialTheme.colorScheme.tertiary.copy(.5f),
                 style = MaterialTheme.typography.labelMedium
             )
@@ -97,9 +104,11 @@ fun SettingRow(
             enabled = enabled,
         )
     }
+
 }
 
-@Composable
+
+@Composable // This composable animates between theme transitions
 fun AnimateColorSchemeTransition(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme.copy(
         background = animateColorAsState(
@@ -108,11 +117,11 @@ fun AnimateColorSchemeTransition(content: @Composable () -> Unit) {
         ).value,
         primary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = tween(easing = LinearEasing)
+            animationSpec = tween(easing = LinearEasing, delayMillis = 256)
         ).value,
         secondary = animateColorAsState(
             targetValue = MaterialTheme.colorScheme.primary,
-            animationSpec = tween(easing = LinearOutSlowInEasing)
+            animationSpec = tween(easing = LinearOutSlowInEasing, delayMillis = 256)
         ).value,
     )
     MaterialTheme(colorScheme = colors, content = content)
