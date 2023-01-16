@@ -98,6 +98,7 @@ fun PrevailTheme(
             systemUiController.setSystemBarsColor(darkIcons = false, color = Color.Transparent)
             darkColorScheme
         }
+
         else -> {
             systemUiController.setSystemBarsColor(darkIcons = true, color = Color.Transparent)
             lightColorScheme

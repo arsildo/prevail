@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -128,7 +129,10 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                 .padding(horizontal = 16.dp)
         ) {
             val screenState by remember { viewModel.screenState }
-            Crossfade(targetState = screenState) { screen ->
+            Crossfade(
+                targetState = screenState,
+                animationSpec = tween(durationMillis = 1000)
+            ) { screen ->
                 when (screen) {
                     BoardsScreenState.Loading -> LoadingAnimation()
                     BoardsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestBoards)

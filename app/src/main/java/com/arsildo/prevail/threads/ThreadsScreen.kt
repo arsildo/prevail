@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -117,8 +116,14 @@ fun ThreadsScreen(
             PrevailAppBar(
                 title = {
                     Column {
-                        Text("/${currentBoard}/", style = MaterialTheme.typography.titleLarge)
-                        Text(text = currentBoardDesc, style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            text = "/${currentBoard}/",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = currentBoardDesc,
+                            style = MaterialTheme.typography.titleSmall
+                        )
                     }
                 },
                 actions = {
@@ -158,10 +163,9 @@ fun ThreadsScreen(
                 .pullRefresh(pullRefreshState),
         ) {
             val screenState by remember { viewModel.screenState }
-            val animationSpec: FiniteAnimationSpec<Float> = tween(durationMillis = 1000)
             Crossfade(
                 targetState = screenState,
-                animationSpec = animationSpec
+                animationSpec = tween(durationMillis = 1000)
             ) { screen ->
                 when (screen) {
                     ThreadsScreenState.EmptyBoards -> SelectBoardFirst(onClick = ::showBottomSheet)
