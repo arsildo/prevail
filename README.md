@@ -51,13 +51,14 @@
 <h4> More Screenshots  [Work in progress] </h4>
 <p align="center">
 <ul>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212927578-199ff7ae-2abd-485d-bbe7-c58d283acc39.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212927600-8b47ec49-8e40-428c-b310-adb02deaccae.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212928009-6bb3d6a6-c5bc-4573-8951-437b9c39b661.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212928152-4f6549b8-bc87-4c66-bf94-55cd09230972.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212928255-a7277eba-71e7-4626-8e37-9aa8222978b1.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212928421-8e301fa4-db59-4987-a43c-82cba66a2cc5.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212944105-5badcf3b-b949-486b-97cc-85571a106109.png"/>
-<img width="280" src="https://user-images.githubusercontent.com/51417052/212944289-5cd0d666-3946-47a2-b803-d43828c5d665.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212927578-199ff7ae-2abd-485d-bbe7-c58d283acc39.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212927600-8b47ec49-8e40-428c-b310-adb02deaccae.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212928009-6bb3d6a6-c5bc-4573-8951-437b9c39b661.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212928152-4f6549b8-bc87-4c66-bf94-55cd09230972.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212928255-a7277eba-71e7-4626-8e37-9aa8222978b1.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212928421-8e301fa4-db59-4987-a43c-82cba66a2cc5.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212944105-5badcf3b-b949-486b-97cc-85571a106109.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212944289-5cd0d666-3946-47a2-b803-d43828c5d665.png"/>
+<img width="260" src="https://user-images.githubusercontent.com/51417052/212944992-4c94bbdb-c5ca-49be-b3f0-393569699635.png"/>
 </ul>
 </p>
