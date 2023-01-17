@@ -63,7 +63,6 @@ fun MediaPlayer(
     val player = playerRepository.player
     val isPlaying by playerRepository.isPlaying
     val isMuted by playerRepository.isMuted
-    val noTracks by playerRepository.noTracks
     val videoDuration by playerRepository.videoDuration
     val progressMade by playerRepository.progressMade
     val durationLeft by playerRepository.durationLeft
@@ -104,7 +103,6 @@ fun MediaPlayer(
                 onPlayOrPauseClick = { if (inFocus) playerRepository.pauseUnPausePlayer() else onPlayVideoNotInFocus() },
                 onMuteUnMuteClick = ::muteUnMute,
             )
-            if (noTracks) Text(text = "NO TRACKS")
             if (isPlaying) LaunchedEffect(Unit) {
                 while (true) {
                     playerRepository.durationLeft.value = videoDuration - player.currentPosition
