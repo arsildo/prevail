@@ -19,6 +19,9 @@
 <li><a href="https://developer.android.com/training/dependency-injection/hilt-android">Hilt</a></li>
 <ul><li>Hilt is a dependency injection library for Android that reduces the boilerplate of doing manual dependency injection.</li></ul>
 
+<li><a href="https://developer.android.com/jetpack/compose/navigation">Compose Navigation</a></li>
+<ul><li>The Navigation component provides support for Jetpack Compose applications. You can navigate between composables while taking advantage of the Navigation component’s infrastructure and features. </li></ul>
+
 <li><a href="https://developer.android.com/training/data-storage/room">Room</a></li>
 <ul><li>The Room persistence library provides an abstraction layer over SQLite to allow fluent database access while harnessing the full power of SQLite.</li></ul>
 
@@ -42,7 +45,7 @@
 <ul><li>Flows are built on top of coroutines and can provide multiple values. A flow is conceptually a stream of data that can be computed asynchronously.</li></ul>
 
 <li><a href="https://developer.android.com/topic/libraries/architecture/livedata">LiveData</a></li>
-<ul><li>Flows are built on top of coroutines and can provide multiple values. A flow is conceptually a stream of data that can be computed asynchronously.</li></ul>
+<ul><li>LiveData is an observable data holder class. Unlike a regular observable, LiveData is lifecycle-aware, meaning it respects the lifecycle of other app components, such as activities, fragments, or services.</li></ul>
 
 </ul>
 
