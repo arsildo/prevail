@@ -53,7 +53,7 @@ fun providePreferenceList(navController: NavController) = listOf(
     ),
     PreferenceCategoryModel(
         title = "Player",
-        subtitle = "Customize how the vide player behaves.",
+        subtitle = "Customize how the video player behaves.",
         icon = Icons.Outlined.PlayArrow,
         action = { navController.navigate(PrevailDestinations.PLAYER_PREFS_ROUTE) }
     ),
