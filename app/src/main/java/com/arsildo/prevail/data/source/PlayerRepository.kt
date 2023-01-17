@@ -15,7 +15,6 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
 
     var isPlaying = mutableStateOf(false)
     var isMuted = mutableStateOf(false)
-    var noTracks = mutableStateOf(false)
 
     var videoDuration = mutableStateOf(0L)
     var durationLeft = mutableStateOf(1L)
@@ -51,7 +50,6 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
 
                 override fun onTracksChanged(tracks: Tracks) {
                     super.onTracksChanged(tracks)
-                    noTracks.value = tracks.isEmpty
                 }
             }
         )
