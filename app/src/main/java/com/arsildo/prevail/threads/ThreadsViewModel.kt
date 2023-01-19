@@ -1,6 +1,5 @@
 package com.arsildo.prevail.threads
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
@@ -34,8 +33,7 @@ class ThreadsViewModel @Inject constructor(
     private val savedBoardsRepository: SavedBoardsRepository,
 ) : ViewModel() {
 
-    private val _screenState: MutableState<ThreadsScreenState> =
-        mutableStateOf(ThreadsScreenState.Loading)
+    private val _screenState = mutableStateOf(ThreadsScreenState.Loading)
     val screenState: State<ThreadsScreenState> = _screenState
 
     private var threadCatalog: ThreadCatalog = ThreadCatalog()
@@ -48,9 +46,7 @@ class ThreadsViewModel @Inject constructor(
     init {
         getAllFavoriteBoards()
         viewModelScope.launch {
-            currentBoard.value = boardPreferencesRepository.getCurrentBoard.stateIn(this).value
-            currentBoardDesc.value =
-                boardPreferencesRepository.getCurrentBoardDescription.stateIn(this).value
+            getCurrentBoardContext()
             if (currentBoard.value == NO_BOARD)
                 _screenState.value = ThreadsScreenState.EmptyBoards
             else try {
@@ -65,11 +61,9 @@ class ThreadsViewModel @Inject constructor(
         _screenState.value = ThreadsScreenState.Loading
         viewModelScope.launch {
             try {
-                currentBoard.value = boardPreferencesRepository.getCurrentBoard.stateIn(this).value
-                currentBoardDesc.value =
-                    boardPreferencesRepository.getCurrentBoardDescription.stateIn(this).value
+                getCurrentBoardContext()
                 threadCatalog = contentRepository.getThreadCatalog(board = currentBoard.value)
-                threadList = transformThreadCatalog()
+                threadList = flattenThreadsCatalog()
                 delay(1000)
                 _screenState.value = ThreadsScreenState.Responded
             } catch (e: Exception) {
@@ -84,13 +78,17 @@ class ThreadsViewModel @Inject constructor(
         requestThreads()
     }
 
+    private suspend fun getCurrentBoardContext() {
+        currentBoard.value =
+            boardPreferencesRepository.getCurrentBoard.stateIn(viewModelScope).value
+        currentBoardDesc.value =
+            boardPreferencesRepository.getCurrentBoardDescription.stateIn(viewModelScope).value
+    }
 
-    private fun transformThreadCatalog(): List<Thread> {
+    private fun flattenThreadsCatalog(): List<Thread> {
         val threadList = mutableListOf<Thread>()
         threadCatalog.forEach { catalogItem ->
-            catalogItem.threads.forEach { thread ->
-                threadList.add(thread)
-            }
+            catalogItem.threads.forEach { thread -> threadList.add(thread) }
         }
         return threadList
     }

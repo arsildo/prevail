@@ -14,12 +14,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddComment
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.BookmarkAdd
-import androidx.compose.material.icons.rounded.Chat
-import androidx.compose.material.icons.rounded.ChatBubble
-import androidx.compose.material.icons.rounded.ChatBubbleOutline
 import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -65,8 +61,7 @@ fun PostsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val threadNumber = viewModel.threadNumber
-    val currentBoard by viewModel.currentBoard
-    val currentBoardDesc by viewModel.currentBoardDesc
+    val currentBoard by remember { viewModel.currentBoard }
 
     val appBarState = rememberTopAppBarState()
     val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = appBarState)
@@ -79,7 +74,6 @@ fun PostsScreen(
         delay(1000)
         viewModel.requestThread()
         refreshing = false
-        lazyListState.animateScrollToItem(viewModel.postList.lastIndex)
     }
 
     val pullRefreshState = rememberPullRefreshState(
@@ -151,6 +145,7 @@ fun PostsScreen(
                     PostsScreenState.Loading -> LoadingAnimation()
                     PostsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThread)
                     PostsScreenState.Responded -> {
+
                         val postList = viewModel.postList
 
 
