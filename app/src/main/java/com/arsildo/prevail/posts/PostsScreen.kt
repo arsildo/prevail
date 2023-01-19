@@ -140,8 +140,8 @@ fun PostsScreen(
             Crossfade(
                 targetState = screenState,
                 animationSpec = tween(durationMillis = 1000)
-            ) { screen ->
-                when (screen) {
+            ) { state ->
+                when (state) {
                     PostsScreenState.Loading -> LoadingAnimation()
                     PostsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThread)
                     PostsScreenState.Responded -> {

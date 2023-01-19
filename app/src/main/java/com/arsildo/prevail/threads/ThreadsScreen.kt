@@ -165,8 +165,8 @@ fun ThreadsScreen(
             Crossfade(
                 targetState = screenState,
                 animationSpec = tween(durationMillis = 1000)
-            ) { screen ->
-                when (screen) {
+            ) { state ->
+                when (state) {
                     ThreadsScreenState.EmptyBoards -> SelectBoardFirst(onClick = ::showBottomSheet)
                     ThreadsScreenState.Loading -> LoadingAnimation()
                     ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
@@ -235,7 +235,6 @@ fun ThreadsScreen(
                     }
                 }
             }
-
 
             PullRefreshIndicator(
                 refreshing = isRefreshing,
