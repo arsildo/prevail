@@ -76,8 +76,8 @@ fun ThreadsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val favoriteBoards by viewModel.savedBoards.observeAsState()
-    val currentBoard by viewModel.currentBoard
-    val currentBoardDesc by viewModel.currentBoardDesc
+    val currentBoard by remember { viewModel.currentBoard }
+    val currentBoardDesc by remember { viewModel.currentBoardDesc }
 
     val lazyListState = rememberLazyListState()
     val firstVisibleItemIndexVisible by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
@@ -109,7 +109,6 @@ fun ThreadsScreen(
         refreshing = isRefreshing,
         onRefresh = ::pullRefresh
     )
-
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
@@ -236,6 +235,7 @@ fun ThreadsScreen(
                     }
                 }
             }
+
 
             PullRefreshIndicator(
                 refreshing = isRefreshing,

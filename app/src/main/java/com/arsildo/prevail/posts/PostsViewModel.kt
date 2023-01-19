@@ -1,6 +1,5 @@
 package com.arsildo.prevail.posts
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
@@ -12,16 +11,14 @@ import com.arsildo.prevail.data.ThreadPosts
 import com.arsildo.prevail.data.source.BoardPreferencesRepository
 import com.arsildo.prevail.data.source.ContentRepository
 import com.arsildo.prevail.data.source.NO_BOARD
-import com.arsildo.prevail.data.source.NO_BOARD_DESC
 import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.di.BASE_URL
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class PostsScreenState { Loading, Responded, Failed, }
+enum class PostsScreenState { Loading, Responded, Failed }
 
 @HiltViewModel
 class PostsViewModel @Inject constructor(
@@ -30,8 +27,7 @@ class PostsViewModel @Inject constructor(
     val playerRepository: PlayerRepository,
     private val boardPreferencesRepository: BoardPreferencesRepository
 ) : ViewModel() {
-    private val _screenState: MutableState<PostsScreenState> =
-        mutableStateOf(PostsScreenState.Loading)
+    private val _screenState = mutableStateOf(PostsScreenState.Loading)
     val screenState: State<PostsScreenState> = _screenState
 
     val threadNumber: Int = checkNotNull(savedStateHandle["threadNumber"])
@@ -40,7 +36,6 @@ class PostsViewModel @Inject constructor(
     var postList: List<Post> = emptyList()
 
     var currentBoard = mutableStateOf(NO_BOARD)
-    var currentBoardDesc = mutableStateOf(NO_BOARD_DESC)
 
     init {
         try {
@@ -54,16 +49,12 @@ class PostsViewModel @Inject constructor(
         _screenState.value = PostsScreenState.Loading
         viewModelScope.launch {
             try {
-                currentBoard.value =
-                    boardPreferencesRepository.getCurrentBoard.stateIn(this).value
-                currentBoardDesc.value =
-                    boardPreferencesRepository.getCurrentBoardDescription.stateIn(this).value
+                getCurrentBoardContext()
                 postCatalog = repository.getThread(
                     currentThread = currentBoard.value,
                     threadNumber = threadNumber
                 )
-                postList = transformThreadCatalog()
-                delay(1000)
+                postList = flattenPostList()
                 _screenState.value = PostsScreenState.Responded
             } catch (e: Exception) {
                 _screenState.value = PostsScreenState.Failed
@@ -71,10 +62,15 @@ class PostsViewModel @Inject constructor(
         }
     }
 
-    private fun transformThreadCatalog(): List<Post> {
+    private fun flattenPostList(): List<Post> {
         val postList = mutableListOf<Post>()
         postCatalog.posts.forEach { post -> postList.add(post) }
         return postList
+    }
+
+    private suspend fun getCurrentBoardContext() {
+        currentBoard.value =
+            boardPreferencesRepository.getCurrentBoard.stateIn(viewModelScope).value
     }
 
     fun openThreadInBrowser(uriHandler: UriHandler) {
