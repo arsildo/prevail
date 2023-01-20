@@ -51,7 +51,6 @@ fun ImageMediaLoader(
             )
             .scale(Scale.FIT)
             .crossfade(true)
-            .crossfade(512)
             .build()
     }
 

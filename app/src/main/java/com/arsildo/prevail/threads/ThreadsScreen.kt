@@ -1,10 +1,12 @@
 package com.arsildo.prevail.threads
 
+import android.app.Activity
+import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +67,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 fun ThreadsScreen(
     navController: NavController,
@@ -162,10 +167,7 @@ fun ThreadsScreen(
                 .pullRefresh(pullRefreshState),
         ) {
             val screenState by remember { viewModel.screenState }
-            Crossfade(
-                targetState = screenState,
-                animationSpec = tween(durationMillis = 1000)
-            ) { state ->
+            Crossfade(targetState = screenState) { state ->
                 when (state) {
                     ThreadsScreenState.EmptyBoards -> SelectBoardFirst(onClick = ::showBottomSheet)
                     ThreadsScreenState.Loading -> LoadingAnimation()
@@ -265,13 +267,13 @@ fun ThreadsScreen(
     )
 
     val context = LocalContext.current
+    var timeWhenPressed by remember { mutableStateOf(0L) }
     BackHandler {
         if (bottomSheetState.isVisible) hideBottomSheet()
-        else Toast.makeText(
-            context,
-            "Swipe back once more to leave the app.",
-            Toast.LENGTH_LONG
-        ).show()
+        else onBackPressedTwice(
+            timeWhenPressed = timeWhenPressed,
+            context = context
+        ) { timeWhenPressed = System.currentTimeMillis() }
     }
 
 }
@@ -294,8 +296,20 @@ private fun LazyListState.isScrollingUp(): Boolean {
     }.value
 }
 
+
+private fun onBackPressedTwice(
+    timeWhenPressed: Long,
+    context: Context,
+    updateTimeWhenPressed: () -> Unit
+) {
+    val activityContext = context as Activity
+    if (timeWhenPressed + 2000 > System.currentTimeMillis()) activityContext.finish()
+    else Toast.makeText(context, "Swipe back once more to leave the app.", Toast.LENGTH_LONG).show()
+    updateTimeWhenPressed()
+}
+
 @Composable
-fun SelectBoardFirst(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun SelectBoardFirst(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(Modifier.fillMaxWidth()) {
         TextButton(
             onClick = onClick,

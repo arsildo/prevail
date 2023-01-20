@@ -41,7 +41,6 @@ fun GIFMediaLoader(
         ImageRequest.Builder(context = context)
             .data(gifUri)
             .crossfade(true)
-            .crossfade(512)
             .build()
     }
 

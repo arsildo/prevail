@@ -1,6 +1,8 @@
 package com.arsildo.prevail.posts
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -135,12 +137,8 @@ fun PostsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState)
         ) {
-
             val screenState by remember { viewModel.screenState }
-            Crossfade(
-                targetState = screenState,
-                animationSpec = tween(durationMillis = 1000)
-            ) { state ->
+            Crossfade(targetState = screenState) { state ->
                 when (state) {
                     PostsScreenState.Loading -> LoadingAnimation()
                     PostsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThread)
