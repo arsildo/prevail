@@ -1,7 +1,6 @@
 package com.arsildo.prevail.boards
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -98,10 +97,7 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                 .padding(horizontal = 16.dp)
         ) {
             val screenState by remember { viewModel.screenState }
-            Crossfade(
-                targetState = screenState,
-                animationSpec = tween(durationMillis = 1000)
-            ) { state ->
+            Crossfade(targetState = screenState) { state ->
                 when (state) {
                     BoardsScreenState.Loading -> LoadingAnimation()
                     BoardsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestBoards)
