@@ -54,16 +54,16 @@ dependencies {
     def retrofitVersion = "2.9.0"
     def exoPlayerVersion = "2.18.2"
     def coilVersion = "2.2.2"
-    def timberVersion = '5.0.1'
     def roomVersion = "2.5.0"
+    def timberVersion = '5.0.1'
 
     implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation "androidx.activity:activity-compose:1.6.1"
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.ui:ui-tooling-preview"
-    implementation "com.jakewharton.timber:timber:$timberVersion"
     implementation "androidx.compose.runtime:runtime-livedata"
+    implementation "com.jakewharton.timber:timber:$timberVersion"
 
     // Material Components
     implementation 'androidx.compose.material:material'
