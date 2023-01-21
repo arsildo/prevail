@@ -64,6 +64,7 @@ class ThreadsViewModel @Inject constructor(
                 getCurrentBoardContext()
                 threadCatalog = contentRepository.getThreadCatalog(board = currentBoard.value)
                 threadList = flattenThreadsCatalog()
+                playerRepository.loadMediaFiles(currentBoard.value, threadList)
                 delay(1000)
                 _screenState.value = ThreadsScreenState.Responded
             } catch (e: Exception) {

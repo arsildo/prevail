@@ -11,7 +11,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import com.arsildo.prevail.preferences.AppearancesViewModel
+import com.arsildo.prevail.preferences.appearances.AppearancesViewModel
 import com.arsildo.prevail.theme.PrevailTheme
 import dagger.hilt.android.AndroidEntryPoint
 

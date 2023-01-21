@@ -15,7 +15,7 @@ fun MediaTypeIdentifier(
     inFocus: Boolean,
     currentBoard: String,
     playerRepository: PlayerRepository,
-    onPlayVideoNotInFocus: (Float) -> Unit,
+    onPlayVideoNotInFocus: () -> Unit,
 ) {
 
     val aspectRatio = remember {
@@ -44,8 +44,9 @@ fun MediaTypeIdentifier(
             currentBoard = currentBoard,
             aspectRatio = aspectRatio,
             inFocus = inFocus,
+            fullScreenMode = false,
             playerRepository = playerRepository,
-            onPlayVideoNotInFocus = { onPlayVideoNotInFocus(aspectRatio) }
+            onPlayVideoNotInFocus =  onPlayVideoNotInFocus
         )
 
         ".pdf" -> Text(text = "PDF")

@@ -83,10 +83,7 @@ fun PreferencesScreen(navController: NavController) {
                 title = { Text("Preferences") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(ContentScreens.THREADS_SCREEN) }) {
-                        Icon(
-                            Icons.Rounded.ArrowBack,
-                            contentDescription = null,
-                        )
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = null)
                     }
                 },
                 scrollBehavior = scrollBehavior,

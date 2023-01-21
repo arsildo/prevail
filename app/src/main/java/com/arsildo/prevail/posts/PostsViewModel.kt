@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arsildo.prevail.PrevailDestinationsArg.THREAD_NUMBER_ARG
 import com.arsildo.prevail.data.Post
 import com.arsildo.prevail.data.ThreadPosts
 import com.arsildo.prevail.data.source.BoardPreferencesRepository
@@ -30,7 +31,7 @@ class PostsViewModel @Inject constructor(
     private val _screenState = mutableStateOf(PostsScreenState.Loading)
     val screenState: State<PostsScreenState> = _screenState
 
-    val threadNumber: Int = checkNotNull(savedStateHandle["threadNumber"])
+    val threadNumber: Int = checkNotNull(savedStateHandle[THREAD_NUMBER_ARG])
 
     var postCatalog: ThreadPosts = ThreadPosts(emptyList())
     var postList: List<Post> = emptyList()
