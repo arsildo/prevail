@@ -1,4 +1,4 @@
-package com.arsildo.prevail.preferences
+package com.arsildo.prevail.preferences.appearances
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
