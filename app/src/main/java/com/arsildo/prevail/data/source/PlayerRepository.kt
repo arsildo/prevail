@@ -1,11 +1,11 @@
 package com.arsildo.prevail.data.source
 
 import androidx.compose.runtime.mutableStateOf
+import com.arsildo.prevail.data.Thread
 import com.arsildo.prevail.di.MEDIA_BASE_URL
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
 import javax.inject.Inject
@@ -63,7 +63,15 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
         val mediaItem = MediaItem.fromUri(uri)
         player.setMediaItem(mediaItem)
         player.prepare()
-        player.playWhenReady = false
+    }
+
+    fun loadMediaFiles(currentBoard: String, list: List<Thread>) {
+        list.forEachIndexed { index, thread ->
+            val uri = "$MEDIA_BASE_URL$currentBoard/${thread.mediaId}.webm"
+            val mediaItem = MediaItem.fromUri(uri)
+            player.addMediaItem(index, mediaItem)
+        }
+        player.prepare()
     }
 
     fun muteUnMutePlayer() {
@@ -73,10 +81,5 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
 
     fun pauseUnPausePlayer() {
         if (isPlaying.value) player.pause() else player.play()
-    }
-
-    fun clearPlayer() {
-        player.clearMediaItems()
-        player.clearVideoSurface()
     }
 }

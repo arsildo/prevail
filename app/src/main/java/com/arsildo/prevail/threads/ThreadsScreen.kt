@@ -6,19 +6,18 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -58,22 +57,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.arsildo.prevail.PrevailNavigationActions
 import com.arsildo.prevail.utils.LoadingAnimation
-import com.arsildo.prevail.utils.MediaPlayerDialog
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
+import com.arsildo.prevail.utils.firstFullyVisibleItem
+import com.arsildo.prevail.utils.isScrollingUp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
-    ExperimentalAnimationApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ThreadsScreen(
-    navController: NavController,
+    navController: NavHostController,
     viewModel: ThreadsViewModel,
     onThreadClicked: (Int) -> Unit,
 ) {
@@ -176,29 +174,21 @@ fun ThreadsScreen(
 
                         val threadList = viewModel.threadList
 
-                        val centerScreenItem by remember {
-                            derivedStateOf {
-                                lazyListState.layoutInfo.visibleItemsInfo.run {
-                                    val firstVisibleIndex = lazyListState.firstVisibleItemIndex
-                                    if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
-                                }
+                        val focused = lazyListState.firstFullyVisibleItem()
+
+                        LaunchedEffect(lazyListState.firstFullyVisibleItem()) {
+                            viewModel.playerRepository.player.pause()
+                            if (threadList[focused].fileExtension == ".webm") {
+                                viewModel.playerRepository.playMediaFile(
+                                    currentBoard,
+                                    threadList[focused].mediaId
+                                )
                             }
                         }
-                        LaunchedEffect(centerScreenItem) {
-                            viewModel.playerRepository.player.pause()
-                            if (threadList[centerScreenItem].fileExtension == ".webm")
-                                viewModel.playerRepository.playMediaFile(
-                                    currentBoard = currentBoard,
-                                    mediaID = threadList[centerScreenItem].mediaId
-                                )
-                        }
-
-                        var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
-                        var aspectRatioMediaPlayer by remember { mutableStateOf(1f) }
 
                         LazyColumn(
                             state = lazyListState,
-                            contentPadding = PaddingValues(vertical = 16.dp),
+                            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             itemsIndexed(
@@ -208,31 +198,16 @@ fun ThreadsScreen(
                                 ThreadCard(
                                     thread = thread,
                                     playerRepository = viewModel.playerRepository,
-                                    inFocus = centerScreenItem == index,
+                                    inFocus = focused == index,
                                     currentBoard = currentBoard,
-                                    onClick = { onThreadClicked(thread.no) },
-                                    onPlayVideoNotInFocus = { mediaID, aspectRatio ->
-                                        viewModel.playerRepository.playMediaFile(
-                                            currentBoard = currentBoard,
-                                            mediaID = mediaID
-                                        )
-                                        aspectRatioMediaPlayer = aspectRatio
-                                        mediaPlayerDialogVisible = true
-                                    },
+                                    onClick = onThreadClicked,
+                                    onMediaScreenClick = {
+                                        PrevailNavigationActions(navController)
+                                            .navigateToMedia(index)
+                                    }
                                 )
                             }
                         }
-
-                        MediaPlayerDialog(
-                            visible = mediaPlayerDialogVisible,
-                            videoAspectRatio = aspectRatioMediaPlayer,
-                            playerRepository = viewModel.playerRepository,
-                            currentBoard = currentBoard,
-                            onDismissRequest = {
-                                mediaPlayerDialogVisible = false
-                                viewModel.playerRepository.clearPlayer()
-                            }
-                        )
 
                     }
                 }
@@ -258,6 +233,7 @@ fun ThreadsScreen(
         lazyListState.scrollToItem(0)
         hideBottomSheet()
     }
+
     BottomSheet(
         bottomSheetState = bottomSheetState,
         savedBoards = favoriteBoards,
@@ -276,24 +252,6 @@ fun ThreadsScreen(
         ) { timeWhenPressed = System.currentTimeMillis() }
     }
 
-}
-
-@Composable
-private fun LazyListState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
-            }
-        }
-    }.value
 }
 
 

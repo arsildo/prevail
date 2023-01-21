@@ -124,7 +124,7 @@ fun BoardsScreen(navController: NavController, viewModel: BoardsViewModel) {
                             BoardsTabRow(
                                 selectedTabIndex = selectedTabIndex,
                                 tabList = tabList,
-                                onClick = { selectedTabIndex = it }
+                                onClick = { index -> selectedTabIndex = index }
                             )
 
                             AnimatedBoardTabs(

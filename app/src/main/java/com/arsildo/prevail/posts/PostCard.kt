@@ -77,8 +77,7 @@ fun PostCard(
                     inFocus = inFocus,
                     currentBoard = currentBoard,
                     playerRepository = playerRepository,
-                    onPlayVideoNotInFocus = { aspectRatio ->
-                        onPlayVideoNotInFocus(post.mediaId, aspectRatio)
+                    onPlayVideoNotInFocus = {
                     }
                 )
             }

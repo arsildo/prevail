@@ -36,6 +36,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,19 +58,19 @@ fun MediaPlayer(
     currentBoard: String,
     aspectRatio: Float,
     inFocus: Boolean,
+    fullScreenMode: Boolean,
     playerRepository: PlayerRepository,
     onPlayVideoNotInFocus: () -> Unit = {},
 ) {
 
-    val player = playerRepository.player
-    val isPlaying by playerRepository.isPlaying
-    val isMuted by playerRepository.isMuted
-    val videoDuration by playerRepository.videoDuration
-    val progressMade by playerRepository.progressMade
-    val durationLeft by playerRepository.durationLeft
+    val player = remember { playerRepository.player }
+    val isPlaying by remember { playerRepository.isPlaying }
+    val isMuted by remember { playerRepository.isMuted }
+    val videoDuration by remember { playerRepository.videoDuration }
+    var progressMade by remember { playerRepository.progressMade }
+    var durationLeft by remember { playerRepository.durationLeft }
 
     val playerState = playerRepository.playerState.value
-    fun muteUnMute() = playerRepository.muteUnMutePlayer()
 
     val animatedProgress: Float by animateFloatAsState(
         (if (isPlaying) progressMade else progressMade).toFloat(),
@@ -82,7 +84,6 @@ fun MediaPlayer(
             .aspectRatio(aspectRatio),
         contentAlignment = Alignment.Center
     ) {
-
         VideoThumbnail(
             preloadedThumbnailUri = "$MEDIA_BASE_URL$currentBoard/$mediaID" + "s.jpg",
             videoUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.webm",
@@ -90,24 +91,23 @@ fun MediaPlayer(
         )
         AnimatedVisibility(
             visible = inFocus && playerState == Player.STATE_READY,
-            enter = fadeIn(tween(durationMillis = 1000)),
-            exit = fadeOut(tween(durationMillis = 1000)),
+            enter = fadeIn(),
+            exit = fadeOut(),
         ) {
-            ExoPlayerAndroidView(playerRepository.player)
+            ExoPlayerAndroidView(player)
             VidePlayerControls(
                 isPlaying = isPlaying,
                 isVideoMuted = isMuted,
                 videoDuration = videoDuration,
                 videoProgress = animatedProgress,
                 durationLeft = durationLeft,
-                onPlayOrPauseClick = { if (inFocus) playerRepository.pauseUnPausePlayer() else onPlayVideoNotInFocus() },
-                onMuteUnMuteClick = ::muteUnMute,
+                onPlayOrPauseClick = { playerRepository.pauseUnPausePlayer() },
+                onMuteUnMuteClick = playerRepository::muteUnMutePlayer,
             )
             if (isPlaying) LaunchedEffect(Unit) {
                 while (true) {
-                    playerRepository.durationLeft.value = videoDuration - player.currentPosition
-                    playerRepository.progressMade.value =
-                        1.0 - (player.currentPosition.toDouble() / videoDuration)
+                    durationLeft = videoDuration - player.currentPosition
+                    progressMade = 1.0 - (player.currentPosition.toDouble() / videoDuration)
                     delay(1000)
                 }
             }
@@ -115,10 +115,7 @@ fun MediaPlayer(
         }
 
         if (playerState == Player.STATE_BUFFERING && inFocus) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.primary,
-                strokeWidth = 3.dp,
-            )
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, strokeWidth = 3.dp)
         }
 
     }
@@ -139,6 +136,7 @@ private fun ExoPlayerAndroidView(
                 layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             }
         },
+        update = { it.player = exoPlayer },
         modifier = Modifier.fillMaxSize()
     )
 }
@@ -163,7 +161,7 @@ private fun VidePlayerControls(
         AnimatedVisibility(
             visible = !isPlaying,
             enter = fadeIn(),
-            exit = fadeOut(tween(delayMillis = 64)),
+            exit = fadeOut(),
         ) {
             IconButton(
                 onClick = onPlayOrPauseClick,

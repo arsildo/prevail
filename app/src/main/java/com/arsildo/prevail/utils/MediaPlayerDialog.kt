@@ -9,15 +9,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -25,13 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavDestinationDsl
 import com.arsildo.prevail.data.source.PlayerRepository
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MediaPlayerDialog(
     visible: Boolean,
@@ -47,19 +47,18 @@ fun MediaPlayerDialog(
     ) {
         Dialog(
             onDismissRequest = onDismissRequest,
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            properties = DialogProperties(),
         ) {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .wrapContentHeight()
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .clickable(onClick = onDismissRequest),
                 contentAlignment = Alignment.Center,
-                propagateMinConstraints = false
             ) {
-                Column(verticalArrangement = Arrangement.SpaceBetween) {
+
+                Column {
 
                     MediaPlayer(
                         mediaID = 1,
@@ -67,12 +66,10 @@ fun MediaPlayerDialog(
                         inFocus = true,
                         currentBoard = currentBoard,
                         playerRepository = playerRepository,
+                        fullScreenMode = true
                     )
-
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         IconButton(
@@ -106,8 +103,8 @@ fun MediaPlayerDialog(
                             )
                         }
                     }
-
                 }
+
 
             }
         }

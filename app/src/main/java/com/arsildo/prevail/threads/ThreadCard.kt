@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.data.Thread
+import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeIdentifier
@@ -31,11 +31,11 @@ fun ThreadCard(
     thread: Thread,
     playerRepository: PlayerRepository,
     inFocus: Boolean,
-    currentBoard : String,
-    onClick: () -> Unit,
-    onPlayVideoNotInFocus: (Long, Float) -> Unit,
+    currentBoard: String,
+    onClick: (Int) -> Unit,
+    onMediaScreenClick: () -> Unit,
 ) {
-    ContentCardWrapper(onClick = onClick) {
+    ContentCardWrapper(onClick = { onClick(thread.no) }) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(
                 modifier = Modifier
@@ -114,7 +114,7 @@ fun ThreadCard(
             if (thread.com != null)
                 HtmlText(
                     htmlText = thread.com,
-                    onClick = onClick
+                    onClick = { onClick(thread.no) }
                 )
 
 
@@ -127,9 +127,7 @@ fun ThreadCard(
                     currentBoard = currentBoard,
                     inFocus = inFocus,
                     playerRepository = playerRepository,
-                    onPlayVideoNotInFocus = { aspectRatio ->
-                        onPlayVideoNotInFocus(thread.mediaId, aspectRatio)
-                    }
+                    onPlayVideoNotInFocus = onMediaScreenClick
                 )
             }
 
