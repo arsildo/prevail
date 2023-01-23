@@ -203,15 +203,13 @@ fun ThreadsScreen(
                                         onClick = onThreadClicked,
                                         onMediaScreenClick = { aspectRatio ->
                                             PrevailNavigationActions(navController)
-                                                .navigateToMedia(
-                                                    id = thread.mediaID,
-                                                    aspectRatio = aspectRatio
-                                                )
+                                                .navigateToMedia(id = thread.mediaID, aspectRatio = aspectRatio)
                                         }
                                     )
                                 }
                             }
                         }
+
                     }
                 }
             }

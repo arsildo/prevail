@@ -55,12 +55,12 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun MediaPlayer(
-    mediaID: Long,
     inFocus: Boolean,
     playerRepository: PlayerRepository,
     onMediaScreenClick: (Float) -> Unit = {},
 ) {
 
+    val mediaID = LocalMediaID.current
     val currentBoard = LocalBoardContext.current
     val aspectRatio = LocalMediaAspectRatio.current
 
@@ -102,7 +102,7 @@ fun MediaPlayer(
                 videoDuration = videoDuration,
                 videoProgress = animatedProgress,
                 durationLeft = durationLeft,
-                onPlayOrPauseClick = { onMediaScreenClick(aspectRatio) },
+                onPlayOrPauseClick = { if (isPlaying) player.pause() else player.play() },
                 onMuteUnMuteClick = playerRepository::muteUnMutePlayer,
             )
             if (isPlaying) LaunchedEffect(Unit) {

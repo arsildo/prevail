@@ -15,9 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.arsildo.prevail.PrevailDestinations.APPEARANCE_PREFS_ROUTE
 import com.arsildo.prevail.PrevailDestinations.MEDIA_ROUTE
-import com.arsildo.prevail.PrevailDestinations.PLAYER_PREFS_ROUTE
 import com.arsildo.prevail.PrevailDestinations.POSTS_ROUTE
 import com.arsildo.prevail.PrevailDestinations.PREFERENCES_ROUTE
 import com.arsildo.prevail.PrevailDestinations.THREADS_ROUTE
@@ -32,6 +30,7 @@ import com.arsildo.prevail.posts.PostsScreen
 import com.arsildo.prevail.posts.PostsViewModel
 import com.arsildo.prevail.preferences.PreferencesScreen
 import com.arsildo.prevail.preferences.appearances.AppearancesPreferencesScreen
+import com.arsildo.prevail.preferences.general.GeneralPreferencesScreen
 import com.arsildo.prevail.preferences.player.PlayerPreferencesScreen
 import com.arsildo.prevail.threads.ThreadsScreen
 import com.arsildo.prevail.threads.ThreadsViewModel
@@ -112,16 +111,21 @@ fun NavGraphBuilder.preferencesNavigationGraph(navController: NavHostController)
     ) {
 
         // Preference List
-        composable(route = PREFERENCES_ROUTE) {
+        composable(route = PrevailDestinations.PREFERENCES_ROUTE) {
             PreferencesScreen(navController = navController)
         }
 
+        // General Preferences
+        composable(route = PrevailDestinations.GENERALS_ROUTE) {
+            GeneralPreferencesScreen(navController = navController)
+        }
+
         // Appearance Preferences
-        composable(route = APPEARANCE_PREFS_ROUTE) {
+        composable(route = PrevailDestinations.APPEARANCE_PREFS_ROUTE) {
             AppearancesPreferencesScreen(navController = navController)
         }
         // Player Preferences
-        composable(route = PLAYER_PREFS_ROUTE) {
+        composable(route = PrevailDestinations.PLAYER_PREFS_ROUTE) {
             PlayerPreferencesScreen(navController = navController)
         }
 

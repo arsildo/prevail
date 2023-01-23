@@ -153,7 +153,7 @@ fun PostsScreen(
                                 if (postList[focused].fileExtension == ".webm")
                                     viewModel.playerRepository.playMediaFile(
                                         currentBoard,
-                                        postList[focused].mediaId
+                                        postList[focused].mediaID
                                     )
                             }
 

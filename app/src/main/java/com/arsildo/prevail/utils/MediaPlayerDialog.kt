@@ -60,7 +60,6 @@ fun MediaPlayerDialog(
                 Column {
 
                     MediaPlayer(
-                        mediaID = 1,
                         inFocus = true,
                         playerRepository = playerRepository,
                     )

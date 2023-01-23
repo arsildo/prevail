@@ -79,8 +79,4 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
         if (isMuted.value) player.volume = 1f else player.volume = 0f
     }
 
-
-    fun pauseUnPausePlayer() {
-        if (isPlaying.value) player.pause() else player.play()
-    }
 }

@@ -1,11 +1,11 @@
-package com.arsildo.prevail.data.source
+package com.arsildo.prevail.preferences.player
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import com.arsildo.prevail.data.source.PlayerPreferencesRepository.PlayerPreferencesKeys.AUTOPLAY
-import com.arsildo.prevail.data.source.PlayerPreferencesRepository.PlayerPreferencesKeys.PLAY_MUTED
+import com.arsildo.prevail.preferences.player.PlayerPreferencesRepository.PlayerPreferencesKeys.AUTOPLAY
+import com.arsildo.prevail.preferences.player.PlayerPreferencesRepository.PlayerPreferencesKeys.PLAY_MUTED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

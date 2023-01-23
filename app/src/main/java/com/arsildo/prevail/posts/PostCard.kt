@@ -71,9 +71,9 @@ fun PostCard(
             if (post.fileExtension != null) {
                 MediaTypeIdentifier(
                     mediaType = post.fileExtension,
+                    mediaID = post.mediaID,
                     mediaHeight = post.mediaHeight,
                     mediaWidth = post.mediaWidth,
-                    mediaID = post.mediaId,
                     inFocus = inFocus,
                     playerRepository = playerRepository,
                     onMediaScreenClick = {}

@@ -27,7 +27,7 @@ data class Post(
     val replies: Int,
     val semantic_url: String,
     @SerializedName("tim")
-    val mediaId: Long,
+    val mediaID: Long,
     @SerializedName("time")
     val timeStamp: Int,
     @SerializedName("w")

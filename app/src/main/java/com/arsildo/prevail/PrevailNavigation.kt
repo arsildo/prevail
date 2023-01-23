@@ -3,6 +3,7 @@ package com.arsildo.prevail
 import androidx.navigation.NavHostController
 import com.arsildo.prevail.ContentScreens.APPEARANCE_PREFERENCES
 import com.arsildo.prevail.ContentScreens.BOARDS_SCREEN
+import com.arsildo.prevail.ContentScreens.GENERALS_SCREEN
 import com.arsildo.prevail.ContentScreens.MEDIA_SCREEN
 import com.arsildo.prevail.ContentScreens.PLAYER_PREFERENCES
 import com.arsildo.prevail.ContentScreens.POSTS_SCREEN
@@ -26,6 +27,7 @@ object ContentScreens {
     const val MEDIA_SCREEN = "media"
 
     const val PREFERENCES_SCREEN = "preferences"
+    const val GENERALS_SCREEN = "generalPreferences"
     const val APPEARANCE_PREFERENCES = "appearancesPreferences"
     const val PLAYER_PREFERENCES = "playerPreferences"
 }
@@ -45,6 +47,7 @@ object PrevailDestinations {
     const val BOARDS_ROUTE = BOARDS_SCREEN
 
     const val PREFERENCES_ROUTE = PREFERENCES_SCREEN
+    const val GENERALS_ROUTE = GENERALS_SCREEN
     const val APPEARANCE_PREFS_ROUTE = APPEARANCE_PREFERENCES
     const val PLAYER_PREFS_ROUTE = PLAYER_PREFERENCES
 }

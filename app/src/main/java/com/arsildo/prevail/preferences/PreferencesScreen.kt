@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,6 +46,12 @@ data class PreferenceCategoryModel(
 )
 
 fun providePreferenceList(navController: NavController) = listOf(
+    PreferenceCategoryModel(
+        title = "General",
+        subtitle = "Overall application preferences.",
+        icon = Icons.Outlined.Tune,
+        action = { navController.navigate(PrevailDestinations.GENERALS_ROUTE) }
+    ),
     PreferenceCategoryModel(
         title = "Appearance",
         subtitle = "Customize the look of your experience.",
