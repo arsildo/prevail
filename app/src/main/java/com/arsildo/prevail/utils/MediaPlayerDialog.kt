@@ -36,7 +36,6 @@ import com.arsildo.prevail.data.source.PlayerRepository
 fun MediaPlayerDialog(
     visible: Boolean,
     videoAspectRatio: Float,
-    currentBoard: String,
     playerRepository: PlayerRepository,
     onDismissRequest: () -> Unit,
 ) {
@@ -62,11 +61,8 @@ fun MediaPlayerDialog(
 
                     MediaPlayer(
                         mediaID = 1,
-                        aspectRatio = videoAspectRatio,
                         inFocus = true,
-                        currentBoard = currentBoard,
                         playerRepository = playerRepository,
-                        fullScreenMode = true
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),

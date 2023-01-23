@@ -8,7 +8,8 @@ import com.arsildo.prevail.ContentScreens.PLAYER_PREFERENCES
 import com.arsildo.prevail.ContentScreens.POSTS_SCREEN
 import com.arsildo.prevail.ContentScreens.PREFERENCES_SCREEN
 import com.arsildo.prevail.ContentScreens.THREADS_SCREEN
-import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_INDEX_ARG
+import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_ASPECT_RATIO_ARG
+import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_ID_ARG
 import com.arsildo.prevail.PrevailDestinationsArg.THREAD_NUMBER_ARG
 
 const val ROOT_GRAPH_ROUTE = "root"
@@ -32,14 +33,15 @@ object ContentScreens {
 // Arguments
 object PrevailDestinationsArg {
     const val THREAD_NUMBER_ARG = "threadNumber"
-    const val MEDIA_INDEX_ARG = "mediaIndex"
+    const val MEDIA_ID_ARG = "mediaID"
+    const val MEDIA_ASPECT_RATIO_ARG = "mediaAspectRatio"
 }
 
 // Destinations
 object PrevailDestinations {
     const val THREADS_ROUTE = THREADS_SCREEN
     const val POSTS_ROUTE = "$POSTS_SCREEN/{$THREAD_NUMBER_ARG}"
-    const val MEDIA_ROUTE = "$MEDIA_SCREEN/{$MEDIA_INDEX_ARG}"
+    const val MEDIA_ROUTE = "$MEDIA_SCREEN/{$MEDIA_ID_ARG}/{$MEDIA_ASPECT_RATIO_ARG}"
     const val BOARDS_ROUTE = BOARDS_SCREEN
 
     const val PREFERENCES_ROUTE = PREFERENCES_SCREEN
@@ -54,8 +56,8 @@ class PrevailNavigationActions(private val navController: NavHostController) {
         navController.navigate("$POSTS_SCREEN/$threadNumber")
     }
 
-    fun navigateToMedia(index: Int) {
-        navController.navigate("$MEDIA_SCREEN/$index")
+    fun navigateToMedia(id: Long, aspectRatio: Float) {
+        navController.navigate("$MEDIA_SCREEN/$id/$aspectRatio")
     }
 
 }

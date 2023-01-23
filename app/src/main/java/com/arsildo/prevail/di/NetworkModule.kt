@@ -9,8 +9,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-const val API_BASE_URL = "https://a.4cdn.org/"
 const val BASE_URL = "https://boards.4channel.org/"
+const val API_BASE_URL = "https://a.4cdn.org/"
 const val MEDIA_BASE_URL = "https://i.4cdn.org/"
 
 @Module

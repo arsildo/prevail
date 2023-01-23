@@ -65,9 +65,10 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
         player.prepare()
     }
 
+
     fun loadMediaFiles(currentBoard: String, list: List<Thread>) {
-        list.forEachIndexed { index, thread ->
-            val uri = "$MEDIA_BASE_URL$currentBoard/${thread.mediaId}.webm"
+        list.forEachIndexed { index, element ->
+            val uri = "$MEDIA_BASE_URL$currentBoard/${element.mediaID}.webm"
             val mediaItem = MediaItem.fromUri(uri)
             player.addMediaItem(index, mediaItem)
         }

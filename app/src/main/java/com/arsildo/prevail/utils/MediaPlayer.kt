@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.di.MEDIA_BASE_URL
+import com.arsildo.prevail.threads.LocalBoardContext
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
@@ -55,13 +56,13 @@ import kotlinx.coroutines.delay
 @Composable
 fun MediaPlayer(
     mediaID: Long,
-    currentBoard: String,
-    aspectRatio: Float,
     inFocus: Boolean,
-    fullScreenMode: Boolean,
     playerRepository: PlayerRepository,
-    onPlayVideoNotInFocus: () -> Unit = {},
+    onMediaScreenClick: (Float) -> Unit = {},
 ) {
+
+    val currentBoard = LocalBoardContext.current
+    val aspectRatio = LocalMediaAspectRatio.current
 
     val player = remember { playerRepository.player }
     val isPlaying by remember { playerRepository.isPlaying }
@@ -87,7 +88,7 @@ fun MediaPlayer(
         VideoThumbnail(
             preloadedThumbnailUri = "$MEDIA_BASE_URL$currentBoard/$mediaID" + "s.jpg",
             videoUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.webm",
-            onPlayVideoNotInFocus = onPlayVideoNotInFocus
+            onPlayVideoNotInFocus = { onMediaScreenClick(aspectRatio) }
         )
         AnimatedVisibility(
             visible = inFocus && playerState == Player.STATE_READY,
@@ -101,7 +102,7 @@ fun MediaPlayer(
                 videoDuration = videoDuration,
                 videoProgress = animatedProgress,
                 durationLeft = durationLeft,
-                onPlayOrPauseClick = { playerRepository.pauseUnPausePlayer() },
+                onPlayOrPauseClick = { onMediaScreenClick(aspectRatio) },
                 onMuteUnMuteClick = playerRepository::muteUnMutePlayer,
             )
             if (isPlaying) LaunchedEffect(Unit) {

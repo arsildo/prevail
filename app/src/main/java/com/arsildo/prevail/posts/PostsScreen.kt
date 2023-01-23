@@ -31,8 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,10 +45,11 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
+import com.arsildo.prevail.threads.LocalBoardContext
 import com.arsildo.prevail.utils.LoadingAnimation
-import com.arsildo.prevail.utils.MediaPlayerDialog
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
+import com.arsildo.prevail.utils.firstFullyVisibleItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -135,75 +136,47 @@ fun PostsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState)
         ) {
-            val screenState by remember { viewModel.screenState }
-            Crossfade(targetState = screenState) { state ->
-                when (state) {
-                    PostsScreenState.Loading -> LoadingAnimation()
-                    PostsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThread)
-                    PostsScreenState.Responded -> {
+            CompositionLocalProvider(LocalBoardContext provides currentBoard) {
+                val screenState by remember { viewModel.screenState }
+                Crossfade(targetState = screenState) { state ->
+                    when (state) {
+                        PostsScreenState.Loading -> LoadingAnimation()
+                        PostsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThread)
+                        PostsScreenState.Responded -> {
 
-                        val postList = viewModel.postList
+                            val postList = viewModel.postList
 
+                            val focused = lazyListState.firstFullyVisibleItem()
 
-                        val midIndex by remember {
-                            derivedStateOf {
-                                lazyListState.layoutInfo.visibleItemsInfo.run {
-                                    val firstVisibleIndex = lazyListState.firstVisibleItemIndex
-                                    if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                            LaunchedEffect(focused) {
+                                viewModel.playerRepository.player.pause()
+                                if (postList[focused].fileExtension == ".webm")
+                                    viewModel.playerRepository.playMediaFile(
+                                        currentBoard,
+                                        postList[focused].mediaId
+                                    )
+                            }
+
+                            LazyColumn(
+                                state = lazyListState,
+                                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                itemsIndexed(
+                                    items = postList,
+                                    key = { index, post -> post.no },
+                                ) { index, post ->
+                                    PostCard(
+                                        post = post,
+                                        playerRepository = viewModel.playerRepository,
+                                        inFocus = focused == index,
+                                        currentBoard = currentBoard,
+                                        onPlayVideoNotInFocus = { }
+                                    )
                                 }
                             }
+
                         }
-
-                        LaunchedEffect(midIndex) {
-                            viewModel.playerRepository.player.pause()
-                            if (postList[midIndex].fileExtension == ".webm")
-                                viewModel.playerRepository.playMediaFile(
-                                    currentBoard,
-                                    postList[midIndex].mediaId
-                                )
-                        }
-
-                        var mediaPlayerDialogVisible by remember { mutableStateOf(false) }
-                        var aspectRatioMediaPlayer by remember { mutableStateOf(1f) }
-
-                        LazyColumn(
-                            state = lazyListState,
-                            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(
-                                items = postList,
-                                key = { index, post -> post.no },
-                            ) { index, post ->
-                                PostCard(
-                                    post = post,
-                                    playerRepository = viewModel.playerRepository,
-                                    inFocus = midIndex == index,
-                                    currentBoard = currentBoard,
-                                    onPlayVideoNotInFocus = { mediaID, aspectRatio ->
-                                        viewModel.playerRepository.playMediaFile(
-                                            currentBoard,
-                                            mediaID
-                                        )
-                                        aspectRatioMediaPlayer = aspectRatio
-                                        mediaPlayerDialogVisible = true
-                                    }
-
-                                )
-                            }
-                        }
-
-                        MediaPlayerDialog(
-                            visible = mediaPlayerDialogVisible,
-                            videoAspectRatio = aspectRatioMediaPlayer,
-                            playerRepository = viewModel.playerRepository,
-                            currentBoard = currentBoard,
-                            onDismissRequest = {
-                                mediaPlayerDialogVisible = false
-                                viewModel.playerRepository.player.clearMediaItems()
-                                viewModel.playerRepository.player.clearVideoSurface()
-                            }
-                        )
                     }
                 }
             }

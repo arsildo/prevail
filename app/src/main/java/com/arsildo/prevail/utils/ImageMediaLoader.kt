@@ -31,7 +31,6 @@ import com.google.accompanist.placeholder.placeholder
 @Composable
 fun ImageMediaLoader(
     imageUri: String,
-    aspectRatio: Float,
     onImageClick: () -> Unit = {},
     onImageLongClick: () -> Unit = {},
 ) {
@@ -66,7 +65,7 @@ fun ImageMediaLoader(
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
-                .aspectRatio(aspectRatio)
+                .aspectRatio(LocalMediaAspectRatio.current)
                 .fillMaxSize()
                 .placeholder(
                     visible = loadingImage,

@@ -43,7 +43,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -59,6 +61,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.arsildo.prevail.PrevailNavigationActions
+import com.arsildo.prevail.data.source.NO_BOARD
 import com.arsildo.prevail.utils.LoadingAnimation
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
@@ -67,6 +70,8 @@ import com.arsildo.prevail.utils.isScrollingUp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+// Current board context
+val LocalBoardContext = compositionLocalOf { NO_BOARD }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -164,51 +169,49 @@ fun ThreadsScreen(
                 .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
-            val screenState by remember { viewModel.screenState }
-            Crossfade(targetState = screenState) { state ->
-                when (state) {
-                    ThreadsScreenState.EmptyBoards -> SelectBoardFirst(onClick = ::showBottomSheet)
-                    ThreadsScreenState.Loading -> LoadingAnimation()
-                    ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
-                    ThreadsScreenState.Responded -> {
+            CompositionLocalProvider(LocalBoardContext provides currentBoard) {
+                val screenState by remember { viewModel.screenState }
+                Crossfade(targetState = screenState) { state ->
+                    when (state) {
+                        ThreadsScreenState.EmptyBoards -> SelectBoardFirst(onClick = ::showBottomSheet)
+                        ThreadsScreenState.Loading -> LoadingAnimation()
+                        ThreadsScreenState.Failed -> RetryConnectionButton(onClick = viewModel::requestThreads)
+                        ThreadsScreenState.Responded -> {
 
-                        val threadList = viewModel.threadList
+                            val threadList = viewModel.threadList
+                            val focused = lazyListState.firstFullyVisibleItem()
+                            LaunchedEffect(focused) {
+                                viewModel.playerRepository.player.pause()
+                                if (threadList[focused].fileExtension == ".webm") {
+                                    viewModel.playerRepository.player.seekTo(focused, 0)
+                                }
+                            }
 
-                        val focused = lazyListState.firstFullyVisibleItem()
-
-                        LaunchedEffect(lazyListState.firstFullyVisibleItem()) {
-                            viewModel.playerRepository.player.pause()
-                            if (threadList[focused].fileExtension == ".webm") {
-                                viewModel.playerRepository.playMediaFile(
-                                    currentBoard,
-                                    threadList[focused].mediaId
-                                )
+                            LazyColumn(
+                                state = lazyListState,
+                                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                itemsIndexed(
+                                    items = threadList,
+                                    key = { index, thread -> thread.no },
+                                ) { index, thread ->
+                                    ThreadCard(
+                                        thread = thread,
+                                        playerRepository = viewModel.playerRepository,
+                                        inFocus = focused == index,
+                                        onClick = onThreadClicked,
+                                        onMediaScreenClick = { aspectRatio ->
+                                            PrevailNavigationActions(navController)
+                                                .navigateToMedia(
+                                                    id = thread.mediaID,
+                                                    aspectRatio = aspectRatio
+                                                )
+                                        }
+                                    )
+                                }
                             }
                         }
-
-                        LazyColumn(
-                            state = lazyListState,
-                            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            itemsIndexed(
-                                items = threadList,
-                                key = { index, thread -> thread.no },
-                            ) { index, thread ->
-                                ThreadCard(
-                                    thread = thread,
-                                    playerRepository = viewModel.playerRepository,
-                                    inFocus = focused == index,
-                                    currentBoard = currentBoard,
-                                    onClick = onThreadClicked,
-                                    onMediaScreenClick = {
-                                        PrevailNavigationActions(navController)
-                                            .navigateToMedia(index)
-                                    }
-                                )
-                            }
-                        }
-
                     }
                 }
             }

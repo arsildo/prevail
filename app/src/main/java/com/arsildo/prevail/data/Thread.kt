@@ -41,7 +41,7 @@ data class Thread(
     val sticky: Int,
     val sub: String? = null,
     @SerializedName("tim")
-    val mediaId: Long,
+    val mediaID: Long,
     @SerializedName("time")
     val timeStamp: Int,
     @SerializedName("w")

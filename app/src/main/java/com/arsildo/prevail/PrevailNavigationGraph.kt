@@ -21,7 +21,8 @@ import com.arsildo.prevail.PrevailDestinations.PLAYER_PREFS_ROUTE
 import com.arsildo.prevail.PrevailDestinations.POSTS_ROUTE
 import com.arsildo.prevail.PrevailDestinations.PREFERENCES_ROUTE
 import com.arsildo.prevail.PrevailDestinations.THREADS_ROUTE
-import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_INDEX_ARG
+import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_ASPECT_RATIO_ARG
+import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_ID_ARG
 import com.arsildo.prevail.PrevailDestinationsArg.THREAD_NUMBER_ARG
 import com.arsildo.prevail.boards.BoardsScreen
 import com.arsildo.prevail.boards.BoardsViewModel
@@ -29,9 +30,9 @@ import com.arsildo.prevail.media.MediaScreen
 import com.arsildo.prevail.media.MediaViewModel
 import com.arsildo.prevail.posts.PostsScreen
 import com.arsildo.prevail.posts.PostsViewModel
+import com.arsildo.prevail.preferences.PreferencesScreen
 import com.arsildo.prevail.preferences.appearances.AppearancesPreferencesScreen
 import com.arsildo.prevail.preferences.player.PlayerPreferencesScreen
-import com.arsildo.prevail.preferences.PreferencesScreen
 import com.arsildo.prevail.threads.ThreadsScreen
 import com.arsildo.prevail.threads.ThreadsViewModel
 
@@ -86,12 +87,13 @@ fun NavGraphBuilder.contentNavigationGraph(
         dialog(
             route = MEDIA_ROUTE,
             arguments = listOf(
-                navArgument(MEDIA_INDEX_ARG) { type = NavType.IntType }
+                navArgument(MEDIA_ID_ARG) { type = NavType.LongType },
+                navArgument(MEDIA_ASPECT_RATIO_ARG) { type = NavType.FloatType }
             ),
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             val mediaViewModel = hiltViewModel<MediaViewModel>()
-            MediaScreen(navController = navController)
+            MediaScreen(navController = navController, viewModel = mediaViewModel)
         }
 
         // Board List

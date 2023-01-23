@@ -25,10 +25,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 
 @Composable
-fun GIFMediaLoader(
-    gifUri: String,
-    aspectRatio: Float,
-) {
+fun GIFMediaLoader(gifUri: String) {
 
     val context = LocalContext.current
 
@@ -54,7 +51,7 @@ fun GIFMediaLoader(
                 .padding(vertical = 4.dp)
                 .clip(MaterialTheme.shapes.large)
                 .fillMaxWidth()
-                .aspectRatio(aspectRatio)
+                .aspectRatio(LocalMediaAspectRatio.current)
         )
         Text(
             text = "GIF",

@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -26,14 +27,16 @@ import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeIdentifier
 import com.arsildo.prevail.utils.getCountryFromCode
 
+
+val LocalMediaID = compositionLocalOf { 0L }
+
 @Composable
 fun ThreadCard(
     thread: Thread,
     playerRepository: PlayerRepository,
     inFocus: Boolean,
-    currentBoard: String,
     onClick: (Int) -> Unit,
-    onMediaScreenClick: () -> Unit,
+    onMediaScreenClick: (Float) -> Unit,
 ) {
     ContentCardWrapper(onClick = { onClick(thread.no) }) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -119,15 +122,15 @@ fun ThreadCard(
 
 
             if (thread.fileExtension != null) {
+
                 MediaTypeIdentifier(
                     mediaType = thread.fileExtension,
                     mediaHeight = thread.mediaHeight,
                     mediaWidth = thread.mediaWidth,
-                    mediaID = thread.mediaId,
-                    currentBoard = currentBoard,
+                    mediaID = thread.mediaID,
                     inFocus = inFocus,
                     playerRepository = playerRepository,
-                    onPlayVideoNotInFocus = onMediaScreenClick
+                    onMediaScreenClick = { aspectRatio -> onMediaScreenClick(aspectRatio) }
                 )
             }
 
