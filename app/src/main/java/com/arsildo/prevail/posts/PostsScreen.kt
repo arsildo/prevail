@@ -4,10 +4,9 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -47,6 +46,7 @@ import androidx.navigation.NavController
 import com.arsildo.prevail.ContentScreens
 import com.arsildo.prevail.threads.LocalBoardContext
 import com.arsildo.prevail.utils.LoadingAnimation
+import com.arsildo.prevail.utils.MediaPlayer
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
 import com.arsildo.prevail.utils.firstFullyVisibleItem
@@ -63,6 +63,9 @@ fun PostsScreen(
 
     val threadNumber = viewModel.threadNumber
     val currentBoard by remember { viewModel.currentBoard }
+
+    val playerRepository = remember { viewModel.playerRepository }
+    val mediaPlayer = remember { playerRepository.player }
 
     val appBarState = rememberTopAppBarState()
     val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = appBarState)
@@ -147,31 +150,30 @@ fun PostsScreen(
                             val postList = viewModel.postList
 
                             val focused = lazyListState.firstFullyVisibleItem()
-
                             LaunchedEffect(focused) {
-                                viewModel.playerRepository.player.pause()
-                                if (postList[focused].fileExtension == ".webm")
-                                    viewModel.playerRepository.playMediaFile(
-                                        currentBoard,
-                                        postList[focused].mediaID
-                                    )
+                                mediaPlayer.pause()
+                                if (postList[focused].mediaType == ".webm") {
+                                    mediaPlayer.seekTo(focused, 0)
+                                }
                             }
 
                             LazyColumn(
                                 state = lazyListState,
-                                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                                contentPadding = PaddingValues(vertical = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 itemsIndexed(
                                     items = postList,
-                                    key = { index, post -> post.no },
+                                    key = { _, post -> post.no },
                                 ) { index, post ->
                                     PostCard(
                                         post = post,
-                                        playerRepository = viewModel.playerRepository,
-                                        inFocus = focused == index,
-                                        currentBoard = currentBoard,
-                                        onPlayVideoNotInFocus = { }
+                                        playableMedia = {
+                                            MediaPlayer(
+                                                focused = index == focused,
+                                                playerRepository = playerRepository
+                                            )
+                                        }
                                     )
                                 }
                             }

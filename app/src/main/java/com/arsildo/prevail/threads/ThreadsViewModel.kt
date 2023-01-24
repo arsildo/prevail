@@ -15,11 +15,14 @@ import com.arsildo.prevail.data.source.NO_BOARD
 import com.arsildo.prevail.data.source.NO_BOARD_DESC
 import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.data.source.SavedBoardsRepository
+import com.arsildo.prevail.preferences.general.GeneralsRepository
+import com.arsildo.prevail.preferences.player.PlayerPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -31,6 +34,8 @@ class ThreadsViewModel @Inject constructor(
     val playerRepository: PlayerRepository,
     private val boardPreferencesRepository: BoardPreferencesRepository,
     private val savedBoardsRepository: SavedBoardsRepository,
+    private val generalsRepository: GeneralsRepository,
+    private val playerPreferencesRepository: PlayerPreferencesRepository,
 ) : ViewModel() {
 
     private val _screenState = mutableStateOf(ThreadsScreenState.Loading)
@@ -64,7 +69,7 @@ class ThreadsViewModel @Inject constructor(
                 getCurrentBoardContext()
                 threadCatalog = contentRepository.getThreadCatalog(board = currentBoard.value)
                 threadList = flattenThreadsCatalog()
-                playerRepository.loadMediaFiles(currentBoard.value, threadList)
+                playerRepository.loadThreadsMediaFiles(currentBoard.value, threadList)
                 delay(1000)
                 _screenState.value = ThreadsScreenState.Responded
             } catch (e: Exception) {
@@ -99,5 +104,7 @@ class ThreadsViewModel @Inject constructor(
             withContext(Dispatchers.IO) { savedBoards = savedBoardsRepository.getSavedBoards() }
         }
     }
+
+    fun getConfirmAppExit() = runBlocking { generalsRepository.getConfirmAppExit }
 
 }

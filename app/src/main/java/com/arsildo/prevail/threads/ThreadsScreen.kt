@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -60,9 +62,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.arsildo.prevail.PrevailNavigationActions
 import com.arsildo.prevail.data.source.NO_BOARD
 import com.arsildo.prevail.utils.LoadingAnimation
+import com.arsildo.prevail.utils.MediaPlayer
 import com.arsildo.prevail.utils.PrevailAppBar
 import com.arsildo.prevail.utils.RetryConnectionButton
 import com.arsildo.prevail.utils.firstFullyVisibleItem
@@ -79,6 +81,7 @@ fun ThreadsScreen(
     navController: NavHostController,
     viewModel: ThreadsViewModel,
     onThreadClicked: (Int) -> Unit,
+    onPlayableMediaClicked: (Float) -> Unit,
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -86,6 +89,9 @@ fun ThreadsScreen(
     val favoriteBoards by viewModel.savedBoards.observeAsState()
     val currentBoard by remember { viewModel.currentBoard }
     val currentBoardDesc by remember { viewModel.currentBoardDesc }
+
+    val playerRepository = remember { viewModel.playerRepository }
+    val mediaPlayer = remember { playerRepository.player }
 
     val lazyListState = rememberLazyListState()
     val firstVisibleItemIndexVisible by remember { derivedStateOf { lazyListState.firstVisibleItemIndex > 0 } }
@@ -181,29 +187,29 @@ fun ThreadsScreen(
                             val threadList = viewModel.threadList
                             val focused = lazyListState.firstFullyVisibleItem()
                             LaunchedEffect(focused) {
-                                viewModel.playerRepository.player.pause()
-                                if (threadList[focused].fileExtension == ".webm") {
-                                    viewModel.playerRepository.player.seekTo(focused, 0)
+                                mediaPlayer.pause()
+                                if (threadList[focused].mediaType == ".webm") {
+                                    mediaPlayer.seekTo(focused, 0)
                                 }
                             }
 
                             LazyColumn(
                                 state = lazyListState,
-                                contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+                                contentPadding = PaddingValues(vertical = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 itemsIndexed(
                                     items = threadList,
-                                    key = { index, thread -> thread.no },
+                                    key = { _, thread -> thread.no },
                                 ) { index, thread ->
                                     ThreadCard(
                                         thread = thread,
-                                        playerRepository = viewModel.playerRepository,
-                                        inFocus = focused == index,
                                         onClick = onThreadClicked,
-                                        onMediaScreenClick = { aspectRatio ->
-                                            PrevailNavigationActions(navController)
-                                                .navigateToMedia(id = thread.mediaID, aspectRatio = aspectRatio)
+                                        playableMedia = {
+                                            MediaPlayer(
+                                                focused = index == focused,
+                                                playerRepository = playerRepository
+                                            )
                                         }
                                     )
                                 }
@@ -244,13 +250,15 @@ fun ThreadsScreen(
     )
 
     val context = LocalContext.current
+    val onBackPressedTwiceEnabled by viewModel.getConfirmAppExit().collectAsState(initial = false)
     var timeWhenPressed by remember { mutableStateOf(0L) }
     BackHandler {
         if (bottomSheetState.isVisible) hideBottomSheet()
-        else onBackPressedTwice(
+        else if (onBackPressedTwiceEnabled) onBackPressedTwice(
             timeWhenPressed = timeWhenPressed,
             context = context
         ) { timeWhenPressed = System.currentTimeMillis() }
+        else endApplication(context = context)
     }
 
 }
@@ -265,6 +273,11 @@ private fun onBackPressedTwice(
     if (timeWhenPressed + 2000 > System.currentTimeMillis()) activityContext.finish()
     else Toast.makeText(context, "Swipe back once more to leave the app.", Toast.LENGTH_LONG).show()
     updateTimeWhenPressed()
+}
+
+private fun endApplication(context: Context) {
+    val activityContext = context as Activity
+    activityContext.finish()
 }
 
 @Composable

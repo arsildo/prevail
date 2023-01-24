@@ -4,13 +4,10 @@ import androidx.navigation.NavHostController
 import com.arsildo.prevail.ContentScreens.APPEARANCE_PREFERENCES
 import com.arsildo.prevail.ContentScreens.BOARDS_SCREEN
 import com.arsildo.prevail.ContentScreens.GENERALS_SCREEN
-import com.arsildo.prevail.ContentScreens.MEDIA_SCREEN
 import com.arsildo.prevail.ContentScreens.PLAYER_PREFERENCES
 import com.arsildo.prevail.ContentScreens.POSTS_SCREEN
 import com.arsildo.prevail.ContentScreens.PREFERENCES_SCREEN
 import com.arsildo.prevail.ContentScreens.THREADS_SCREEN
-import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_ASPECT_RATIO_ARG
-import com.arsildo.prevail.PrevailDestinationsArg.MEDIA_ID_ARG
 import com.arsildo.prevail.PrevailDestinationsArg.THREAD_NUMBER_ARG
 
 const val ROOT_GRAPH_ROUTE = "root"
@@ -24,8 +21,6 @@ object ContentScreens {
     const val POSTS_SCREEN = "posts"
     const val BOARDS_SCREEN = "boards"
 
-    const val MEDIA_SCREEN = "media"
-
     const val PREFERENCES_SCREEN = "preferences"
     const val GENERALS_SCREEN = "generalPreferences"
     const val APPEARANCE_PREFERENCES = "appearancesPreferences"
@@ -35,15 +30,12 @@ object ContentScreens {
 // Arguments
 object PrevailDestinationsArg {
     const val THREAD_NUMBER_ARG = "threadNumber"
-    const val MEDIA_ID_ARG = "mediaID"
-    const val MEDIA_ASPECT_RATIO_ARG = "mediaAspectRatio"
 }
 
 // Destinations
 object PrevailDestinations {
     const val THREADS_ROUTE = THREADS_SCREEN
     const val POSTS_ROUTE = "$POSTS_SCREEN/{$THREAD_NUMBER_ARG}"
-    const val MEDIA_ROUTE = "$MEDIA_SCREEN/{$MEDIA_ID_ARG}/{$MEDIA_ASPECT_RATIO_ARG}"
     const val BOARDS_ROUTE = BOARDS_SCREEN
 
     const val PREFERENCES_ROUTE = PREFERENCES_SCREEN
@@ -57,10 +49,6 @@ class PrevailNavigationActions(private val navController: NavHostController) {
 
     fun navigateToPosts(threadNumber: Int) {
         navController.navigate("$POSTS_SCREEN/$threadNumber")
-    }
-
-    fun navigateToMedia(id: Long, aspectRatio: Float) {
-        navController.navigate("$MEDIA_SCREEN/$id/$aspectRatio")
     }
 
 }

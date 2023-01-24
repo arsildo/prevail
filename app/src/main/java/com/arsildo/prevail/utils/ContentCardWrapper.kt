@@ -1,5 +1,6 @@
 package com.arsildo.prevail.utils
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -12,7 +13,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun ContentCardWrapper(
     onClick: () -> Unit = {},
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -22,5 +23,6 @@ fun ContentCardWrapper(
         ),
         shape = MaterialTheme.shapes.medium,
         onClick = onClick,
-    ) { content() }
+        content = content
+    )
 }

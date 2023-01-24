@@ -15,7 +15,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,8 +45,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arsildo.prevail.data.source.PlayerRepository
-import com.arsildo.prevail.di.MEDIA_BASE_URL
-import com.arsildo.prevail.threads.LocalBoardContext
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
@@ -55,23 +52,21 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun MediaPlayer(
-    inFocus: Boolean,
+    focused: Boolean,
     playerRepository: PlayerRepository,
-    onMediaScreenClick: (Float) -> Unit = {},
 ) {
-
-    val mediaID = LocalMediaID.current
-    val currentBoard = LocalBoardContext.current
-    val aspectRatio = LocalMediaAspectRatio.current
-
     val player = remember { playerRepository.player }
+
     val isPlaying by remember { playerRepository.isPlaying }
     val isMuted by remember { playerRepository.isMuted }
+
+    val isLoading by remember { playerRepository.isLoading }
+
     val videoDuration by remember { playerRepository.videoDuration }
     var progressMade by remember { playerRepository.progressMade }
     var durationLeft by remember { playerRepository.durationLeft }
 
-    val playerState = playerRepository.playerState.value
+    val playerState by playerRepository.playerState
 
     val animatedProgress: Float by animateFloatAsState(
         (if (isPlaying) progressMade else progressMade).toFloat(),
@@ -79,20 +74,12 @@ fun MediaPlayer(
     )
 
     Box(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .clip(MaterialTheme.shapes.large)
-            .aspectRatio(aspectRatio),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        VideoThumbnail(
-            preloadedThumbnailUri = "$MEDIA_BASE_URL$currentBoard/$mediaID" + "s.jpg",
-            videoUri = "$MEDIA_BASE_URL$currentBoard/$mediaID.webm",
-            onPlayVideoNotInFocus = { onMediaScreenClick(aspectRatio) }
-        )
         AnimatedVisibility(
-            visible = inFocus && playerState == Player.STATE_READY,
-            enter = fadeIn(),
+            visible = focused && !isLoading,
+            enter = fadeIn(tween(delayMillis = 256, easing = LinearOutSlowInEasing)),
             exit = fadeOut(),
         ) {
             ExoPlayerAndroidView(player)
@@ -115,8 +102,11 @@ fun MediaPlayer(
 
         }
 
-        if (playerState == Player.STATE_BUFFERING && inFocus) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, strokeWidth = 3.dp)
+        if (isLoading && focused) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.primary.copy(.4f),
+                strokeWidth = 3.dp,
+            )
         }
 
     }
@@ -132,7 +122,6 @@ private fun ExoPlayerAndroidView(
         factory = {
             StyledPlayerView(context).apply {
                 useController = false
-                player = exoPlayer
                 resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
                 layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             }
@@ -177,6 +166,7 @@ private fun VidePlayerControls(
                 )
             }
         }
+
 
         Row(
             modifier = Modifier

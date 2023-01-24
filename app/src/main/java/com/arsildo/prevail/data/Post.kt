@@ -14,8 +14,9 @@ data class Post(
     val com: String?,
     val sub: String?,
     @SerializedName("ext")
-    val fileExtension: String?,
-    val filename: String,
+    val mediaType: String?,
+    @SerializedName("filename")
+    val fileName: String,
     @SerializedName("fsize")
     val fileSize: Int,
     val country: String?,

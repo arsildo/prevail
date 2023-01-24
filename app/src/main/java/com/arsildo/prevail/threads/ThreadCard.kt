@@ -1,6 +1,7 @@
 package com.arsildo.prevail.threads
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,19 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arsildo.prevail.data.Thread
-import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
-import com.arsildo.prevail.utils.MediaTypeIdentifier
+import com.arsildo.prevail.utils.MediaTypeDistributor
 import com.arsildo.prevail.utils.getCountryFromCode
 
 @Composable
 fun ThreadCard(
     thread: Thread,
-    playerRepository: PlayerRepository,
-    inFocus: Boolean,
     onClick: (Int) -> Unit,
-    onMediaScreenClick: (Float) -> Unit,
+    playableMedia: @Composable (BoxScope.() -> Unit)
 ) {
     ContentCardWrapper(onClick = { onClick(thread.no) }) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -117,15 +115,13 @@ fun ThreadCard(
                 )
 
 
-            if (thread.fileExtension != null) {
-                MediaTypeIdentifier(
-                    mediaType = thread.fileExtension,
+            if (thread.mediaType != null) {
+                MediaTypeDistributor(
+                    mediaType = thread.mediaType,
                     mediaID = thread.mediaID,
                     mediaHeight = thread.mediaHeight,
                     mediaWidth = thread.mediaWidth,
-                    inFocus = inFocus,
-                    playerRepository = playerRepository,
-                    onMediaScreenClick = { aspectRatio -> onMediaScreenClick(aspectRatio) }
+                    playableMedia = playableMedia
                 )
             }
 

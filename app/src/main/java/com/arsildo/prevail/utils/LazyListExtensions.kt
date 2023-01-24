@@ -31,11 +31,10 @@ fun LazyListState.firstFullyVisibleItem(): Int {
     return remember(this) {
         derivedStateOf {
             val visibleItemsInfo = layoutInfo.visibleItemsInfo
-            if (visibleItemsInfo.isEmpty()) 0
-            else {
+            if (visibleItemsInfo.isNotEmpty()) {
                 val offset = (visibleItemsInfo.last().index - visibleItemsInfo.first().index) / 2
                 visibleItemsInfo.first().index + offset
-            }
+            } else 0
         }
     }.value
 }

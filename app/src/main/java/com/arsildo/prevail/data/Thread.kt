@@ -20,8 +20,9 @@ data class Thread(
     val closed: Int,
     val com: String? = null,
     @SerializedName("ext")
-    val fileExtension: String?,
-    val filename: String,
+    val mediaType: String?,
+    @SerializedName("filename")
+    val fileName: String,
     @SerializedName("fsize")
     val fileSize: Int,
     val country: String?,

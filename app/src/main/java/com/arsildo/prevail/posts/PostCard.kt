@@ -1,6 +1,7 @@
 package com.arsildo.prevail.posts
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,19 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arsildo.prevail.data.Post
-import com.arsildo.prevail.data.source.PlayerRepository
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
-import com.arsildo.prevail.utils.MediaTypeIdentifier
+import com.arsildo.prevail.utils.MediaTypeDistributor
 import com.arsildo.prevail.utils.getCountryFromCode
 
 @Composable
 fun PostCard(
     post: Post,
-    playerRepository: PlayerRepository,
-    inFocus: Boolean,
-    currentBoard: String,
-    onPlayVideoNotInFocus: () -> Unit,
+    playableMedia: @Composable (BoxScope.() -> Unit)
 ) {
     ContentCardWrapper {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -68,15 +65,13 @@ fun PostCard(
             if (post.com != null) {
                 HtmlText(htmlText = post.com)
             }
-            if (post.fileExtension != null) {
-                MediaTypeIdentifier(
-                    mediaType = post.fileExtension,
+            if (post.mediaType != null) {
+                MediaTypeDistributor(
+                    mediaType = post.mediaType,
                     mediaID = post.mediaID,
                     mediaHeight = post.mediaHeight,
                     mediaWidth = post.mediaWidth,
-                    inFocus = inFocus,
-                    playerRepository = playerRepository,
-                    onMediaScreenClick = {}
+                    playableMedia = playableMedia
                 )
             }
 

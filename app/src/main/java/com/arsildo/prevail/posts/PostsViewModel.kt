@@ -48,7 +48,7 @@ class PostsViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        playerRepository.player.release()
+        playerRepository.player?.release()
     }
 
     fun requestThread() {
@@ -60,7 +60,7 @@ class PostsViewModel @Inject constructor(
                     currentThread = currentBoard.value,
                     threadNumber = threadNumber
                 )
-               /* playerRepository.loadMediaFiles(currentBoard.value,postList)*/
+                playerRepository.loadPostsMediaFiles(currentBoard.value,postList)
                 postList = flattenPostList()
                 _screenState.value = PostsScreenState.Responded
             } catch (e: Exception) {

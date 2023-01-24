@@ -1,9 +1,9 @@
 package com.arsildo.prevail.utils
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -36,7 +36,7 @@ import coil.size.Precision
 fun VideoThumbnail(
     preloadedThumbnailUri: String,
     videoUri: String,
-    onPlayVideoNotInFocus: () -> Unit,
+    playableMedia: @Composable() (BoxScope.() -> Unit)
 ) {
     val context = LocalContext.current
 
@@ -75,8 +75,9 @@ fun VideoThumbnail(
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .clickable(onClick = onPlayVideoNotInFocus),
+            .padding(vertical = 4.dp)
+            .clip(MaterialTheme.shapes.large)
+            .aspectRatio(LocalMediaAspectRatio.current),
         contentAlignment = Alignment.Center
     ) {
 
@@ -103,7 +104,7 @@ fun VideoThumbnail(
 
 
         IconButton(
-            onClick = onPlayVideoNotInFocus,
+            onClick =  {},
             colors = IconButtonDefaults.filledIconButtonColors(
                 containerColor = Color.White.copy(.2f)
             )
@@ -126,5 +127,8 @@ fun VideoThumbnail(
                 .padding(vertical = 2.dp, horizontal = 4.dp)
                 .align(Alignment.BottomEnd)
         )
+
+        playableMedia()
+
     }
 }

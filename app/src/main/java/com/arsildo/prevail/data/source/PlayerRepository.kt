@@ -1,6 +1,7 @@
 package com.arsildo.prevail.data.source
 
 import androidx.compose.runtime.mutableStateOf
+import com.arsildo.prevail.data.Post
 import com.arsildo.prevail.data.Thread
 import com.arsildo.prevail.di.MEDIA_BASE_URL
 import com.google.android.exoplayer2.C
@@ -21,6 +22,7 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
     var progressMade = mutableStateOf(1.0)
 
     var playerState = mutableStateOf(1)
+    var isLoading = mutableStateOf(false)
 
     init {
 
@@ -37,8 +39,16 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
                     progressMade.value = 1.0
                     when (playbackState) {
                         Player.STATE_IDLE -> playerState.value = Player.STATE_IDLE
-                        Player.STATE_BUFFERING -> playerState.value = Player.STATE_BUFFERING
-                        Player.STATE_READY -> playerState.value = Player.STATE_READY
+                        Player.STATE_BUFFERING -> {
+                            playerState.value = Player.STATE_BUFFERING
+                            isLoading.value = true
+                        }
+
+                        Player.STATE_READY -> {
+                            playerState.value = Player.STATE_READY
+                            isLoading.value = false
+                        }
+
                         Player.STATE_ENDED -> playerState.value = Player.STATE_ENDED
                     }
                 }
@@ -51,6 +61,7 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
                 override fun onTracksChanged(tracks: Tracks) {
                     super.onTracksChanged(tracks)
                 }
+
             }
         )
         player.repeatMode = Player.REPEAT_MODE_ONE
@@ -58,21 +69,24 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
         player.setForegroundMode(false)
     }
 
-    fun playMediaFile(currentBoard: String, mediaID: Long) {
-        val uri = "$MEDIA_BASE_URL$currentBoard/$mediaID.webm"
-        val mediaItem = MediaItem.fromUri(uri)
-        player.setMediaItem(mediaItem)
-        player.prepare()
-    }
-
-
-    fun loadMediaFiles(currentBoard: String, list: List<Thread>) {
-        list.forEachIndexed { index, element ->
-            val uri = "$MEDIA_BASE_URL$currentBoard/${element.mediaID}.webm"
+    fun loadThreadsMediaFiles(currentBoard: String, list: List<Thread>) {
+        list.forEachIndexed { index, thread ->
+            val uri = "$MEDIA_BASE_URL$currentBoard/${thread.mediaID}.webm"
             val mediaItem = MediaItem.fromUri(uri)
             player.addMediaItem(index, mediaItem)
         }
         player.prepare()
+    }
+
+    fun loadPostsMediaFiles(currentBoard: String, list: List<Post>) {
+
+        list.forEachIndexed { index, post ->
+            val uri = "$MEDIA_BASE_URL$currentBoard/${post.mediaID}.webm"
+            val mediaItem = MediaItem.fromUri(uri)
+            player.addMediaItem(index, mediaItem)
+        }
+        player.prepare()
+
     }
 
     fun muteUnMutePlayer() {
