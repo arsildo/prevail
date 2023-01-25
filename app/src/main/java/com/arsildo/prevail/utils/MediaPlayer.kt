@@ -60,8 +60,6 @@ fun MediaPlayer(
     val isPlaying by remember { playerRepository.isPlaying }
     val isMuted by remember { playerRepository.isMuted }
 
-    val isLoading by remember { playerRepository.isLoading }
-
     val videoDuration by remember { playerRepository.videoDuration }
     var progressMade by remember { playerRepository.progressMade }
     var durationLeft by remember { playerRepository.durationLeft }
@@ -78,7 +76,7 @@ fun MediaPlayer(
         contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(
-            visible = focused && !isLoading,
+            visible = focused && playerState == 3, // 3 Means Player is ready
             enter = fadeIn(tween(delayMillis = 256, easing = LinearOutSlowInEasing)),
             exit = fadeOut(),
         ) {
@@ -102,10 +100,10 @@ fun MediaPlayer(
 
         }
 
-        if (isLoading && focused) {
+        if (playerState == 2 && focused) {  // 2 Means Player is buffering
             CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.primary.copy(.4f),
-                strokeWidth = 3.dp,
+                color = MaterialTheme.colorScheme.primary.copy(.8f),
+                strokeWidth = 3.dp
             )
         }
 

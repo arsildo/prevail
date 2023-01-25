@@ -22,7 +22,6 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
     var progressMade = mutableStateOf(1.0)
 
     var playerState = mutableStateOf(1)
-    var isLoading = mutableStateOf(false)
 
     init {
 
@@ -39,16 +38,8 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
                     progressMade.value = 1.0
                     when (playbackState) {
                         Player.STATE_IDLE -> playerState.value = Player.STATE_IDLE
-                        Player.STATE_BUFFERING -> {
-                            playerState.value = Player.STATE_BUFFERING
-                            isLoading.value = true
-                        }
-
-                        Player.STATE_READY -> {
-                            playerState.value = Player.STATE_READY
-                            isLoading.value = false
-                        }
-
+                        Player.STATE_BUFFERING -> playerState.value = Player.STATE_BUFFERING
+                        Player.STATE_READY -> playerState.value = Player.STATE_READY
                         Player.STATE_ENDED -> playerState.value = Player.STATE_ENDED
                     }
                 }
