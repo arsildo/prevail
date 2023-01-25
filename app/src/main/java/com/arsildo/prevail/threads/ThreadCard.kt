@@ -24,7 +24,7 @@ import com.arsildo.prevail.data.Thread
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeDistributor
-import com.arsildo.prevail.utils.getCountryFromCode
+import com.arsildo.prevail.utils.countryCodeToEmoji
 
 @Composable
 fun ThreadCard(
@@ -88,7 +88,7 @@ fun ThreadCard(
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = thread.name + if (thread.country != null) " "
-                                    + getCountryFromCode(thread.country) else "",
+                                    + countryCodeToEmoji(thread.country) else "",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primary,
                         )

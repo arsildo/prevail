@@ -18,7 +18,7 @@ import com.arsildo.prevail.data.Post
 import com.arsildo.prevail.utils.ContentCardWrapper
 import com.arsildo.prevail.utils.HtmlText
 import com.arsildo.prevail.utils.MediaTypeDistributor
-import com.arsildo.prevail.utils.getCountryFromCode
+import com.arsildo.prevail.utils.countryCodeToEmoji
 
 @Composable
 fun PostCard(
@@ -48,7 +48,7 @@ fun PostCard(
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = post.name + if (post.country != null) " " + getCountryFromCode(post.country) else "",
+                        text = post.name + if (post.country != null) " " + countryCodeToEmoji(post.country) else "",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                     )
