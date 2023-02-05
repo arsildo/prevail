@@ -8,6 +8,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
+
+@Composable
+fun LazyListState.isScrolledToStart(): Boolean {
+    return remember {
+        derivedStateOf {
+            val firstItem = layoutInfo.visibleItemsInfo.firstOrNull()
+            firstItem == null || firstItem.offset == layoutInfo.viewportStartOffset
+        }
+    }.value
+}
+
+@Composable
+fun LazyListState.isScrolledToEnd(): Boolean {
+    return remember {
+        derivedStateOf {
+            val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+            lastItem == null || lastItem.size + lastItem.offset <= layoutInfo.viewportEndOffset
+        }
+    }.value
+}
+
 @Composable
 fun LazyListState.isScrollingUp(): Boolean {
     var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
@@ -26,6 +47,26 @@ fun LazyListState.isScrollingUp(): Boolean {
     }.value
 }
 
+
+@Composable
+fun LazyListState.isScrollingDown(): Boolean {
+    var previousIndex by remember { mutableStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember { mutableStateOf(firstVisibleItemScrollOffset) }
+    return remember {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex < firstVisibleItemIndex
+            } else {
+                previousScrollOffset <= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
+}
+
+
 @Composable
 fun LazyListState.firstFullyVisibleItem(): Int {
     return remember(this) {
@@ -34,7 +75,8 @@ fun LazyListState.firstFullyVisibleItem(): Int {
             if (visibleItemsInfo.isNotEmpty()) {
                 val offset = (visibleItemsInfo.last().index - visibleItemsInfo.first().index) / 2
                 visibleItemsInfo.first().index + offset
-            } else 0
+            } else firstVisibleItemIndex
         }
     }.value
 }
+

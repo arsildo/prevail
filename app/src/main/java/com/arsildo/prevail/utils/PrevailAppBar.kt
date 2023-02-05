@@ -49,7 +49,6 @@ fun PrevailAppBar(
             actionIconContentColor = MaterialTheme.colorScheme.onBackground,
         ),
         modifier = Modifier
-            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(top = animatedStatusBarPadding)
     )

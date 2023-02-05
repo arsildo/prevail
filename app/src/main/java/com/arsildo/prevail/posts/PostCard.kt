@@ -59,12 +59,10 @@ fun PostCard(
                     )
                 }
             }
-            if (post.sub != null) {
-                HtmlText(htmlText = post.sub)
-            }
-            if (post.com != null) {
-                HtmlText(htmlText = post.com)
-            }
+            if (post.sub != null) HtmlText(htmlText = post.sub)
+
+            if (post.com != null) HtmlText(htmlText = post.com)
+
             if (post.mediaType != null) {
                 MediaTypeDistributor(
                     mediaType = post.mediaType,

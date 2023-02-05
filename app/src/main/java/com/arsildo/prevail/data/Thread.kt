@@ -1,18 +1,21 @@
 package com.arsildo.prevail.data
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Stable
 import com.google.gson.annotations.SerializedName
 
+@Stable
 @Keep
 class ThreadCatalog : ArrayList<ThreadCatalogItem>()
 
+@Stable
 @Keep
 data class ThreadCatalogItem(
     val page: Int,
     val threads: List<Thread>
 )
 
-
+@Stable
 @Keep
 data class Thread(
     val bumplimit: Int,

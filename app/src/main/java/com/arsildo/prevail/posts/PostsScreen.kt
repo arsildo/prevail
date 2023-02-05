@@ -150,6 +150,7 @@ fun PostsScreen(
                             val postList = viewModel.postList
 
                             val focused = lazyListState.firstFullyVisibleItem()
+
                             LaunchedEffect(focused) {
                                 mediaPlayer.pause()
                                 if (postList[focused].mediaType == ".webm") {

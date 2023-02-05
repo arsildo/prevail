@@ -112,13 +112,10 @@ fun MediaPlayer(
 }
 
 @Composable
-private fun ExoPlayerAndroidView(
-    exoPlayer: Player,
-    context: Context = LocalContext.current,
-) {
+private fun ExoPlayerAndroidView(exoPlayer: Player) {
     AndroidView(
         factory = {
-            StyledPlayerView(context).apply {
+            StyledPlayerView(it).apply {
                 useController = false
                 resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
                 layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)

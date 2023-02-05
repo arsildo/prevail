@@ -46,9 +46,9 @@ dependencies {
 
     // Library Versions
     def navVersion = "2.5.3"
-    def accompanistVersion = "0.29.0-alpha"
+    def accompanistVersion = "0.29.1-alpha"
     def datastoreVersion = "1.0.0"
-    def material3Version = "1.1.0-alpha04"
+    def material3Version = "1.1.0-alpha05"
     def hiltVersion = '2.44.2'
     def retrofitVersion = "2.9.0"
     def exoPlayerVersion = "2.18.2"

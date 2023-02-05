@@ -1,14 +1,16 @@
 package com.arsildo.prevail.data
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Stable
 import com.google.gson.annotations.SerializedName
 
-
+@Stable
 @Keep
 data class ThreadPosts(
     val posts: List<Post>
 )
 
+@Stable
 @Keep
 data class Post(
     val com: String?,
