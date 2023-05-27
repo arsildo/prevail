@@ -67,9 +67,10 @@ fun LazyListState.isScrollingDown(): Boolean {
 }
 
 
+// TODO Improve logic
 @Composable
 fun LazyListState.firstFullyVisibleItem(): Int {
-    return remember(this) {
+    return remember {
         derivedStateOf {
             val visibleItemsInfo = layoutInfo.visibleItemsInfo
             if (visibleItemsInfo.isNotEmpty()) {

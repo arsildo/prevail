@@ -16,6 +16,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,15 +64,17 @@ fun SavedBoardCard(
             }
         },
         colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            containerColor = MaterialTheme.colorScheme.background,
+            labelColor = MaterialTheme.colorScheme.onBackground,
+            selectedContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
         ),
         border = FilterChipDefaults.filterChipBorder(
-            borderColor = MaterialTheme.colorScheme.secondaryContainer,
-            selectedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+            borderColor = MaterialTheme.colorScheme.background,
+            selectedBorderColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+            borderWidth = 0.dp,
+            selectedBorderWidth = 1.5.dp
         ),
         shape = MaterialTheme.shapes.medium,
         onClick = onClick,

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -96,7 +98,10 @@ fun ThreadsScreen(
 
     // AppBar
     val appBarState = rememberTopAppBarState()
-    val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(appBarState)
+    val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = appBarState,
+        snapAnimationSpec = tween(delayMillis = 0)
+    )
 
     // Bottom Sheet
     val bottomSheetState = rememberModalBottomSheetState(
@@ -170,7 +175,6 @@ fun ThreadsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
-                .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState),
         ) {
             CompositionLocalProvider(LocalBoardContext provides currentBoard) {
@@ -184,11 +188,11 @@ fun ThreadsScreen(
 
                             val threadList = viewModel.threadList
                             val focused = lazyListState.firstFullyVisibleItem()
+                            val autoPlay by playerRepository.getAutoPlay()
+                                .collectAsState(initial = false)
                             LaunchedEffect(focused) {
-                                mediaPlayer.pause()
-                                if (threadList[focused].mediaType == ".webm") {
-                                    mediaPlayer.seekTo(focused, 0)
-                                }
+                                mediaPlayer.seekTo(focused, 0)
+                                mediaPlayer.playWhenReady = autoPlay
                             }
 
                             LazyColumn(
@@ -208,7 +212,6 @@ fun ThreadsScreen(
                                                 focused = index == focused,
                                                 playerRepository = playerRepository
                                             )
-                                            Text(text = focused.toString())
                                         }
                                     )
                                 }

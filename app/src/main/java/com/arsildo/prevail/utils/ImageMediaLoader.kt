@@ -69,8 +69,8 @@ fun ImageMediaLoader(
                 .fillMaxSize()
                 .placeholder(
                     visible = loadingImage,
-                    highlight = PlaceholderHighlight.fade(highlightColor = MaterialTheme.colorScheme.primaryContainer),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    highlight = PlaceholderHighlight.fade(highlightColor = MaterialTheme.colorScheme.surfaceVariant),
+                    color = MaterialTheme.colorScheme.background,
                 )
                 .combinedClickable(
                     onClick = onImageClick,

@@ -33,11 +33,11 @@ fun ThreadCard(
     playableMedia: @Composable (BoxScope.() -> Unit)
 ) {
     ContentCardWrapper(onClick = { onClick(thread.no) }) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                    .padding(bottom = 4.dp,),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -46,10 +46,10 @@ fun ThreadCard(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Card(
-                        shape = MaterialTheme.shapes.extraLarge,
+                        shape = MaterialTheme.shapes.large,
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
                         )
                     ) {
                         Text(
@@ -105,13 +105,14 @@ fun ThreadCard(
             if (thread.sub != null)
                 HtmlText(
                     htmlText = thread.sub,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.onBackground,
                 )
 
             if (thread.com != null)
                 HtmlText(
                     htmlText = thread.com,
-                    onClick = { onClick(thread.no) }
+                    onClick = { onClick(thread.no) },
+                    color = MaterialTheme.colorScheme.primary
                 )
 
 

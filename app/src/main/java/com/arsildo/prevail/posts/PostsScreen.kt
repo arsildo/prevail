@@ -1,6 +1,7 @@
 package com.arsildo.prevail.posts
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +70,10 @@ fun PostsScreen(
     val mediaPlayer = remember { playerRepository.player }
 
     val appBarState = rememberTopAppBarState()
-    val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = appBarState)
+    val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = appBarState,
+        snapAnimationSpec = tween(delayMillis = 0)
+    )
 
     val lazyListState = rememberLazyListState()
 
@@ -136,7 +141,6 @@ fun PostsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
-                .padding(horizontal = 16.dp)
                 .pullRefresh(pullRefreshState)
         ) {
             CompositionLocalProvider(LocalBoardContext provides currentBoard) {
@@ -150,12 +154,11 @@ fun PostsScreen(
                             val postList = viewModel.postList
 
                             val focused = lazyListState.firstFullyVisibleItem()
-
+                            val autoPlay by playerRepository.getAutoPlay()
+                                .collectAsState(initial = false)
                             LaunchedEffect(focused) {
-                                mediaPlayer.pause()
-                                if (postList[focused].mediaType == ".webm") {
-                                    mediaPlayer.seekTo(focused, 0)
-                                }
+                                mediaPlayer.seekTo(focused, 0)
+                                mediaPlayer.playWhenReady = autoPlay
                             }
 
                             LazyColumn(

@@ -4,15 +4,25 @@ import androidx.compose.runtime.mutableStateOf
 import com.arsildo.prevail.data.Post
 import com.arsildo.prevail.data.Thread
 import com.arsildo.prevail.di.MEDIA_BASE_URL
+import com.arsildo.prevail.preferences.player.PlayerPreferencesRepository
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class PlayerRepository @Inject constructor(val player: ExoPlayer) {
+class PlayerRepository @Inject constructor(
+    val player: ExoPlayer,
+    val dataStore: PlayerPreferencesRepository
+) {
 
     var isPlaying = mutableStateOf(false)
     var isMuted = mutableStateOf(false)
@@ -83,5 +93,7 @@ class PlayerRepository @Inject constructor(val player: ExoPlayer) {
     fun muteUnMutePlayer() {
         if (isMuted.value) player.volume = 1f else player.volume = 0f
     }
+
+    fun getAutoPlay() = runBlocking { dataStore.getAutoPlayMedia }
 
 }
