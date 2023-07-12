@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="17">
+      <module name="prevail.lib.myapplication" target="17" />
+      <module name="prevail.main" target="17" />
+      <module name="prevail.myapplication" target="17" />
+      <module name="prevail.myapplication.dynamicfeature" target="17" />
+      <module name="prevail.test" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
