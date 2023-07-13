@@ -1,5 +1,8 @@
-package com.arsildo.prevail.data
+package com.arsildo.model
 
+import androidx.annotation.Keep
+
+@Keep
 data class Thread(
     val bumplimit: Int? = null,
     val capcode: String? = null,

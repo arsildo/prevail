@@ -67,6 +67,12 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":feature:threadcatalog"))
+
+    implementation(project(":core:network"))
+    implementation(project(":core:model"))
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.bundles.koin)

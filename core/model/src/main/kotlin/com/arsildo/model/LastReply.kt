@@ -1,5 +1,10 @@
-package com.arsildo.prevail.data
+package com.arsildo.model
 
+import androidx.annotation.Keep
+import kotlinx.serialization.Serializable
+
+@Serializable
+@Keep
 data class LastReply(
     val capcode: String? = null,
     val com: String? = null,

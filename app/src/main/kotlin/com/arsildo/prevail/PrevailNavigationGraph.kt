@@ -6,12 +6,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.arsildo.prevail.threads.ThreadsScreen
+import com.arsildo.threadcatalog.ThreadsScreen
 
 @Composable
 fun PrevailNavigationGraph(
     navController: NavHostController = rememberNavController()
-){
+) {
     NavHost(
         navController = navController,
         contentAlignment = Alignment.Center,
@@ -20,7 +20,7 @@ fun PrevailNavigationGraph(
     ) {
         composable(
             route = Destinations.THREADS_ROUTE
-        ){
+        ) {
             ThreadsScreen(
                 onThreadClick = {}
             )

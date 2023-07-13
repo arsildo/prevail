@@ -1,6 +1,6 @@
-package com.arsildo.prevail.data.remote
+package com.arsildo.network
 
-import com.arsildo.prevail.data.ThreadCatalogItem
+import com.arsildo.model.ThreadCatalogItem
 import retrofit2.http.GET
 import retrofit2.http.Url
 

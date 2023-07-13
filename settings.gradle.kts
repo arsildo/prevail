@@ -15,3 +15,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "prevail"
 include(":app")
+
+include(":feature:threadcatalog")
+
+include(":core:model")
+include(":core:network")

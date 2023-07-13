@@ -1,9 +1,8 @@
-package com.arsildo.prevail.threads
+package com.arsildo.threadcatalog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arsildo.prevail.data.ThreadCatalogItem
-import com.arsildo.prevail.data.local.ThreadCatalogRepository
+import com.arsildo.model.ThreadCatalogItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +24,7 @@ class ThreadsViewModel(
         delay(1_000)
         _uiState.update { state ->
             state.copy(
-                threads = threadCatalogRepository.getThreadCatalog("po/catalog.json"),
+                threads = threadCatalogRepository.getThreadCatalog("wsg/catalog.json"),
                 isLoading = false
             )
         }

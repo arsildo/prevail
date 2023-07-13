@@ -1,4 +1,4 @@
-package com.arsildo.prevail.threads
+package com.arsildo.threadcatalog
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -50,7 +50,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.arsildo.prevail.utils.isScrollingUp
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -102,7 +101,7 @@ fun ThreadsScreenContent(
         },
         floatingActionButton = {
             AnimatedVisibility(
-                visible = listState.isScrollingUp(),
+                visible = true,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -141,42 +140,11 @@ fun ThreadsScreenContent(
                 items(
                     items = uiState.threads[1].threads,
                     key = { item -> item.no!! }
-                ) { item ->
-                    Card(
-                        shape = CardDefaults.shape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Row {
-                                Text(
-                                    text = item.name!!,
-                                    modifier = Modifier
-                                )
-                                Text(
-                                    text = "${item.no}",
-                                    modifier = Modifier
-                                )
-                            }
-                            val context = LocalContext.current
-                            val imageModel = remember {
-                                ImageRequest.Builder(context)
-                                    .data("")
-                                    .crossfade(true)
-                                    .scale(Scale.FIT)
-                                    .build()
-                            }
-                            AsyncImage(
-                                model = imageModel,
-                                contentDescription = null,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .clip(CardDefaults.shape)
-                                    .aspectRatio(1f)
-                            )
-                        }
-                    }
+                ) { thread ->
+                    ThreadCard(
+                        thread = thread,
+                        onClick = { onThreadClick(thread.no!!) }
+                    )
                 }
             }
         }

@@ -1,11 +1,11 @@
-package com.arsildo.prevail.data.local
+package com.arsildo.threadcatalog
 
-import com.arsildo.prevail.data.ThreadCatalogItem
-import com.arsildo.prevail.data.remote.NetworkService
+import com.arsildo.model.ThreadCatalogItem
+import com.arsildo.network.NetworkService
 
-class ThreadCatalogRepository (
+class ThreadCatalogRepository(
     private val networkService: NetworkService
-){
+) {
     suspend fun getThreadCatalog(board: String): List<ThreadCatalogItem> {
         return networkService.getThreadCatalog(board)
     }

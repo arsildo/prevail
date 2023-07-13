@@ -1,6 +1,7 @@
 package com.arsildo.prevail
 
 import android.app.Application
+import com.arsildo.network.di.networkModule
 import com.arsildo.prevail.di.appModule
 import org.koin.android.BuildConfig
 import org.koin.android.ext.koin.androidContext
@@ -14,7 +15,10 @@ class PrevailApplication : Application() {
         startKoin {
             androidLogger(level = if (BuildConfig.DEBUG) Level.DEBUG else Level.NONE)
             androidContext(this@PrevailApplication)
-            modules(appModule)
+            modules(
+                networkModule,
+                appModule
+            )
         }
     }
 }
