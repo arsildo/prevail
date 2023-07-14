@@ -20,3 +20,5 @@ include(":feature:threadcatalog")
 
 include(":core:model")
 include(":core:network")
+include(":core:preferences")
+include(":feature:preferences")

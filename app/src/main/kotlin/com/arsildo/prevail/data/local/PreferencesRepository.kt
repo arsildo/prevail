@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
+@Single
 class PreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {

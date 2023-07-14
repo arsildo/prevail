@@ -1,6 +1,7 @@
 package com.arsildo.prevail
 
 import android.app.Application
+import com.arsildo.core.preferences.di.datastoreModule
 import com.arsildo.network.di.networkModule
 import com.arsildo.prevail.di.appModule
 import org.koin.android.BuildConfig
@@ -17,6 +18,7 @@ class PrevailApplication : Application() {
             androidContext(this@PrevailApplication)
             modules(
                 networkModule,
+                datastoreModule,
                 appModule
             )
         }

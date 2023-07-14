@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.arsildo.preferences.navigateToPreferences
+import com.arsildo.preferences.preferences
 import com.arsildo.threadcatalog.ThreadsScreen
 
 @Composable
@@ -22,8 +24,11 @@ fun PrevailNavigationGraph(
             route = Destinations.THREADS_ROUTE
         ) {
             ThreadsScreen(
-                onThreadClick = {}
+                onThreadClick = {
+                    navController.navigateToPreferences()
+                }
             )
         }
+        preferences()
     }
 }

@@ -59,7 +59,7 @@ fun ThreadsScreen(
     onThreadClick: (Int) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ThreadsScreenContent(
+    ThreadsScreenPreview(
         uiState = uiState,
         onThreadClick = onThreadClick
     )
@@ -67,7 +67,7 @@ fun ThreadsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ThreadsScreenContent(
+private fun ThreadsScreenPreview(
     uiState: ThreadsScreenUiState,
     onThreadClick: (Int) -> Unit,
 ) {

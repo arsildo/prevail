@@ -13,12 +13,6 @@ import org.koin.dsl.module
 
 val appModule = module {
     singleOf(::ThreadCatalogRepository)
-    single {
-        PreferenceDataStoreFactory.create(
-            produceFile = { androidContext().preferencesDataStoreFile("DATASTORE_KEY") },
-        )
-    }
-
     singleOf(::PreferencesRepository)
     viewModelOf(::ThreadsViewModel)
     viewModelOf(::MainActivityViewModel)

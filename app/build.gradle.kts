@@ -69,9 +69,11 @@ android {
 dependencies {
 
     implementation(project(":feature:threadcatalog"))
+    implementation(project(":feature:preferences"))
 
     implementation(project(":core:network"))
     implementation(project(":core:model"))
+    implementation(project(":core:preferences"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
