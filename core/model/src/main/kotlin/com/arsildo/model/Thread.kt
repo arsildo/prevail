@@ -11,14 +11,14 @@ data class Thread(
     val ext: String? = null,
     val filename: String? = null,
     val fsize: Int? = null,
-    val h: Int? = null,
+    val h: Int,
     val imagelimit: Int? = null,
     val images: Int? = null,
     val last_modified: Int? = null,
     val last_replies: List<LastReply>? = null,
     val md5: String? = null,
     val name: String? = null,
-    val no: Int? = null,
+    val no: Int,
     val now: String? = null,
     val omitted_images: Int? = null,
     val omitted_posts: Int? = null,
@@ -29,8 +29,8 @@ data class Thread(
     val sub: String? = null,
     val tim: Long? = null,
     val time: Int? = null,
-    val tn_h: Int? = null,
-    val tn_w: Int? = null,
+    val tn_h: Int,
+    val tn_w: Int,
     val trip: String? = null,
-    val w: Int? = null
+    val w: Int
 )

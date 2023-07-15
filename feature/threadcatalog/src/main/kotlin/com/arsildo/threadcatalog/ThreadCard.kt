@@ -7,13 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arsildo.media.VideoThumbnail
 import com.arsildo.model.Thread
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,27 +31,24 @@ internal fun ThreadCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = thread.name.toString())
+            Badge {
                 Text(text = thread.no.toString())
             }
-            Box(
-                modifier = Modifier.aspectRatio(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = thread.ext.toString())
+
+            Box(modifier = Modifier.aspectRatio(1f)) {
+                VideoThumbnail(url = "https://is2.4chan.org/wsg/1685178119727625.webm")
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = thread.replies.toString())
-                Text(text = thread.no.toString())
+                Text(
+                    text = thread.replies.toString() + " replies",
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }

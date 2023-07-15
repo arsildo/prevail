@@ -139,11 +139,11 @@ private fun ThreadsScreenPreview(
             ) {
                 items(
                     items = uiState.threads[1].threads,
-                    key = { item -> item.no!! }
+                    key = { item -> item.no }
                 ) { thread ->
                     ThreadCard(
                         thread = thread,
-                        onClick = { onThreadClick(thread.no!!) }
+                        onClick = { onThreadClick(thread.no) }
                     )
                 }
             }

@@ -6,7 +6,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
-const val PREFERENCES_GRAPH = "preferences"
+const val PREFERENCES_GRAPH = "preferenceGraph"
 
 fun NavController.navigateToPreferences(navOptions: NavOptions? = null) {
     this.navigate(PREFERENCES_GRAPH, navOptions)

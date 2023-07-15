@@ -16,7 +16,6 @@ fun PrevailNavigationGraph(
 ) {
     NavHost(
         navController = navController,
-        contentAlignment = Alignment.Center,
         route = ROOT_GRAPH,
         startDestination = Destinations.THREADS_ROUTE
     ) {

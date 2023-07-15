@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arsildo.prevail.ui.theme.PrevailTheme
+import com.arsildo.core.theme.PrevailTheme
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : AppCompatActivity() {

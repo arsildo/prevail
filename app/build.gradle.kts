@@ -67,13 +67,13 @@ android {
 }
 
 dependencies {
-
     implementation(project(":feature:threadcatalog"))
     implementation(project(":feature:preferences"))
 
     implementation(project(":core:network"))
     implementation(project(":core:model"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:theme"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -81,9 +81,7 @@ dependencies {
     ksp(libs.koin.ksp)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.bundles.accompanist)
     implementation(libs.bundles.coil)
     implementation(libs.datastore.preferences)
     implementation(libs.bundles.retrofit)
-
 }

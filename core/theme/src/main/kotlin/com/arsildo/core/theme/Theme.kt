@@ -1,4 +1,4 @@
-package com.arsildo.prevail.ui.theme
+package com.arsildo.core.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -7,15 +7,16 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
-import com.arsildo.prevail.PrevailUiState
+import com.arsildo.core.theme.PrevailUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun PrevailTheme(
-    uiState: PrevailUiState  = PrevailUiState(),
+    uiState: PrevailUiState = PrevailUiState(),
     content: @Composable () -> Unit
 ) {
-    val isDarkThemeEnabled = if (uiState.isAutomaticThemeEnabled) isSystemInDarkTheme() else uiState.isDarkThemeEnabled
+    val isDarkThemeEnabled =
+        if (uiState.isAutomaticThemeEnabled) isSystemInDarkTheme() else uiState.isDarkThemeEnabled
     val systemUiController = rememberSystemUiController()
     DisposableEffect(systemUiController, isDarkThemeEnabled) {
         systemUiController.setSystemBarsColor(
