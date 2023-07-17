@@ -13,7 +13,6 @@ data class ThreadsScreenUiState(
     val isLoading: Boolean = true,
     val threads: List<ThreadCatalog> = emptyList()
 )
-
 class ThreadsViewModel(
     private val threadCatalogRepository: ThreadCatalogRepository
 ) : ViewModel() {

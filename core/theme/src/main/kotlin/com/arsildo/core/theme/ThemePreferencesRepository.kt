@@ -4,8 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import com.arsildo.core.preferences.di.datastoreModule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
+import org.koin.core.annotation.Singleton
 
 class ThemePreferencesRepository(
     private val dataStore: DataStore<Preferences>

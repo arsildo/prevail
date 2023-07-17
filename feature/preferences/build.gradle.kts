@@ -20,6 +20,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:theme"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

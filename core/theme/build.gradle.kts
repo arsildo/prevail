@@ -17,8 +17,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:preferences"))
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.bundles.koin)
+    ksp(libs.koin.ksp)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.bundles.accompanist)

@@ -9,13 +9,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 val networkModule = module {
-
     single {
         Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
     }
-
     single {
         Retrofit.Builder()
             .baseUrl(Endpoints.BASE_URL)
@@ -23,5 +21,4 @@ val networkModule = module {
             .build()
     }
     single { get<Retrofit>().create(NetworkService::class.java) }
-
 }

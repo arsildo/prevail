@@ -18,7 +18,10 @@ fun PrevailTheme(
     val isDarkThemeEnabled =
         if (uiState.isAutomaticThemeEnabled) isSystemInDarkTheme() else uiState.isDarkThemeEnabled
     val systemUiController = rememberSystemUiController()
-    DisposableEffect(systemUiController, isDarkThemeEnabled) {
+    DisposableEffect(
+        key1 = systemUiController,
+        key2 = isDarkThemeEnabled
+    ) {
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
             darkIcons = !isDarkThemeEnabled

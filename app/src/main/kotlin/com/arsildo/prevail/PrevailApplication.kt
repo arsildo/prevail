@@ -17,9 +17,9 @@ class PrevailApplication : Application() {
             androidLogger(level = if (BuildConfig.DEBUG) Level.DEBUG else Level.NONE)
             androidContext(this@PrevailApplication)
             modules(
+                appModule,
                 networkModule,
-                datastoreModule,
-                appModule
+                datastoreModule
             )
         }
     }

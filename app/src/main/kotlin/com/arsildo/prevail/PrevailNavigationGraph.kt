@@ -1,7 +1,6 @@
 package com.arsildo.prevail
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +27,6 @@ fun PrevailNavigationGraph(
                 }
             )
         }
-        preferences()
+        preferences(navController = navController)
     }
 }
