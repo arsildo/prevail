@@ -3,6 +3,7 @@ package com.arsildo.prevail.di
 import com.arsildo.prevail.MainActivityViewModel
 import com.arsildo.core.theme.ThemePreferencesRepository
 import com.arsildo.preferences.appearance.AppearancePreferencesViewModel
+import com.arsildo.threadcatalog.ThreadCatalogDataSource
 import com.arsildo.threadcatalog.ThreadCatalogRepository
 import com.arsildo.threadcatalog.ThreadsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -11,6 +12,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     singleOf(::ThreadCatalogRepository)
+    singleOf(::ThreadCatalogDataSource)
     singleOf(::ThemePreferencesRepository)
 
     viewModelOf(::ThreadsViewModel)

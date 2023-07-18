@@ -1,9 +1,9 @@
 [versions]
 agp = "8.2.0-alpha12"
-kotlin = "1.8.22"
+kotlin = "1.9.0"
 compose-bom = "2023.06.01"
-compose-compiler = "1.4.8"
-ksp = "1.8.22-1.0.11"
+compose-compiler = "1.5.0"
+ksp = "1.9.0-1.0.11"
 lifecycle-runtime = "2.6.1"
 material3 = "1.2.0-alpha03"
 accompanist = "0.31.5-beta"
@@ -12,6 +12,7 @@ koin-ksp = "1.2.2"
 koin-androidx = "3.4.5"
 detekt = "1.23.0"
 retrofit = "2.9.0"
+okhttp = "4.10.0"
 ktor = "2.3.2"
 coil = "2.4.0"
 
@@ -43,6 +44,10 @@ koin-compose-navigation = { group = "io.insert-koin", name = "koin-androidx-comp
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 retrofit-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version = "1.15.0" }
+# okhttp
+okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 # ktor
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }

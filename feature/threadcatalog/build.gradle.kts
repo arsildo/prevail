@@ -32,4 +32,5 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coil)
     implementation(libs.datastore.preferences)
+    implementation(libs.bundles.retrofit)
 }

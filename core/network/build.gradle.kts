@@ -19,4 +19,7 @@ dependencies {
     implementation(libs.bundles.koin)
     ksp(libs.koin.ksp)
     implementation(libs.bundles.retrofit)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 }

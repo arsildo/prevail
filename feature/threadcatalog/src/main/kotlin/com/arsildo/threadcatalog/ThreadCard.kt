@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arsildo.media.Image
 import com.arsildo.media.VideoThumbnail
 import com.arsildo.model.Thread
 
@@ -34,12 +35,23 @@ internal fun ThreadCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Badge {
-                Text(text = thread.no.toString())
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Badge { Text(text = thread.no.toString()) }
+                Text(text = thread.now.toString(), style = MaterialTheme.typography.labelMedium)
             }
 
-            Box(modifier = Modifier.aspectRatio(1f)) {
-                VideoThumbnail(url = "https://is2.4chan.org/wsg/1685178119727625.webm")
+            Text(
+                text = thread.sub.toString(),
+            )
+
+            Box(
+                modifier = Modifier.aspectRatio(1f)
+            ) {
+                Image(url = "https://i.4cdn.org/po/1546293948883.png")
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
