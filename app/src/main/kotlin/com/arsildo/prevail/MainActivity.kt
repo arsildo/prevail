@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
             val prevailUiState by viewModel.uiState.collectAsStateWithLifecycle()
             PrevailTheme(
                 uiState = prevailUiState,
-                content = { PrevailNavigationGraph() }
+                content = { PrevailNavigationGraph(viewModel = viewModel) }
             )
         }
     }

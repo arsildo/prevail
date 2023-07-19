@@ -1,17 +1,14 @@
 package com.arsildo.threadcatalog
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeGestures
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,19 +25,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ThreadsScreen(
     viewModel: ThreadsViewModel = koinViewModel(),
+    testValue: Boolean,
     onThreadClick: (Int) -> Unit,
+    onPreferencesClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     ThreadsScreenPreview(
         uiState = uiState,
-        onThreadClick = onThreadClick
+        onThreadClick = onThreadClick,
+        testValue = testValue,
+        onPreferencesClick = onPreferencesClick
     )
 }
 
@@ -48,7 +48,9 @@ fun ThreadsScreen(
 @Composable
 private fun ThreadsScreenPreview(
     uiState: ThreadsScreenUiState,
+    testValue: Boolean,
     onThreadClick: (Int) -> Unit,
+    onPreferencesClick: () -> Unit,
 ) {
     val listState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -64,7 +66,7 @@ private fun ThreadsScreenPreview(
                                 contentDescription = null
                             )
                         },
-                        onClick = { /*TODO*/ }
+                        onClick = onPreferencesClick
                     )
                 },
                 scrollBehavior = scrollBehavior,
@@ -89,20 +91,28 @@ private fun ThreadsScreenPreview(
             if (uiState.isLoading) CircularProgressIndicator(strokeCap = StrokeCap.Round)
             else {
                 if (uiState.loadingError.isBlank())
-                    LazyColumn(
-                        state = listState,
-                        contentPadding = WindowInsets.safeGestures.asPaddingValues(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(
-                            items = uiState.threads[0].threads,
-                            key = { item -> item.no }
-                        ) { thread ->
-                            ThreadCard(
-                                thread = thread,
-                                onClick = { onThreadClick(thread.no) }
-                            )
+                    Column {
+                        Text(text = testValue.toString())
+                        Button(
+                            onClick = { onThreadClick(0) }
+                        ) {
+                            Text(text = "Update")
                         }
+                        /*LazyColumn(
+                            state = listState,
+                            contentPadding = WindowInsets.safeGestures.asPaddingValues(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(
+                                items = uiState.threads[0].threads,
+                                key = { item -> item.no }
+                            ) { thread ->
+                                ThreadCard(
+                                    thread = thread,
+                                    onClick = { onThreadClick(thread.no) }
+                                )
+                            }
+                        }*/
                     }
                 else Text(text = uiState.loadingError, textAlign = TextAlign.Center)
             }

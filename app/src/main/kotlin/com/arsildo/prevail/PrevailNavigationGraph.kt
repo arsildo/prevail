@@ -11,7 +11,8 @@ import com.arsildo.threadcatalog.ThreadsScreen
 
 @Composable
 fun PrevailNavigationGraph(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    viewModel: MainActivityViewModel,
 ) {
     NavHost(
         navController = navController,
@@ -22,11 +23,15 @@ fun PrevailNavigationGraph(
             route = Destinations.THREADS_ROUTE
         ) {
             ThreadsScreen(
-                onThreadClick = {
-                    navController.navigateToPreferences()
-                }
+                onThreadClick = { viewModel.updateTestValue() },
+                onPreferencesClick = navController::navigateToPreferences,
+                testValue = viewModel.testValue
             )
         }
-        preferences(navController = navController)
+        preferences(
+            navController = navController,
+            testValue = viewModel.testValue,
+            updateTestValue = viewModel::updateTestValue
+        )
     }
 }

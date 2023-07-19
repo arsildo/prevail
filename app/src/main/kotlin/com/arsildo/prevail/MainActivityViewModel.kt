@@ -1,5 +1,8 @@
 package com.arsildo.prevail
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.core.theme.PrevailUiState
@@ -24,4 +27,13 @@ class MainActivityViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = PrevailUiState()
     )
+
+    var testValue by mutableStateOf(false)
+        private set
+
+    fun updateTestValue() {
+        testValue = !testValue
+    }
+
+
 }
