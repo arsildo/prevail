@@ -3,35 +3,32 @@ package com.arsildo.prevail
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.arsildo.posts.navigateToPosts
+import com.arsildo.posts.posts
 import com.arsildo.preferences.navigateToPreferences
 import com.arsildo.preferences.preferences
-import com.arsildo.threadcatalog.ThreadsScreen
+import com.arsildo.threadcatalog.THREAD_CATALOG_GRAPH
+import com.arsildo.threadcatalog.threadCatalog
 
 @Composable
 fun PrevailNavigationGraph(
-    navController: NavHostController = rememberNavController(),
-    viewModel: MainActivityViewModel,
+    navController: NavHostController = rememberNavController()
 ) {
     NavHost(
         navController = navController,
-        route = ROOT_GRAPH,
-        startDestination = Destinations.THREADS_ROUTE
+        startDestination = THREAD_CATALOG_GRAPH
     ) {
-        composable(
-            route = Destinations.THREADS_ROUTE
-        ) {
-            ThreadsScreen(
-                onThreadClick = { viewModel.updateTestValue() },
-                onPreferencesClick = navController::navigateToPreferences,
-                testValue = viewModel.testValue
-            )
-        }
-        preferences(
+        threadCatalog(
             navController = navController,
-            testValue = viewModel.testValue,
-            updateTestValue = viewModel::updateTestValue
+            onThreadClick = navController::navigateToPosts,
+            onPreferencesClick = navController::navigateToPreferences,
+        )
+        posts(
+            navController = navController
+        )
+        preferences(
+            navController = navController
         )
     }
 }

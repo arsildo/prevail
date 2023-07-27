@@ -1,35 +1,41 @@
-package com.arsildo.threadcatalog
+package com.arsildo.posts
 
 import ApiError
 import ApiException
 import ApiSuccess
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arsildo.model.ThreadCatalog
-import com.arsildo.threadcatalog.data.ThreadCatalogRepository
+import com.arsildo.model.Post
+import com.arsildo.posts.data.PostsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ThreadsScreenUiState(
+
+data class PostsUiState(
     val isLoading: Boolean = true,
     val loadingError: String = "",
-    val threads: List<ThreadCatalog> = emptyList()
+    val posts: List<Post> = emptyList(),
 )
 
-class ThreadsViewModel(
-    private val threadCatalogRepository: ThreadCatalogRepository
+class PostsViewModel(
+    private val postsRepository: PostsRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(ThreadsScreenUiState())
+    private val _uiState = MutableStateFlow(PostsUiState())
     val uiState = _uiState.asStateFlow()
 
-    private suspend fun getThreads() = viewModelScope.launch {
+    private suspend fun getPosts() = viewModelScope.launch {
         _uiState.update { state ->
-            when (val response = threadCatalogRepository.getThreadCatalog("po")) {
+            when (val response = postsRepository.getThreadCatalog(
+                thread = "po",
+                threadNumber = checkNotNull(savedStateHandle[THREAD_NUMBER_ARG])
+            )) {
                 is ApiSuccess -> state.copy(
                     isLoading = false,
-                    threads = response.data
+                    posts = response.data.posts
                 )
 
                 is ApiError -> state.copy(
@@ -48,7 +54,7 @@ class ThreadsViewModel(
     }
 
     init {
-        viewModelScope.launch { getThreads() }
+        viewModelScope.launch { getPosts() }
     }
 
 }

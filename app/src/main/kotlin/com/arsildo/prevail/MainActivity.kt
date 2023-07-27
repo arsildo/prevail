@@ -16,10 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val viewModel = koinViewModel<MainActivityViewModel>()
             val prevailUiState by viewModel.uiState.collectAsStateWithLifecycle()
-            PrevailTheme(
-                uiState = prevailUiState,
-                content = { PrevailNavigationGraph(viewModel = viewModel) }
-            )
+            PrevailTheme(uiState = prevailUiState) { PrevailNavigationGraph() }
         }
     }
 }

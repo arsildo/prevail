@@ -3,11 +3,10 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.detekt)
 }
 
 android {
-    namespace = "com.arsildo.feature.threadcatalog"
+    namespace = "com.arsildo.feature.posts"
     compileSdk = 34
     buildFeatures {
         compose = true
@@ -22,7 +21,6 @@ dependencies {
     implementation(project(":core:media"))
     implementation(project(":core:preferences"))
     implementation(project(":core:model"))
-    implementation(project(":core:theme"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

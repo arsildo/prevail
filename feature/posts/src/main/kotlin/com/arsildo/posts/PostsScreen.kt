@@ -1,4 +1,4 @@
-package com.arsildo.threadcatalog
+package com.arsildo.posts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,99 +23,36 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
-import androidx.navigation.navigation
-import com.arsildo.prevail.MainActivityViewModel
 import org.koin.androidx.compose.koinViewModel
-
-
-const val THREAD_CATALOG_GRAPH = "threadCatalogGraph"
-
-fun NavController.navigateToThreadCatalog(navOptions: NavOptions?) {
-    this.navigate(
-        route = THREAD_CATALOG_GRAPH,
-        navOptions = navOptions
-    )
-}
-
-fun NavGraphBuilder.threadCatalog(
-    navController: NavHostController,
-    onThreadClick: (Int) -> Unit,
-    onPreferencesClick: () -> Unit,
-) {
-    navigation(
-        route = THREAD_CATALOG_GRAPH,
-        startDestination = "threadCatalog"
-    ) {
-        composable("threadCatalog") { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(THREAD_CATALOG_GRAPH)
-            }
-            val viewModel = koinViewModel<MainActivityViewModel>(viewModelStoreOwner = parentEntry)
-            ThreadsScreen(
-                onThreadClick = onThreadClick,
-                onPreferencesClick = onPreferencesClick
-            )
-        }
-    }
-}
-
-
-@Composable
-fun ThreadsScreen(
-    viewModel: ThreadsViewModel = koinViewModel(),
-    onThreadClick: (Int) -> Unit,
-    onPreferencesClick: () -> Unit,
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ThreadsScreenPreview(
-        uiState = uiState,
-        onThreadClick = onThreadClick,
-        onPreferencesClick = onPreferencesClick
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ThreadsScreenPreview(
-    uiState: ThreadsScreenUiState,
-    onThreadClick: (Int) -> Unit,
-    onPreferencesClick: () -> Unit,
+fun PostsScreen(
+    viewModel: PostsViewModel = koinViewModel(),
+    onBackPress: () -> Unit,
 ) {
-    val listState = rememberLazyListState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "/gif/") },
-                actions = {
+                title = { Text("") },
+                navigationIcon = {
                     IconButton(
                         content = {
                             Icon(
-                                imageVector = Icons.Rounded.Menu,
+                                imageVector = Icons.Rounded.ArrowBack,
                                 contentDescription = null
                             )
                         },
-                        onClick = onPreferencesClick
+                        onClick = onBackPress
                     )
                 },
-                scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     scrolledContainerColor = MaterialTheme.colorScheme.background,
@@ -128,12 +63,11 @@ private fun ThreadsScreenPreview(
             )
         },
         contentWindowInsets = WindowInsets(top = 0, bottom = 0),
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { contentPadding ->
         Box(
             modifier = Modifier
-                .padding(contentPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(contentPadding),
             contentAlignment = Alignment.Center
         ) {
             if (uiState.isLoading) CircularProgressIndicator(strokeCap = StrokeCap.Round)
@@ -141,18 +75,17 @@ private fun ThreadsScreenPreview(
                 if (uiState.loadingError.isBlank())
                     Column {
                         LazyColumn(
-                            state = listState,
                             contentPadding = WindowInsets.safeGestures.asPaddingValues(),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             items(
-                                items = uiState.threads[0].threads,
+                                items = uiState.posts,
                                 key = { item -> item.no }
-                            ) { thread ->
-                                ThreadCard(
-                                    thread = thread,
-                                    onClick = { onThreadClick(thread.no) }
-                                )
+                            ) { post ->
+                                Column {
+                                    Text(text = post.ext.toString())
+                                    Text(text = post.sub.toString())
+                                }
                             }
                         }
                     }

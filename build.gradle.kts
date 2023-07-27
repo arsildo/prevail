@@ -4,12 +4,14 @@ plugins {
     alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.kotlinAndroid) apply false
     alias(libs.plugins.kotlin.jvm) apply false
-    alias (libs.plugins.ksp) apply false
-    alias (libs.plugins.detekt)
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.detekt)
 }
 
-subprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions.jvmTarget = "1.8"
+allprojects {
+    subprojects {
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            kotlinOptions.jvmTarget = "1.8"
+        }
     }
 }

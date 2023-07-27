@@ -68,6 +68,7 @@ android {
 
 dependencies {
     implementation(project(":feature:threadcatalog"))
+    implementation(project(":feature:posts"))
     implementation(project(":feature:preferences"))
 
     implementation(project(":core:network"))

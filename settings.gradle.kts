@@ -17,10 +17,11 @@ rootProject.name = "prevail"
 include(":app")
 
 include(":feature:threadcatalog")
+include(":feature:posts")
+include(":feature:preferences")
 
 include(":core:model")
 include(":core:network")
 include(":core:preferences")
-include(":feature:preferences")
 include(":core:theme")
 include(":core:media")
