@@ -18,6 +18,7 @@ include(":app")
 
 include(":feature:threadcatalog")
 include(":feature:posts")
+include(":feature:boards")
 include(":feature:preferences")
 
 include(":core:model")

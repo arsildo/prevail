@@ -1,5 +1,7 @@
 package com.arsildo.threadcatalog
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.rounded.PlaylistAddCheck
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,25 +27,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
-import com.arsildo.prevail.MainActivityViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -59,19 +55,21 @@ fun NavController.navigateToThreadCatalog(navOptions: NavOptions?) {
 fun NavGraphBuilder.threadCatalog(
     navController: NavHostController,
     onThreadClick: (Int) -> Unit,
+    onBoardsClick: () -> Unit,
     onPreferencesClick: () -> Unit,
 ) {
     navigation(
         route = THREAD_CATALOG_GRAPH,
         startDestination = "threadCatalog"
     ) {
-        composable("threadCatalog") { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(THREAD_CATALOG_GRAPH)
-            }
-            val viewModel = koinViewModel<MainActivityViewModel>(viewModelStoreOwner = parentEntry)
+        composable(
+            route = "threadCatalog",
+            enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right) },
+            exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left) }
+        ) {
             ThreadsScreen(
                 onThreadClick = onThreadClick,
+                onBoardsClick = onBoardsClick,
                 onPreferencesClick = onPreferencesClick
             )
         }
@@ -83,12 +81,14 @@ fun NavGraphBuilder.threadCatalog(
 fun ThreadsScreen(
     viewModel: ThreadsViewModel = koinViewModel(),
     onThreadClick: (Int) -> Unit,
+    onBoardsClick: () -> Unit,
     onPreferencesClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     ThreadsScreenPreview(
         uiState = uiState,
         onThreadClick = onThreadClick,
+        onBoardsClick = onBoardsClick,
         onPreferencesClick = onPreferencesClick
     )
 }
@@ -98,6 +98,7 @@ fun ThreadsScreen(
 private fun ThreadsScreenPreview(
     uiState: ThreadsScreenUiState,
     onThreadClick: (Int) -> Unit,
+    onBoardsClick: () -> Unit,
     onPreferencesClick: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -107,6 +108,15 @@ private fun ThreadsScreenPreview(
             TopAppBar(
                 title = { Text(text = "/gif/") },
                 actions = {
+                    IconButton(
+                        content = {
+                            Icon(
+                                imageVector = Icons.Rounded.PlaylistAddCheck,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = onBoardsClick
+                    )
                     IconButton(
                         content = {
                             Icon(
