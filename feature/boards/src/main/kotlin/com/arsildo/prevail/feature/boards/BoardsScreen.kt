@@ -29,16 +29,19 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardsScreen(
+    viewModel: BoardsViewModel = koinViewModel(),
     onBackPress: () -> Unit,
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("") },
+                title = { Text("Boards") },
                 navigationIcon = {
                     IconButton(
                         content = {
@@ -67,7 +70,27 @@ fun BoardsScreen(
                 .padding(contentPadding),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "Boards")
+            if (uiState.isLoading) CircularProgressIndicator(strokeCap = StrokeCap.Round)
+            else {
+                if (uiState.loadingError.isBlank())
+                    Column {
+                        LazyColumn(
+                            contentPadding = WindowInsets.safeGestures.asPaddingValues(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(
+                                items = uiState.boards,
+                                key = { item -> item.board }
+                            ) { board ->
+                                BoardCard(
+                                    board = board,
+                                    onCheckedChange = {}
+                                )
+                            }
+                        }
+                    }
+                else Text(text = uiState.loadingError, textAlign = TextAlign.Center)
+            }
         }
     }
 }

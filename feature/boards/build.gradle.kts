@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.bundles.koin)
+    implementation(libs.play.services.basement)
     ksp(libs.koin.ksp)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)

@@ -6,6 +6,9 @@ import com.arsildo.posts.data.PostsDataSource
 import com.arsildo.posts.data.PostsRepository
 import com.arsildo.preferences.appearance.AppearancePreferencesViewModel
 import com.arsildo.prevail.MainActivityViewModel
+import com.arsildo.prevail.feature.boards.BoardsViewModel
+import com.arsildo.prevail.feature.boards.data.BoardsDataSource
+import com.arsildo.prevail.feature.boards.data.BoardsRepository
 import com.arsildo.threadcatalog.ThreadsViewModel
 import com.arsildo.threadcatalog.data.ThreadCatalogDataSource
 import com.arsildo.threadcatalog.data.ThreadCatalogRepository
@@ -23,6 +26,10 @@ val appModule = module {
     singleOf(::PostsDataSource)
     singleOf(::PostsRepository)
     viewModelOf(::PostsViewModel)
+
+    singleOf(::BoardsDataSource)
+    singleOf(::BoardsRepository)
+    viewModelOf(::BoardsViewModel)
 
     viewModelOf(::MainActivityViewModel)
     viewModelOf(::AppearancePreferencesViewModel)

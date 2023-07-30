@@ -15,6 +15,7 @@ retrofit = "2.9.0"
 okhttp = "4.11.0"
 ktor = "2.3.2"
 coil = "2.4.0"
+play-services-basement = "18.2.0"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -59,6 +60,7 @@ coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
 
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.5.1" }
+play-services-basement = { group = "com.google.android.gms", name = "play-services-basement", version.ref = "play-services-basement" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
