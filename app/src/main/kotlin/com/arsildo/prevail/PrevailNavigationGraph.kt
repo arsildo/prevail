@@ -15,10 +15,12 @@ import com.arsildo.threadcatalog.threadCatalog
 
 @Composable
 fun PrevailNavigationGraph(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    route: String = "rootGraph",
 ) {
     NavHost(
         navController = navController,
+        route = route,
         startDestination = THREAD_CATALOG_GRAPH
     ) {
         threadCatalog(

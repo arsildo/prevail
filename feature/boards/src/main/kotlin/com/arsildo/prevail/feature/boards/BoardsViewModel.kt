@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.context.startKoin
 
 
 data class BoardsUiState(
     val isLoading: Boolean = true,
     val loadingError: String = "",
     val boards: List<Board> = emptyList(),
+    val searchQuery: String = "",
 )
 
 class BoardsViewModel(
@@ -25,13 +27,19 @@ class BoardsViewModel(
     private val _uiState = MutableStateFlow(BoardsUiState())
     val uiState = _uiState.asStateFlow()
 
-    private suspend fun getBoards() = viewModelScope.launch {
+    // saves a copy of all boards
+    private var boardsResponse = emptyList<Board>()
+
+    private fun getBoards() = viewModelScope.launch {
         _uiState.update { state ->
             when (val response = boardsRepository.getBoards()) {
-                is ApiSuccess -> state.copy(
-                    isLoading = false,
-                    boards = response.data.boards
-                )
+                is ApiSuccess -> {
+                    boardsResponse = response.data.boards
+                    state.copy(
+                        isLoading = false,
+                        boards = boardsResponse
+                    )
+                }
 
                 is ApiError -> state.copy(
                     isLoading = false,
@@ -49,6 +57,24 @@ class BoardsViewModel(
     }
 
     init {
-        viewModelScope.launch { getBoards() }
+        getBoards()
     }
+
+    fun updateSearchQuery(query: String) = _uiState.update { state ->
+        state.copy(
+            searchQuery = query,
+            boards = boardsResponse.filter { board ->
+                board.board.contains(query, ignoreCase = true) ||
+                        board.meta_description?.contains(query, ignoreCase = true) == true
+            }
+        )
+    }
+
+    fun clearSearchQuery() = _uiState.update { state ->
+        state.copy(
+            searchQuery = "",
+            boards = boardsResponse
+        )
+    }
+
 }
