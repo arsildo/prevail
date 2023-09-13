@@ -24,8 +24,8 @@ dependencies {
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+    implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin)
-    ksp(libs.koin.ksp)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.datastore.preferences)
