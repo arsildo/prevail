@@ -65,7 +65,7 @@ fun BoardsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Boards") },
+                title = { Text(text = "Boards") },
                 navigationIcon = {
                     IconButton(
                         content = {
@@ -98,7 +98,8 @@ fun BoardsScreen(
             else {
                 if (uiState.loadingError.isBlank())
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         val tabList = listOf("boards", "your boards")
                         var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -109,7 +110,7 @@ fun BoardsScreen(
                                     Tab(
                                         selected = selectedTabIndex == index,
                                         onClick = { selectedTabIndex = index },
-                                        text = { Text(tabList[index]) }
+                                        text = { Text(text = tabList[index]) }
                                     )
                                 }
                             }
@@ -120,7 +121,9 @@ fun BoardsScreen(
                         ) { target ->
                             when (target) {
                                 0 -> {
-                                    Column {
+                                    Column(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
                                         val listState = rememberLazyListState()
                                         LaunchedEffect(uiState.boards.size) {
                                             listState.scrollToItem(0)
