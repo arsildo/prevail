@@ -7,11 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.model.Board
 import com.arsildo.prevail.feature.boards.data.BoardsRepository
+import com.arsildo.prevail.feature.boards.data.FavoriteBoardRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.context.startKoin
+import kotlinx.coroutines.withContext
 
 
 data class BoardsUiState(
@@ -19,13 +23,30 @@ data class BoardsUiState(
     val loadingError: String = "",
     val boards: List<Board> = emptyList(),
     val searchQuery: String = "",
+    val favoriteBoard: String = ""
 )
 
-class BoardsViewModel(
-    private val boardsRepository: BoardsRepository
+internal class BoardsViewModel(
+    private val boardsRepository: BoardsRepository,
+    private val favoriteBoardRepository: FavoriteBoardRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(BoardsUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState = combine(
+        _uiState,
+        favoriteBoardRepository.getFavoriteBoard
+    ) { state, favoriteBoard ->
+        BoardsUiState(
+            isLoading = state.isLoading,
+            loadingError = state.loadingError,
+            boards = state.boards,
+            searchQuery = state.searchQuery,
+            favoriteBoard = favoriteBoard
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = BoardsUiState(),
+        started = SharingStarted.WhileSubscribed(5000)
+    )
 
     // saves a copy of all boards
     private var boardsResponse = emptyList<Board>()
@@ -77,4 +98,9 @@ class BoardsViewModel(
         )
     }
 
+    fun setFavoriteBoard(board: String) = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            favoriteBoardRepository.setFavoriteBoard(board = board)
+        }
+    }
 }

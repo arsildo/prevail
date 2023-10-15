@@ -4,7 +4,7 @@ import ApiResult
 import com.arsildo.model.Boards
 import com.arsildo.network.NetworkService
 
-class BoardsRepository(private val networkService: NetworkService) {
+internal class BoardsRepository(private val networkService: NetworkService) {
     suspend fun getBoards(): ApiResult<Boards> {
         return BoardsDataSource(networkService).invoke()
     }

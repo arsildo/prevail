@@ -6,7 +6,7 @@ import com.arsildo.model.Posts
 import com.arsildo.network.NetworkService
 import handleApi
 
-class PostsDataSource(private val networkService: NetworkService) {
+internal class PostsDataSource(private val networkService: NetworkService) {
     suspend operator fun invoke(
         thread: String,
         threadNumber: Int

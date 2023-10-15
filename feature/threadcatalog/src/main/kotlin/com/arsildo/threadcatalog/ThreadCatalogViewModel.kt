@@ -18,15 +18,15 @@ data class ThreadsScreenUiState(
     val threads: List<ThreadCatalog> = emptyList()
 )
 
-class ThreadsViewModel(
+internal class ThreadCatalogViewModel(
     private val threadCatalogRepository: ThreadCatalogRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ThreadsScreenUiState())
     val uiState = _uiState.asStateFlow()
 
-    private suspend fun getThreads() = viewModelScope.launch {
+    private fun getThreads() = viewModelScope.launch {
         _uiState.update { state ->
-            when (val response = threadCatalogRepository.getThreadCatalog("po")) {
+            when (val response = threadCatalogRepository.getThreadCatalog()) {
                 is ApiSuccess -> state.copy(
                     isLoading = false,
                     threads = response.data
@@ -48,7 +48,7 @@ class ThreadsViewModel(
     }
 
     init {
-        viewModelScope.launch { getThreads() }
+        getThreads()
     }
 
 }

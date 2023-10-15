@@ -6,13 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,36 +16,27 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arsildo.prevail.feature.boards.search.SearchTextField
@@ -57,11 +44,12 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BoardsScreen(
+internal fun BoardsScreen(
     viewModel: BoardsViewModel = koinViewModel(),
     onBackPress: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var favoriteBoardsVisible by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -70,11 +58,23 @@ fun BoardsScreen(
                     IconButton(
                         content = {
                             Icon(
-                                imageVector = Icons.Rounded.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = null
                             )
                         },
                         onClick = onBackPress
+                    )
+                },
+                actions = {
+                    IconButton(
+                        content = {
+                            Icon(
+                                imageVector = Icons.Rounded.StarBorder,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = { favoriteBoardsVisible = !favoriteBoardsVisible },
+                        colors = if (!favoriteBoardsVisible) IconButtonDefaults.iconButtonColors() else IconButtonDefaults.filledTonalIconButtonColors()
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -101,26 +101,13 @@ fun BoardsScreen(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        val tabList = listOf("boards", "your boards")
-                        var selectedTabIndex by remember { mutableIntStateOf(0) }
-                        TabRow(
-                            selectedTabIndex = selectedTabIndex,
-                            tabs = {
-                                tabList.forEachIndexed { index, s ->
-                                    Tab(
-                                        selected = selectedTabIndex == index,
-                                        onClick = { selectedTabIndex = index },
-                                        text = { Text(text = tabList[index]) }
-                                    )
-                                }
-                            }
-                        )
+                        Text("favorite board : ${uiState.favoriteBoard}")
                         AnimatedContent(
-                            targetState = selectedTabIndex,
-                            label = ""
+                            targetState = favoriteBoardsVisible,
+                            label = "",
                         ) { target ->
                             when (target) {
-                                0 -> {
+                                false -> {
                                     Column(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
@@ -145,7 +132,9 @@ fun BoardsScreen(
                                                     BoardCard(
                                                         board = board,
                                                         checked = true,
-                                                        onCheckedChange = {}
+                                                        onCheckedChange = {
+                                                            viewModel.setFavoriteBoard(board.board)
+                                                        }
                                                     )
                                                 }
                                             }
@@ -153,18 +142,25 @@ fun BoardsScreen(
                                     }
                                 }
 
-                                1 -> {
-                                    LazyVerticalGrid(
-                                        columns = GridCells.Fixed(2),
-                                        contentPadding = WindowInsets.safeGestures.asPaddingValues(),
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                                        content = {
-                                            items(6) {
-                                                FavoriteBoardCard()
+                                else -> {
+                                    Column {
+                                        Text(
+                                            text = "favourite boards",
+                                            style = MaterialTheme.typography.displaySmall,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                        )
+                                        LazyVerticalGrid(
+                                            columns = GridCells.Fixed(count = 2),
+                                            contentPadding = WindowInsets.safeGestures.asPaddingValues(),
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                                            content = {
+                                                items(count = 6, key = { it }) {
+                                                    FavoriteBoardCard()
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         }

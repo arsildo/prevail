@@ -20,7 +20,7 @@ data class PostsUiState(
     val posts: List<Post> = emptyList(),
 )
 
-class PostsViewModel(
+internal class PostsViewModel(
     private val postsRepository: PostsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -29,10 +29,12 @@ class PostsViewModel(
 
     private suspend fun getPosts() = viewModelScope.launch {
         _uiState.update { state ->
-            when (val response = postsRepository.getThreadCatalog(
-                thread = "po",
-                threadNumber = checkNotNull(savedStateHandle[THREAD_NUMBER_ARG])
-            )) {
+            when (
+                val response = postsRepository.getThreadCatalog(
+                    thread = "po",
+                    threadNumber = checkNotNull(savedStateHandle[THREAD_NUMBER_ARG])
+                )
+            ) {
                 is ApiSuccess -> state.copy(
                     isLoading = false,
                     posts = response.data.posts

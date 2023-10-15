@@ -9,11 +9,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
-internal const val THREAD_NUMBER_ARG = "threadNumber"
 internal const val POSTS_GRAPH = "posts"
+internal const val THREAD_NUMBER_ARG = "threadNumber"
 
-fun NavController.navigateToPosts(threadNumber: Int, navOptions: NavOptions? = null) {
-    this.navigate("$POSTS_GRAPH/$threadNumber", navOptions)
+fun NavController.navigateToPosts(threadNumber: Int) {
+    this.navigate("$POSTS_GRAPH/$threadNumber") {
+        launchSingleTop = true
+        restoreState = false
+    }
 }
 
 

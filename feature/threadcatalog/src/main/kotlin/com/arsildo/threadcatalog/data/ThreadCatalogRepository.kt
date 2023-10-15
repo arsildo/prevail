@@ -4,10 +4,11 @@ import ApiResult
 import com.arsildo.model.ThreadCatalog
 import com.arsildo.network.NetworkService
 
-class ThreadCatalogRepository(
-    private val networkService: NetworkService
+internal class ThreadCatalogRepository(
+    private val networkService: NetworkService,
+    private val board: String,
 ) {
-    suspend fun getThreadCatalog(board: String): ApiResult<List<ThreadCatalog>> {
-        return ThreadCatalogDataSource(networkService).invoke(board)
+    suspend fun getThreadCatalog(): ApiResult<List<ThreadCatalog>> {
+        return ThreadCatalogDataSource(networkService, board).invoke()
     }
 }

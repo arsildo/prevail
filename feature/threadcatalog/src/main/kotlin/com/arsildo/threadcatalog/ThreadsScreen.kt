@@ -1,21 +1,22 @@
 package com.arsildo.threadcatalog
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.PlaylistAddCheck
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,81 +27,29 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import org.koin.androidx.compose.koinViewModel
 
-
-const val THREAD_CATALOG_GRAPH = "threadCatalogGraph"
-
-fun NavController.navigateToThreadCatalog(navOptions: NavOptions?) {
-    this.navigate(
-        route = THREAD_CATALOG_GRAPH,
-        navOptions = navOptions
-    )
-}
-
-fun NavGraphBuilder.threadCatalog(
-    navController: NavHostController,
-    onThreadClick: (Int) -> Unit,
-    onBoardsClick: () -> Unit,
-    onPreferencesClick: () -> Unit,
-) {
-    navigation(
-        route = THREAD_CATALOG_GRAPH,
-        startDestination = "threadCatalog"
-    ) {
-        composable(
-            route = "threadCatalog",
-            enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right) },
-            exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left) }
-        ) {
-            ThreadsScreen(
-                onThreadClick = onThreadClick,
-                onBoardsClick = onBoardsClick,
-                onPreferencesClick = onPreferencesClick
-            )
-        }
-    }
-}
-
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ThreadsScreen(
-    viewModel: ThreadsViewModel = koinViewModel(),
+internal fun ThreadsScreen(
+    viewModel: ThreadCatalogViewModel = koinViewModel(),
     onThreadClick: (Int) -> Unit,
     onBoardsClick: () -> Unit,
     onPreferencesClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ThreadsScreenPreview(
-        uiState = uiState,
-        onThreadClick = onThreadClick,
-        onBoardsClick = onBoardsClick,
-        onPreferencesClick = onPreferencesClick
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ThreadsScreenPreview(
-    uiState: ThreadsScreenUiState,
-    onThreadClick: (Int) -> Unit,
-    onBoardsClick: () -> Unit,
-    onPreferencesClick: () -> Unit,
-) {
     val listState = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
@@ -111,7 +60,7 @@ private fun ThreadsScreenPreview(
                     IconButton(
                         content = {
                             Icon(
-                                imageVector = Icons.Rounded.PlaylistAddCheck,
+                                imageVector = Icons.Rounded.FavoriteBorder,
                                 contentDescription = null
                             )
                         },
@@ -150,17 +99,34 @@ private fun ThreadsScreenPreview(
             else {
                 if (uiState.loadingError.isBlank())
                     Column {
+                        val firstVisibleItem by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+                        val midIndex by remember(firstVisibleItem) {
+                            derivedStateOf {
+                                listState.layoutInfo.visibleItemsInfo.run {
+                                    val firstVisibleIndex = listState.firstVisibleItemIndex
+                                    if (isEmpty()) -1 else firstVisibleIndex + (last().index - firstVisibleIndex) / 2
+                                }
+                            }
+                        }
                         LazyColumn(
                             state = listState,
                             contentPadding = WindowInsets.safeGestures.asPaddingValues(),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            items(
+                            itemsIndexed(
                                 items = uiState.threads[0].threads,
-                                key = { item -> item.no }
-                            ) { thread ->
+                                key = { index, thread -> thread.no }
+                            ) { index, thread ->
                                 ThreadCard(
                                     thread = thread,
+                                    mediaContent = {
+                                        Box(
+                                            Modifier
+                                                .clip(CardDefaults.elevatedShape)
+                                                .aspectRatio(1f)
+                                                .background(if (index == midIndex) Color.Green else Color.Blue)
+                                        )
+                                    },
                                     onClick = { onThreadClick(thread.no) }
                                 )
                             }

@@ -5,7 +5,10 @@ import com.arsildo.model.ThreadCatalog
 import com.arsildo.network.NetworkService
 import handleApi
 
-class ThreadCatalogDataSource(private val networkService: NetworkService) {
-    suspend operator fun invoke(board: String): ApiResult<List<ThreadCatalog>> =
-        handleApi { networkService.getThreadCatalog("$board/catalog.json") }
+internal class ThreadCatalogDataSource(
+    private val networkService: NetworkService,
+    private val board: String,
+) {
+    suspend operator fun invoke(): ApiResult<List<ThreadCatalog>> =
+        handleApi { networkService.getThreadCatalog(board = "$board/catalog.json") }
 }

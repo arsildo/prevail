@@ -1,35 +1,45 @@
 package com.arsildo.core.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.graphics.Color
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.graphics.Color
-import com.arsildo.core.theme.PrevailUiState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
+@SuppressLint("NewApi")
 @Composable
 fun PrevailTheme(
-    uiState: PrevailUiState = PrevailUiState(),
+    darkTheme: Boolean,
+    dynamicColor: Boolean = true,
+    context: Context = LocalContext.current,
     content: @Composable () -> Unit
 ) {
-    val isDarkThemeEnabled =
-        if (uiState.isAutomaticThemeEnabled) isSystemInDarkTheme() else uiState.isDarkThemeEnabled
-    val systemUiController = rememberSystemUiController()
-    DisposableEffect(
-        key1 = systemUiController,
-        key2 = isDarkThemeEnabled
-    ) {
-        systemUiController.setSystemBarsColor(
-            color = Color.Transparent,
-            darkIcons = !isDarkThemeEnabled
-        )
-        onDispose {}
+    val colorScheme = when {
+        dynamicColor && darkTheme -> dynamicDarkColorScheme(context)
+        dynamicColor && !darkTheme -> dynamicLightColorScheme(context)
+        darkTheme -> darkColorScheme()
+        else -> lightColorScheme()
+    }
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color.TRANSPARENT
+            window.navigationBarColor = Color.TRANSPARENT
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
     MaterialTheme(
-        colorScheme = if (isDarkThemeEnabled) darkColorScheme() else lightColorScheme(),
+        colorScheme = colorScheme,
         content = content
     )
 }

@@ -9,7 +9,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.arsildo.preferences.appearance.AppearancePreferencesScreen
-import com.arsildo.prevail.MainActivityViewModel
+import com.arsildo.core.theme.MainActivityViewModel
 import org.koin.androidx.compose.koinViewModel
 
 private const val PREFERENCES_GRAPH = "preferenceGraph"
@@ -35,7 +35,7 @@ fun NavGraphBuilder.preferences(
             }
             val viewModel = koinViewModel<MainActivityViewModel>(viewModelStoreOwner = parentEntry)
             PreferencesScreen(
-                onGeneralClick = { viewModel.updateTestValue() },
+                onGeneralClick = {  },
                 onAppearanceClick = { navController.navigate(Destinations.APPEARANCE_PREFERENCES_ROUTE) },
                 onBackClick = navController::navigateUp
             )

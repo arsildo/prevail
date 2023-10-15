@@ -11,18 +11,18 @@ class ThemePreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {
-        val AUTOMATIC_THEME = booleanPreferencesKey("automatic_theme")
-        val THEME_PREFERENCE = booleanPreferencesKey("manual_theme")
-    }
-
-    val isAutomaticThemeEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[AUTOMATIC_THEME] ?: true
-    }
-
-    suspend fun setAutomaticTheme(enabled: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[AUTOMATIC_THEME] = enabled
+            val AUTOMATIC_THEME = booleanPreferencesKey("automatic_theme")
+            val THEME_PREFERENCE = booleanPreferencesKey("manual_theme")
         }
+
+        val isAutomaticThemeEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+            preferences[AUTOMATIC_THEME] ?: true
+        }
+
+        suspend fun setAutomaticTheme(enabled: Boolean) {
+            dataStore.edit { preferences ->
+                preferences[AUTOMATIC_THEME] = enabled
+            }
     }
 
     val getTheme: Flow<Boolean> = dataStore.data.map { preferences ->

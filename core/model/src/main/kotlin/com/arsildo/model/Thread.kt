@@ -19,7 +19,7 @@ data class Thread(
     val md5: String? = null,
     val name: String? = null,
     val no: Int,
-    val now: String? = null,
+    val now: String,
     val omitted_images: Int? = null,
     val omitted_posts: Int? = null,
     val replies: Int? = null,

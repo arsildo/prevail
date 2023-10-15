@@ -33,7 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostsScreen(
+internal fun PostsScreen(
     viewModel: PostsViewModel = koinViewModel(),
     onBackPress: () -> Unit,
 ) {

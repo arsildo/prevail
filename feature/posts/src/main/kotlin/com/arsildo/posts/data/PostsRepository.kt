@@ -4,7 +4,7 @@ import ApiResult
 import com.arsildo.model.Posts
 import com.arsildo.network.NetworkService
 
-class PostsRepository(
+internal class PostsRepository(
     private val networkService: NetworkService
 ) {
     suspend fun getThreadCatalog(
