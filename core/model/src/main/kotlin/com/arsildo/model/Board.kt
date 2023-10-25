@@ -18,7 +18,7 @@ data class Board(
     val max_filesize: Int? = null,
     val max_webm_duration: Int? = null,
     val max_webm_filesize: Int? = null,
-    val meta_description: String? = null,
+    val meta_description: String = "",
     val min_image_height: Int? = null,
     val min_image_width: Int? = null,
     val oekaki: Int? = null,

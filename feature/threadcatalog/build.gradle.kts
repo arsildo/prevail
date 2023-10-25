@@ -18,6 +18,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":feature:boards"))
+
     implementation(project(":core:network"))
     implementation(project(":core:media"))
     implementation(project(":core:utils"))

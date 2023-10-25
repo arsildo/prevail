@@ -24,6 +24,5 @@ dependencies {
     implementation(libs.bundles.koin)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.bundles.accompanist)
     implementation(libs.datastore.preferences)
 }

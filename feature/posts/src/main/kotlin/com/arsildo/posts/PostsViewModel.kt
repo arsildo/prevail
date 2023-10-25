@@ -31,7 +31,6 @@ internal class PostsViewModel(
         _uiState.update { state ->
             when (
                 val response = postsRepository.getThreadCatalog(
-                    thread = "po",
                     threadNumber = checkNotNull(savedStateHandle[THREAD_NUMBER_ARG])
                 )
             ) {

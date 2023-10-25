@@ -1,5 +1,6 @@
 package com.arsildo.prevail.feature.boards
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,16 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arsildo.model.Board
+import com.arsildo.utils.Formaters
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardCard(
     board: Board,
-    checked: Boolean = false,
-    onCheckedChange: (Boolean) -> Unit
+    checked: Boolean = true,
+    onCheckedChange: () -> Unit
 ) {
     ElevatedCard(
-        onClick = { onCheckedChange(checked) },
+        onClick = onCheckedChange,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -47,22 +50,16 @@ fun BoardCard(
                 Column(modifier = Modifier.fillMaxWidth(.8f)) {
                     Text(text = board.title, style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = board.meta_description.toString(),
+                        text = Formaters.htmlToText(board.meta_description),
                         style = MaterialTheme.typography.labelMedium,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                if (checked) IconToggleButton(
-                    checked = true,
-                    onCheckedChange = onCheckedChange,
-                    content = {
-                        Icon(
-                            imageVector = Icons.Rounded.CheckCircleOutline,
-                            contentDescription = null,
-                        )
-                    }
+                if (checked) Icon(
+                    imageVector = Icons.Rounded.CheckCircleOutline,
+                    contentDescription = null,
                 )
             }
         }

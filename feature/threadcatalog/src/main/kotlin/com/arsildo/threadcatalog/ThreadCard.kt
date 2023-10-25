@@ -1,10 +1,14 @@
 package com.arsildo.threadcatalog
 
+import android.os.Build
+import android.text.Html
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Badge
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.arsildo.model.Thread
 import com.arsildo.utils.Formaters
 
+@RequiresApi(Build.VERSION_CODES.N)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ThreadCard(
@@ -48,10 +53,12 @@ internal fun ThreadCard(
                     textAlign = TextAlign.Center
                 )
             }
-            Text(
-                text = thread.sub ?: thread.com ?: "",
-                style = MaterialTheme.typography.titleMedium
-            )
+            SelectionContainer {
+                Text(
+                    text = thread.sub ?: Formaters.htmlToText(thread.com),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
             mediaContent()
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

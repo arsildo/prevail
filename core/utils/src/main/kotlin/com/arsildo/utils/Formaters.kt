@@ -1,5 +1,8 @@
 package com.arsildo.utils
 
+import android.os.Build
+import android.text.Html
+import androidx.annotation.RequiresApi
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -23,5 +26,11 @@ object Formaters {
         } catch (e: Exception) {
             return "Invalid date format"
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun htmlToText(text: String?): String {
+        return Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY)
+            .toString()
     }
 }

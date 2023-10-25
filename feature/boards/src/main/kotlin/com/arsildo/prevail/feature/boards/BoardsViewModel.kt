@@ -3,19 +3,29 @@ package com.arsildo.prevail.feature.boards
 import ApiError
 import ApiException
 import ApiSuccess
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.util.fastFilter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arsildo.model.Board
 import com.arsildo.prevail.feature.boards.data.BoardsRepository
-import com.arsildo.prevail.feature.boards.data.FavoriteBoardRepository
+import com.arsildo.prevail.feature.boards.data.LastVisitedBoardRepository
+import com.arsildo.utils.Formaters
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.cache
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.filterList
 
 
 data class BoardsUiState(
@@ -28,12 +38,16 @@ data class BoardsUiState(
 
 internal class BoardsViewModel(
     private val boardsRepository: BoardsRepository,
-    private val favoriteBoardRepository: FavoriteBoardRepository,
+    private val lastVisitedBoardRepository: LastVisitedBoardRepository,
 ) : ViewModel() {
+
+    // saves a copy of all boards
+    private var boardsResponse = emptyList<Board>()
+
     private val _uiState = MutableStateFlow(BoardsUiState())
     val uiState = combine(
         _uiState,
-        favoriteBoardRepository.getFavoriteBoard
+        lastVisitedBoardRepository.getLastVisitedBoard
     ) { state, favoriteBoard ->
         BoardsUiState(
             isLoading = state.isLoading,
@@ -48,17 +62,14 @@ internal class BoardsViewModel(
         started = SharingStarted.WhileSubscribed(5000)
     )
 
-    // saves a copy of all boards
-    private var boardsResponse = emptyList<Board>()
-
     private fun getBoards() = viewModelScope.launch {
         _uiState.update { state ->
             when (val response = boardsRepository.getBoards()) {
                 is ApiSuccess -> {
-                    boardsResponse = response.data.boards
+
                     state.copy(
                         isLoading = false,
-                        boards = boardsResponse
+                        boards = response.data.boards
                     )
                 }
 
@@ -84,10 +95,7 @@ internal class BoardsViewModel(
     fun updateSearchQuery(query: String) = _uiState.update { state ->
         state.copy(
             searchQuery = query,
-            boards = boardsResponse.filter { board ->
-                board.board.contains(query, ignoreCase = true) ||
-                        board.meta_description?.contains(query, ignoreCase = true) == true
-            }
+            boards = uiState.value.boards.filter { it.meta_description.contains(query) }
         )
     }
 
@@ -100,7 +108,7 @@ internal class BoardsViewModel(
 
     fun setFavoriteBoard(board: String) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
-            favoriteBoardRepository.setFavoriteBoard(board = board)
+            lastVisitedBoardRepository.setLastVisitedBoard(board = board)
         }
     }
 }

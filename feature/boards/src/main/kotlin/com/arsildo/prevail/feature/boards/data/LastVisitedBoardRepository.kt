@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-internal class FavoriteBoardRepository(
+class LastVisitedBoardRepository(
     private val dataStore : DataStore<Preferences>
 ) {
     companion object {
@@ -15,11 +15,11 @@ internal class FavoriteBoardRepository(
 
     }
 
-    val getFavoriteBoard: Flow<String> = dataStore.data.map { preferences ->
+    val getLastVisitedBoard: Flow<String> = dataStore.data.map { preferences ->
         preferences[FAVORITE_BOARD] ?: "po"
     }
 
-    suspend fun setFavoriteBoard(board: String) {
+    suspend fun setLastVisitedBoard(board: String) {
         dataStore.edit { preferences ->
             preferences[FAVORITE_BOARD] = board
         }

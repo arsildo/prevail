@@ -19,6 +19,7 @@ android {
 dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:media"))
+    implementation(project(":core:utils"))
     implementation(project(":core:preferences"))
     implementation(project(":core:model"))
 
